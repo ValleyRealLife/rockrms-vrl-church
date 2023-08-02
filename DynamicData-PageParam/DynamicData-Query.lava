@@ -1,0 +1,34 @@
+{% assign coachGuid = PageParameter.LGCoach | SanitizeSql %}
+
+{% if coachGuid != empty and coachGuid != null %}
+SELECT
+    g.Id AS 'GroupId'
+    , CONCAT(p.NickName, ' ', p.LastName) AS 'Coach'
+    , g.Name AS 'Group Name'
+    , COUNT(DISTINCT CASE WHEN gm.IsArchived = 0 AND gm.GroupMemberStatus=1 THEN gm.Id END) AS 'Active Members'
+    , COUNT(DISTINCT CASE WHEN gm.IsArchived = 0 AND gm.GroupMemberStatus=2 THEN gm.Id END) AS 'Pending Members'
+    , c.Name AS 'Campus'
+FROM
+    [Group] g
+    INNER JOIN [GroupMember] gm ON gm.GroupId = g.Id
+    LEFT JOIN [AttributeValue] av ON av.EntityId = g.Id AND av.AttributeId IN (8975, 8978, 8982, 8979)
+    LEFT JOIN [PersonAlias] pa ON TRY_CAST(pa.Guid AS NVARCHAR(50)) = av.Value
+    LEFT JOIN [Person] p ON p.Id = pa.PersonId
+    LEFT JOIN [Campus] c ON c.Id = g.CampusId
+WHERE
+    g.GroupTypeId IN (25, 45, 46, 59)
+    AND
+    g.IsActive = 1
+    AND
+    g.IsArchived = 0
+    AND
+    av.Value = '{{ coachGuid }}'
+GROUP BY
+    g.Id
+    , p.NickName
+    , p.LastName
+    , g.Name
+    , c.Name
+ORDER BY
+    g.Name
+{% endif %}
