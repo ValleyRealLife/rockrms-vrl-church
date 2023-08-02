@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "tim-tour",
+  "title": "tour-DynamicData-PageParam",
   "steps": [
     {
       "file": "DynamicData-PageParam/DynamicData-Settings.lava",
@@ -63,5 +63,5 @@
       "line": 26
     }
   ],
-  "ref": "dff67e23fe7e3ba044b801221ce619665b641649"
+  "ref": "28eb87fef0e9739d622b36844de7bf290ec34c0e"
 }
