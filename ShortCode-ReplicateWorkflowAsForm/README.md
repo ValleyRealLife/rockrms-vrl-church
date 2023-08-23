@@ -8,7 +8,7 @@ It looked promising so I just copy+pasted it into our Rock Instance. These are t
 | Name                  | (whatever)          |
 | Tag Name              | createformlava      |
 | Tag Type              | Inline              |
-| Shortcode Markup      | abcd                |
+| Shortcode Markup      | [here](../ShortCode-ReplicateWorkflowAsForm/ReplicateWorkflowAsForm-ShortcodeMarkup.lava) |
 | Enabled Lava Commands | Sql                 |
 
 These are the Parameters:
