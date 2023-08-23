@@ -1,0 +1,80 @@
+{% sql %}
+
+    Declare @WorkflowTypeId int = {{ workflowtypeid | Default:'0' }};
+
+    WITH cte AS (
+        SELECT DISTINCT
+            wf.Header AS PreHTML
+            , '' AS AttributeName
+            , '' AS AttributeValue
+            , '' AS PostHTML
+            , '' AS AttributeOrder
+            , wact.[Order] AS ActivityOrder
+            , wat.[Order] AS FormOrder
+            , wact.Id AS activityId
+            , 0 AS level
+        FROM
+            [WorkflowActionFormAttribute] wfa
+            INNER JOIN [WorkflowActionForm] wf ON wf.Id = wfa.WorkflowActionFormId
+            INNER JOIN [WorkflowActionType] wat ON wat.WorkflowFormId = wf.Id --AND wat.Id IN (@FormWorkflowActionType) -- Form Action Type AttributeId
+            INNER JOIN [WorkflowActivityType] wact ON wact.Id = wat.ActivityTypeId {% if workflowactivitytypeids AND workflowactivitytypeids != '' %} AND wact.Id IN ({{workflowactivitytypeids}}){% endif %}
+            INNER JOIN [WorkflowType] wt on wt.Id = wact.WorkflowTypeId AND wt.Id = @WorkflowTypeId
+
+        UNION ALL
+        SELECT
+            REPLACE(wfa.PreHTML,'col-md','col-xs') AS PreHTML,
+            CASE
+                WHEN wfa.HideLabel = 0 THEN Concat('<strong>',a.[Name],'</strong><br>')
+                ELSE ''
+            END AS AttributeName,
+            {% raw %}
+            Concat('<div style="min-width: 5ch;
+            border-bottom: 1px solid black;
+            margin-top:1.5em;
+            display: inline-block;">{{Workflow | Attribute:"',a.[Key],'" }}</div><br>') AS AttributeValue,
+            {% endraw %}
+            REPLACE(wfa.PostHTML,'col-md','col-xs' ) AS PostHTML,
+            wfa.[Order] AS AttributeOrder,
+            wact.[Order] AS ActivityOrder,
+            wat.[Order] AS FormOrder,
+            wact.Id AS activityId,
+            1 AS level
+        FROM
+            [WorkflowActionFormAttribute] wfa
+            INNER JOIN [WorkflowActionForm] wf ON wf.Id = wfa.WorkflowActionFormId
+            INNER JOIN [WorkflowActionType] wat ON wat.WorkflowFormId = wf.Id --AND wat.Id in (@FormWorkflowActionType) -- Form Action Type AttributeId
+            INNER JOIN [WorkflowActivityType] wact ON wact.Id = wat.ActivityTypeId {% if workflowactivitytypeids AND workflowactivitytypeids != '' %} AND wact.Id IN ({{workflowactivitytypeids}}){% endif %}
+            INNER JOIN [WorkflowType] wt ON wt.Id = wact.WorkflowTypeId AND wt.Id = @WorkflowTypeId
+            INNER JOIN [Attribute] a ON a.Id = wfa.AttributeId
+        WHERE
+            wfa.IsVisible = 1
+
+        UNION ALL
+        SELECT DISTINCT
+            '' AS PreHTML
+            , '' AS AttributeName
+            , '' AS AttributeValue
+            , wf.Footer AS PostHTML
+            , '' AS AttributeOrder
+            , wact.[Order] AS ActivityOrder
+            , wat.[Order] AS FormOrder
+            , wact.Id AS activityId
+            , 2 AS level
+        FROM
+            [WorkflowActionFormAttribute] wfa
+            INNER JOIN [WorkflowActionForm] wf ON wf.Id = wfa.WorkflowActionFormId
+            INNER JOIN [WorkflowActionType] wat ON wat.WorkflowFormId = wf.Id --AND wat.Id in (@FormWorkflowActionType) -- Form Action Type AttributeId
+            INNER JOIN [WorkflowActivityType] wact ON wact.Id = wat.ActivityTypeId {% if workflowactivitytypeids AND workflowactivitytypeids != '' %} AND wact.Id IN ({{workflowactivitytypeids}}){% endif %}
+            INNER JOIN [WorkflowType] wt ON wt.Id = wact.WorkflowTypeId AND wt.Id = @WorkflowTypeId
+    )
+
+    SELECT PreHTML, PostHTML, AttributeName, AttributeValue FROM cte ORDER BY ActivityOrder, FormOrder, level, AttributeOrder
+
+{% endsql %}
+
+{% for row in results %}
+    {{ row.PreHTML }}
+    {{ row.AttributeName }}
+    {{ row.AttributeValue }}
+    {{ row.PostHTML }}
+{% endfor %}
