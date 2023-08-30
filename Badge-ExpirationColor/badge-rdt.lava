@@ -1,0 +1,22 @@
+{% assign var1 = Person | Attribute:'date_RDT' %}
+{% assign var2 = var1 | DateAdd: 2, 'y' | Date: 'M/d/yyyy' %}
+{% assign var_today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_datediff = var_today | DateDiff: var2, 'Y' %}
+{% assign var_badge_color = '' %}
+{% assign var_tooltip_text = '' %}
+{% assign var_person_nickname = Person.NickName %}
+
+{% if var1 == blank %}
+    {% assign var_badge_color = 'rockbadge-disabled' %}
+    {% assign var_tooltip_text = var_person_nickname | Append: ' has not taken the RDT course.' %}
+{% elseif var_datediff <= 2 %}
+    {% assign var_badge_color = 'bg-green-500' %}
+    {% assign var_tooltip_text = var_person_nickname | Append: ' has taken the RDT course on ' | Append: var1 %}
+{% elseif var_datediff > 2 %}
+{% assign var_badge_color = 'bg-orange-400' %}
+{% assign var_tooltip_text = var_person_nickname | Append:' has taken the RDT course more than 2 years ago.' %}
+{% endif %}
+
+<div class="rockbadge rockbadge-icon badge_BackgroundCheck {{ var_badge_color }}" data-toggle="tooltip" data-title="{{ var_tooltip_text }}">
+    <i class="badge-icon fas fa-apple-alt"></i>
+</div>

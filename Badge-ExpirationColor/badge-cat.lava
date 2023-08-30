@@ -1,0 +1,23 @@
+{% assign var1 = Person | Attribute:'CATcourse_boolean' %}
+{% assign var2 = Person | Attribute:'CATcourse_date' %}
+{% assign var3 = var2 | DateAdd:2,'y' %}
+{% assign var_today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_datediff = var_today | DateDiff: var3, 'Y' %}
+{% assign var_badge_color = '' %}
+{% assign var_tooltip_text = '' %}
+{% assign var_person_nickname = Person.NickName %}
+
+{% if var1 == blank or var1 == null or var1 == 'No' %}
+    {% assign var_badge_color = 'rockbadge-disabled' %}
+    {% assign var_tooltip_text = var_person_nickname | Append: ' has not taken the CAT course' %}
+{% elseif var1 == 'Yes' and var_datediff <= 2 %}
+    {% assign var_badge_color = 'bg-green-500' %}
+    {% assign var_tooltip_text = var_person_nickname | Append: ' has taken the CAT course on ' | Append: var2 %}
+{% elseif var1 == 'Yes' and var_datediff > 2 %}
+    {% assign var_badge_color = 'bg-orange-400' %}
+    {% assign var_tooltip_text = var_person_nickname | Append: ' has taken the CAT course more than 2 years ago' %}
+{% endif %}
+
+<div class="rockbadge rockbadge-icon rockbadge-circle badge_CATcourse {{ var_badge_color }}" data-toggle="tooltip" data-title="{{ var_tooltip_text }}">
+    <i class="badge-icon fas fa-user-shield"></i>
+</div>

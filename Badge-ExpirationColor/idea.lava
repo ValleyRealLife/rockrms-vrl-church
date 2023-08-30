@@ -1,0 +1,19 @@
+{% assign var1 = Person | Attribute:'date_RDT' %}
+{% assign var2 = var1 | DateAdd: 2, 'y' | Date: 'M/d/yyyy' %}
+{% assign var_today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_datediff = var_today | DateDiff: var2, 'Y' %}
+{% assign var_badge_color = '' %}
+{% assign var_tooltip_text = '' %}
+{% assign var_person_nickname = Person.NickName %}
+
+{% if var1 == blank %}
+    var1 is blank
+{% elseif var_datediff <= 2 %}
+    var1 is recent
+{% elseif var_datediff > 2 %}
+    var1 is old
+{% endif %}
+
+<div class="rockbadge rockbadge-icon rockbadge-circle badge_BackgroundCheck {{ var_badge_color }}" data-toggle="tooltip" data-title="{{ var_tooltip_text }}">
+    <i class="badge-icon fas fa-shield-alt"></i>
+</div>
