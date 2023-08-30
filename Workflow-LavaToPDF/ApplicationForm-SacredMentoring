@@ -1,0 +1,52 @@
+<html document-width="8.5" document-height="11" page-margin-top="1" page-margin-bottom="1">
+    <meta http-equiv="Content-Type" content="text/plain; charset=UTF-8" />
+
+    <head>
+        <style>
+            div.a {
+                text-align: left;
+                font-size: 120%;
+                margin: 75px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <center><h1>Sacred Mentoring</h1></center>
+        <center><h2>Mentorship Application Form</h2></center>
+        <div class="a">
+            <b>Name</b>
+            <br>
+            {{ Workflow | Attribute:'Person', 'FullName' }}
+            <br><br>
+            <b>Email</b>
+            <br>
+            {{ Workflow | Attribute:'Person', 'Email' }}
+            <br><br>
+            <b>Mobile Phone</b>
+            <br>
+            {{ Workflow | Attribute:'Person', 'Object' | PhoneNumber:'Mobile' }}
+            <br><br>
+            <b>Birthdate</b>
+            <br>
+            {{ Workflow | Attribute:'Person', 'BirthDate' | Date:'M/d/yyyy' }}
+            <br><br>
+            <b>Gender</b>
+            <br>
+            {{ Workflow | Attribute:'Person', 'Gender' }}
+            <br><br>
+            <b>Address</b>
+            <br>
+            {{ Workflow | Attribute:'Person', 'Object' | Address:'Home' }}
+            <br><br>
+            {% for attr in Activity.AttributeValues %}
+                {% if attr.AttributeKey contains 'form_Q_' %}
+                    <b>{{ attr.AttributeName }}</b>
+                    <br>
+                    {{ attr.ValueFormatted | NewlineToBr }}
+                    <br><br>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </body>
+</html>
