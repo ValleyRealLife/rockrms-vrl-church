@@ -1,8 +1,8 @@
 {% assign var1 = Person | Attribute:'BackgroundCheckResult' %}
 {% assign var2 = Person | Attribute:'BackgroundCheckDate' %}
-{% assign var3 = var2 | DateAdd:2,'y' | Date:'M/d/yyyy' %} //- As of 27-AUG-2023, this must be a lowercase 'y'
+{% assign var3 = var2 | DateAdd:2,'y' | Date:'M/d/yyyy' %} //- As of 31-AUG-2023, this must be a lowercase 'y'
 {% assign var_today = 'Now' | Date:'M/d/yyyy' %}
-{% assign var_datediff = var_today | DateDiff: var3, 'Y' %} //- As of 27-AUG-2023, this must be an UPPERCASE 'Y'
+{% assign var_datediff = var3 | DateDiff: var_today, 'd' %} //- As of 31-AUG-2023, this must be a lowercase 'd'
 {% assign var_badge_color = '' %}
 {% assign var_tooltip_text = '' %}
 {% assign var_person_nickname = Person.NickName %}
@@ -10,10 +10,10 @@
 {% if var1 == blank %}
     {% assign var_badge_color = 'rockbadge-disabled' %}
     {% assign var_tooltip_text = 'No Background Check Data' %}
-{% elseif var1 == 'Pass' and var_datediff <= 2 %}
+{% elseif var1 == 'Pass' and var_datediff < 1 %}
     {% assign var_badge_color = 'bg-green-500' %}
     {% assign var_tooltip_text = 'Background Check passed on ' | Append: var2 %}
-{% elseif var1 == 'Pass' and var_datediff > 2 %}
+{% elseif var1 == 'Pass' and var_datediff >= 1 %}
     {% assign var_badge_color = 'bg-orange-400' %}
     {% assign var_tooltip_text = 'It has been more than 2 years since the Background Check' %}
 {% elseif var1 == 'Fail' %}
