@@ -7,16 +7,16 @@
 {% assign var_tooltip_text = '' %}
 {% assign var_person_nickname = Person.NickName %}
 
-{% if var1 == blank %}
+{% if var1 == blank %}                            //- This means they need a background check
     {% assign var_badge_color = 'rockbadge-disabled' %}
     {% assign var_tooltip_text = 'No Background Check Data' %}
-{% elseif var1 == 'Pass' and var_datediff < 1 %}
+{% elseif var1 == 'Pass' and var_datediff < 1 %}  //- This means their background check is good
     {% assign var_badge_color = 'bg-green-500' %}
     {% assign var_tooltip_text = 'Background Check passed on ' | Append: var2 %}
-{% elseif var1 == 'Pass' and var_datediff >= 1 %}
+{% elseif var1 == 'Pass' and var_datediff >= 1 %} //- This means their background check is outdated
     {% assign var_badge_color = 'bg-orange-400' %}
     {% assign var_tooltip_text = 'It has been more than 2 years since the Background Check' %}
-{% elseif var1 == 'Fail' %}
+{% elseif var1 == 'Fail' %}                       //- This means they have previously failed a background check
     {% assign var_badge_color = 'bg-red-600' %}
     {% assign var_tooltip_text = 'Background Check failed on ' | Append: var2 %}
 {% endif %}
