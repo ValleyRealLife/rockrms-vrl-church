@@ -1,0 +1,9 @@
+{% assign campusContext = Context.Campus.Name %}
+
+{% if Context.Campus.Name != blank and Context.Campus.Name != 'Riverside' %}
+    <script>
+        setTimeout(function() {
+            location.reload();
+        }, 100); // Refresh after .1 seconds
+    </script>
+{% endif %}
