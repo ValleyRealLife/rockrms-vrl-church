@@ -21,7 +21,7 @@ $(function() {
 {% endjavascript %}
 ```
 
-I really liked this functionality, but I thought it'd be better if the button would open the Page Editor in a new tab, rather than redirect the tab that I'm currenlty on, so I added a `target="_blank"` to the <href>:
+I really liked this functionality, but I thought it'd be better if the button would open the Page Editor in a new tab, rather than redirect the tab that I'm currenlty on, so I added a `target="_blank"` to the `<href>`:
 ```
 {% assign tempPage = CurrentPage %}
 {% assign parentPageList = tempPage.ParentPage.Id %}
