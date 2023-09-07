@@ -1,6 +1,7 @@
-{% assign campusContext = Context.Campus.Name %}
+{% assign var1 = PageParameter.CampusId %}
+{% assign var2 = Context.Campus.Name %}
 
-{% if Context.Campus.Name != blank and Context.Campus.Name != 'Riverside' %}
+{% if var1 != empty and var2 == empty %}
     <script>
         setTimeout(function() {
             location.reload();
