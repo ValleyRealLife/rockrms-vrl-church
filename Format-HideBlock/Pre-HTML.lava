@@ -1,0 +1,18 @@
+{% assign var0 = PageParameter.PersonId %}
+{% assign var1 = 'timtest-hide' %}
+
+{% groupmember where:'GroupId == 113381 && PersonId == {{ var0 }}' %}
+    {% if groupmemberItems.size > 0 %}
+        {% assign var1 = 'timtest-show' %}
+    {% endif %}
+{% endgroupmember %}
+
+{% if var1 == 'timtest-hide' %}
+    <style>
+        #timtest_01 {
+            display: none;
+        }
+    </style>
+{% endif %}
+
+<div id="timtest_01">
