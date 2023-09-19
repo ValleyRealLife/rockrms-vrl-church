@@ -9,7 +9,7 @@
 
 {% if var1 == blank %}                            //- This means they need a background check
     {% assign var_badge_color = 'rockbadge-disabled' %}
-    {% assign var_tooltip_text = 'No Background Check Data' %}
+    {% assign var_tooltip_text = 'BackgroundCheckResult isblank' %}
 {% elseif var1 == 'Pass' and var_datediff < 1 %}  //- This means their background check is good
     {% assign var_badge_color = 'bg-green-500' %}
     {% assign var_tooltip_text = 'Background Check passed on ' | Append: var2 %}
