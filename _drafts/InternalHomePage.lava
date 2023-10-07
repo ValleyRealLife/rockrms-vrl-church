@@ -1,0 +1,118 @@
+<div class="row">
+    <div class="col-md-4">
+        {[ panel title:'Staff Birthdays' icon:'fa fa-birthday-cake' ]}
+            {% person dataview:'417' where:'DaysUntilBirthday <= 14' sort:'DaysUntilBirthday' %}
+                <table style="width:100%;">
+                    {% assign count = 0 %}
+                    {% for person in personItems %}
+                        {% assign count = count | Plus:1 %}
+                        <tr {% if person.DaysUntilBirthday==0 %}style="font-weight:bold;" {%endif%}>
+                            {% capture bday %}{{ person.BirthDate | Date:'MMMM'}} {{person.BirthDate | Date:'d' | NumberToOrdinal}}{%endcapture%}
+                            <td valign="top">{{ person.FullName }}&nbsp;</td>
+                            <td valign="top">{{bday}}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% assign picwidth = 100 | DividedBy:count %}
+                <table style="width:100%">
+                    <tr>
+                        {% for person in personItems %}
+                        <td width="{{picwidth}}%" align="center">
+                            <img src="{{ 'Global' | Attribute:'PublicApplicationRoot' }}{{ person.PhotoUrl }}" style="width:100%;max-width:100px; border-top-left-radius: 50%; border-top-right-radius: 50%; border-bottom-right-radius: 50%; border-bottom-left-radius: 50%; display: block; float: none;padding:5px;">
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            {% endperson %}
+        {[ endpanel ]}
+    </div>
+
+    <div class="col-md-4">
+        {[ panel title:'Staff Wedding Anniversaries' icon:'fa fa-glass-cheers' ]}
+            {% person dataview:'418' where:'DaysUntilAnniversary <= 21' sort:'DaysUntilAnniversary' %}
+                <table style="width:100%;">
+                    {% assign count = 0 %}
+                    {% for person in personItems %}
+                        {% assign count = count | Plus:1 %}
+                        <tr {% if person.DaysUntilAnniversary==0 %}style="font-weight:bold;" {%endif%}>
+                            {% capture NumYears%}{{ person.AnniversaryDate | DateDiff:'Now','Y' }}{%endcapture%}
+                            {% capture AnnDay %}{{ person.AnniversaryDate | Date:'M/d/2000' }}{%endcapture%}
+                            {% capture Day %}{{ 'Now' | Date:'M/d/2000' }}{% endcapture %}
+                            {% assign NewYear = Day | DateDiff:AnnDay,'d' %}
+                            {%if NewYear < 0 %} {% assign NumYears=NumYears | Plus:1 %} {% endif %}
+                            {% capture anniversary %}
+                                <td valign="top">{{ person | FamilySalutation }}&nbsp;</td>
+                                <td valign="top">{{ person.AnniversaryDate | Date:'MMMM'}} {{ person.AnniversaryDate | Date:'d' | NumberToOrdinal }} ({{ NumYears }})&nbsp;</td>
+                            {%endcapture%}
+                            {% if prevann == "" %}{% assign prevann = anniversary %}{% endif %}
+                            {% if prevann != anniversary %}{{anniversary}}{% assign prevann = anniversary %}{% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% assign picwidthb = 100 | DividedBy:count %}
+                <table style="width:100%">
+                    <tr>
+                        {% for person in personItems %}
+                        <td width="{{picwidth}}%" align="center">
+                            <img src="{{ 'Global' | Attribute:'PublicApplicationRoot' }}{{ person.PhotoUrl }}" style="width:100%;max-width:100px; border-top-left-radius: 50%; border-top-right-radius: 50%; border-bottom-right-radius: 50%; border-bottom-left-radius: 50%; display: block; float: none;padding:5px;">
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            {% endperson %}
+        {[ endpanel ]}
+    </div>
+
+    <div class="col-md-4">
+        {[ panel title:'Staff Work Anniversaries' icon:'fas fa-briefcase' ]}
+            {% sql %}
+                DECLARE @StaffHireDateAttributeId AS INT = 4631
+                DECLARE @TermDateAttributeId AS INT = 4631
+                DECLARE @StaffAttributeId AS INT = 3315
+
+                SELECT
+                    CONCAT(p.NickName, ' ', p.LastName) AS 'Name'
+                    , avHireDate.[Value] AS 'StaffHireDate'
+                    , avTermDate.[Value] AS 'TermDate'
+                    , (FLOOR(DATEDIFF(dd,avHireDate.[Value],GETDATE()+300) / 365.25)) AS 'NumYears'
+                    , p.Id
+                FROM Person p
+                    JOIN AttributeValue avHireDate ON (avHireDate.EntityId = p.Id AND avHireDate.AttributeId = @StaffHireDateAttributeId AND avHireDate.[Value] != '')
+                    JOIN AttributeValue avStaff ON (avStaff.EntityId = p.Id AND avStaff.AttributeId = @StaffAttributeId AND avStaff.[Value] = 'true')
+                    LEFT JOIN AttributeValue avTermDate ON (avTermDate.EntityId = p.Id AND avTermDate.AttributeId = @TermDateAttributeId AND avTermDate.[Value] != '')
+                WHERE
+                    1 = (FLOOR(DATEDIFF(dd,avHireDate.[Value],GETDATE()+14) / 365.25))-(FLOOR(DATEDIFF(dd,avHireDate.[Value],GETDATE()) / 365.25))
+                    AND
+                    DATEDIFF(dd,avHireDate.[Value],GETDATE()) > 0
+                ORDER BY
+                    MONTH(avHireDate.[Value])
+                    ,DAY(avHireDate.[Value])
+            {% endsql %}
+            <table style="width:100%;">
+                {% assign count = 0 %}
+                {% for item in results %}
+                    {% assign count = count | Plus:1 %}
+                    {% capture bday %}<td valign="top">{{ item.StaffHireDate | Date:'MMMM'}} {{ item.StaffHireDate | Date:'d' | NumberToOrdinal }} ({{ item.NumYears }})&nbsp;</td>{%endcapture%}
+                    {% assign hiremonth = item.StaffHireDate | Date:'M' %}
+                    {% assign hireday = item.StaffHireDate | Date:'d' %}
+                    {% assign curmonth = 'Now' | Date:'M' %}
+                    {% assign curday = 'Now' | Date:'d' %}
+                    <tr {% if hireday==curday && hiremonth==curmonth %}style="font-weight:bold;" {%endif%}>
+                        <td valign="top">{{ item.Name }}&nbsp;</td>{{bday}}
+                    </tr>
+                {% endfor %}
+            </table>
+            {% assign picwidth = 100 | DividedBy:count %}
+            <table style="width:100%">
+                <tr>
+                    {% for item in results %}
+                        {% assign person = item.Id | PersonById %}
+                        <td width="{{picwidth}}%" align="center">
+                            <img src="{{ 'Global' | Attribute:'PublicApplicationRoot' }}{{ person.PhotoUrl }}" style="width:100%;max-width:100px; border-top-left-radius: 50%; border-top-right-radius: 50%; border-bottom-right-radius: 50%; border-bottom-left-radius: 50%; display: block; float: none;padding:5px;">
+                        </td>
+                    {% endfor %}
+                </tr>
+            </table>
+        {[ endpanel ]}
+    </div>
+</div>
