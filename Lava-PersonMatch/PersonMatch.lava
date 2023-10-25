@@ -1,0 +1,219 @@
+//- Define some Variables
+{% assign var_PersonAliasGuid = '' %}
+{% assign var_option = '' %}
+{% assign var_count_1 = 0 %}
+{% assign var_count_2 = 0 %}
+{% assign var_count_3 = 0 %}
+{% assign var_count_4 = 0 %}
+
+//- count_1 is FirstName and LastName
+{% sql return:'query_1_result' %}
+    SELECT
+        COUNT(p.Guid) AS Count
+    FROM
+        [Person] p
+    WHERE
+        (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+        OR
+        p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+        )
+        AND
+        p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+{% endsql %}
+
+{% for item in query_1_result %}
+    {% assign var_count_1 = item.Count %}
+{% endfor %}
+
+//- count_2 is FirstName, LastName, and MobilePhone
+{% if var_count_1 > 1 %}
+    {% sql return:'query_2_result' %}
+        SELECT
+            COUNT(p.Guid) AS Count
+        FROM
+            [Person] p
+            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            AND
+            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+    {% endsql %}
+
+    {% for item in query_2_result %}
+        {% assign var_count_2 = item.Count %}
+    {% endfor %}
+{% endif %}
+
+//- count_3 is FirstName, LastName, and Email
+{% if var_count_2 > 1 %}
+    {% sql return:'query_3_result' %}
+        SELECT
+            COUNT(p.Guid) AS Count
+        FROM
+            [Person] p
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            AND
+            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+    {% endsql %}
+
+    {% for item in query_3_result %}
+        {% assign var_count_3 = item.Count %}
+    {% endfor %}
+{% endif %}
+
+//- count_4 is FirstName, LastName, Email, and MobilePhone
+{% if var_count_3 > 1 %}
+    {% sql return:'query_4_result' %}
+        SELECT
+            COUNT(p.Guid) AS Count
+        FROM
+            [Person] p
+            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            AND
+            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+            AND
+            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+    {% endsql %}
+
+    {% for item in query_4_result %}
+        {% assign var_count_4 = item.Count %}
+    {% endfor %}
+{% endif %}
+
+{% if var_count_1 == 0 %}          //- No Matches found, create Person
+    {% assign var_option = '0' %}
+{% elseif var_count_1 == 1 %}      //- query_1 had one match
+    {% assign var_option = '1' %}
+{% elseif var_count_2 == 1 %}      //- query_2 had one match
+    {% assign var_option = '2' %}
+{% elseif var_count_3 == 1 %}      //- query_3 had one match
+    {% assign var_option = '3' %}
+{% elseif var_count_4 >= 1 %}      //- query_4 had one or more matches
+    {% assign var_option = '4' %}
+{% endif %}
+
+//- If query_1 had one match
+{% if var_option == '1' %}
+    {% sql return:'query_result' %}
+        SELECT
+            Top 1
+            pa.Guid
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+        ORDER BY p.CreatedDateTime ASC
+    {% endsql %}
+
+    {% for item in query_result %}
+        {% assign var_PersonAliasGuid = item.Guid %}
+    {% endfor %}
+{% endif %}
+
+//- If query_2 had one match
+{% if var_option == '2' %}
+    {% sql return:'query_result' %}
+        SELECT
+            Top 1
+            pa.Guid
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
+            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            AND
+            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+        ORDER BY p.CreatedDateTime ASC
+    {% endsql %}
+
+    {% for item in query_result %}
+        {% assign var_PersonAliasGuid = item.Guid %}
+    {% endfor %}
+{% endif %}
+
+//- If query_3 had one match
+{% if var_option == '3' %}
+    {% sql return:'query_result' %}
+        SELECT
+            Top 1
+            pa.Guid
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            AND
+            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+        ORDER BY p.CreatedDateTime ASC
+    {% endsql %}
+
+    {% for item in query_result %}
+        {% assign var_PersonAliasGuid = item.Guid %}
+    {% endfor %}
+{% endif %}
+
+//- If query_4 is >= 1
+{% if var_option == '4' %}
+    {% sql return:'query_result' %}
+        SELECT
+            Top 1
+            pa.Guid
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
+            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+        WHERE
+            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            OR
+            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            )
+            AND
+            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            AND
+            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+            AND
+            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+        ORDER BY p.CreatedDateTime ASC
+    {% endsql %}
+
+    {% for item in query_result %}
+        {% assign var_PersonAliasGuid = item.Guid %}
+    {% endfor %}
+{% endif %}
+
+{{ var_PersonAliasGuid }}
