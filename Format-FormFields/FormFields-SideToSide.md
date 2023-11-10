@@ -1,6 +1,7 @@
 FirstName Pre-HTML:
 ```HTML
-<div class='row'><div class='col-md-6'>
+<div class="row">
+    <div class="col-md-6">
 ```
 
 FistName Post-HTML:
@@ -10,7 +11,7 @@ FistName Post-HTML:
 
 LastName Pre-HTML:
 ```HTML
-    <div class='col-md-6'>
+    <div class="col-md-6">
 ```
 
 LastName Post-HTML:
