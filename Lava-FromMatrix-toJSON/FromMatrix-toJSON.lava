@@ -1,7 +1,8 @@
 //- This 'var' will have the RawValue of a Matrix-Type Attribute (which is the GUID of an AttributeMatrix)
 {% assign var =  Activity | Attribute:'Form_Registrant_EmergencyContact', 'RawValue' %}
 
-//- This is how we get the AttributeMatrixId
+//- This is how we start with AttributeMatrix.Guid and end with AttributeMatrix.Id
+//- Theoretically, this SQL could be an Entity Command, but writing these all as SQL looks more visually consistent.
 {% sql return:'AttributeMatrix' %}
     SELECT
         am.Id
