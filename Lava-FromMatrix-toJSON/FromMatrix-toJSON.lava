@@ -46,8 +46,7 @@
 { "AttributeMatrixId": {{ AttributeMatrix[0] | Property:'Id' }}, "Rows": [
 {% for row in AttrMat-Row %}
     {% assign r = forloop.index0 %}
-    {
-        "AttributeMatrixItemId": {{ AttrMat-Row[r] | Property:'Id' }},
+    { "AttributeMatrixItemId": {{ AttrMat-Row[r] | Property:'Id' }},
     {% for col in AttrMat-Col %}
         {% assign c = forloop.index0 %}
         {% sql return:'attrmat-row-value' %}
