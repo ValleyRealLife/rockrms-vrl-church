@@ -5,7 +5,7 @@ Tim created this repository in order to contain all the things about VRL's Rock 
 1. [Button that navigates to the editor of the Current Page](./Button-GoToCurrentPageEditor/)
    - I got this from Drew Young, and then I added `target="_blank"`
 1. [HTML for Forms](./Format-FormFields/)
-   - [When I want to hide the Attriute Name, and use the HTML as the Field Label](./Format-FormFields/FormFields-Label.md)
+   - [When I want to hide the Attriute Name, and use the Pre-HTML as the Field Label](./Format-FormFields/FormFields-Label.md)
    - [When I want to put two Attributes next to each other](./Format-FormFields/FormFields-SideToSide.md)
 1. [Hide Certain Blocks from my Internal Rock users](./Format-HideBlock/)
 1. [Lava that converts from Matrix to JSON](./Lava-FromMatrix-toJSON/)
