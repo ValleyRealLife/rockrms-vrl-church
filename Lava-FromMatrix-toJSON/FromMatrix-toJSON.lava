@@ -2,7 +2,7 @@
 {% assign var =  Activity | Attribute:'Form_Registrant_EmergencyContact', 'RawValue' %}
 
 //- This is how we start with AttributeMatrix.Guid and end with AttributeMatrix.Id
-//- Theoretically, this SQL could be an Entity Command, but writing these all as SQL looks more visually consistent.
+//- Theoretically, any of the SQL queries in this Lava can be Entity Commands, but I like how SQL gives me control over which Properties I return.
 {% sql return:'AttributeMatrix' %}
     SELECT
         am.Id
