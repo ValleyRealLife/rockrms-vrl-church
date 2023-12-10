@@ -1,0 +1,84 @@
+{% assign var =  Activity | Attribute:'Form_Registrant_EmergencyContact', 'RawValue' %}
+
+{% sql return:'attributematrix' %}
+    SELECT
+        am.Id
+        , am.AttributeMatrixTemplateId
+    FROM
+        [AttributeMatrix] am
+    WHERE
+        am.Guid = '{{ var }}'
+    ;
+{% endsql %}
+
+{% sql return:'attrmat-col' %}
+    SELECT
+        attr.Id
+        , attr.FieldTypeId
+        , attr.EntityTypeId
+        , attr.[Key]
+        , attr.Name
+    FROM
+        [Attribute] attr
+    WHERE
+        attr.EntityTypeQualifierColumn = 'AttributeMatrixTemplateId'
+        AND
+        attr.EntityTypeQualifierValue = {{ attributematrix[0] | Property:'AttributeMatrixTemplateId' }}
+    ;
+{% endsql %}
+
+{% sql return:'attrmat-row' %}
+    SELECT
+        ami.Id
+        , ami.AttributeMatrixId
+    FROM
+        [AttributeMatrixItem] ami
+    WHERE
+        ami.AttributeMatrixId = {{ attributematrix[0] | Property:'Id' }}
+    ;
+{% endsql %}
+
+{% comment %}
+{% sql return:'attrmat-row-value' %}
+    SELECT
+        attrval.Id
+        , attrval.AttributeId
+        , attrval.EntityId
+        , attrval.Value
+    FROM
+        [AttributeValue] attrval
+    WHERE
+        attrval.AttributeId = {{ attrmat-col[0] | Property:'Id' }}
+        AND
+        attrval.EntityId = {{ attrmat-row[0] | Property:'Id' }}
+    ;
+{% endsql %}
+
+number of cols: {{ attrmat-col | Size }}<br>
+number of rows: {{ attrmat-row | Size }}<br><br>
+
+{{ attrmat-col[0] | Property:'Key' }}<br>
+{{ attrmat-row-value[0] | Property:'Value' }}<br><br>
+{% endcomment %}
+
+{ "Rows": [{
+{% for row in attrmat-row %}
+    {% assign r = forloop.index0 %}
+    {% for col in attrmat-col %}
+        {% assign c = forloop.index0 %}
+        {% sql return:'attrmat-row-value' %}
+            SELECT
+                attrval.Value
+            FROM
+                [AttributeValue] attrval
+            WHERE
+                attrval.AttributeId = {{ attrmat-col[c] | Property:'Id' }}
+                AND
+                attrval.EntityId = {{ attrmat-row[r] | Property:'Id' }}
+            ;
+        {% endsql %}
+        "{{ attrmat-col[c] | Property:'Key' }}": "{{ attrmat-row-value[0] | Property:'Value' }}"{% if forloop.last != true %},{% endif %}
+    {% endfor %}
+    }{% if forloop.last != true %},{% endif %}
+{% endfor %}
+]}
