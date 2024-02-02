@@ -1,0 +1,61 @@
+/-
+    This Lava is found in
+    Communications > System Communications > "Pending Group Members Notification"
+    TThis is [SystemCommunication] sc WHERE sc.Id = 16
+    Thankfully, this sc.Id is the same in Rock Demo Site and VRL Rock Site
+
+    I am copy+pasting it here from the Rock Demo Site, just to compare.
+    I copy+pasted this on 02-FEB-2024
+-/
+
+{{ 'Global' | Attribute:'EmailHeader' }}
+
+<p>
+    {{ Person.NickName }},
+</p>
+
+<p>
+    We wanted to make you aware of additional individuals who have taken the next step to connect with your {{ Group.Name }} group. The individuals' names and contact information can be found below. Our
+    goal is to contact new members within 24-48 hours of receiving this email.
+</p>
+
+<table cellpadding="25">g
+{% for pendingIndividual in PendingIndividuals %}
+    <tr><td>
+        <strong>{{ pendingIndividual.FullName }}</strong><br />
+        {%- assign mobilePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 12 | Select:'NumberFormatted' -%}
+        {%- assign homePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 13 | Select:'NumberFormatted' -%}
+        {%- assign homeAddress = pendingIndividual | Address:'Home' -%}
+
+        {%- if mobilePhone != empty -%}
+            Mobile Phone: {{ mobilePhone }}<br />
+        {%- endif -%}
+
+        {%- if homePhone != empty -%}
+            Home Phone: {{ homePhone }}<br />
+        {%- endif -%}
+
+        {%- if pendingIndividual.Email != empty -%}
+            {{ pendingIndividual.Email }}<br />
+        {%- endif -%}
+
+        <p>
+        {%- if homeAddress != empty -%}
+            Home Address <br />
+            {{ homeAddress }}
+        {%- endif -%}
+        </p>
+
+    </td></tr>
+{% endfor %}
+</table>
+
+<p>
+    Once you have connected with these individuals, please mark them as active.
+</p>
+
+<p>
+    Thank you for your ongoing commitment to {{ 'Global' | Attribute:'OrganizationName' }}.
+</p>
+
+{{ 'Global' | Attribute:'EmailFooter' }}
