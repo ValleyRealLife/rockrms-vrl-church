@@ -1,7 +1,7 @@
 # rock-vrl-church
 Tim created this repository in order to contain all the things about VRL's Rock implementation that could be shared externally and collaborated on.
 
-I like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/codetour), this is a VSC Extension that will allow the code author give you a "tour" of their code. Essentially, it's like adding comments to your code, but differently. I will try to get in the habit of creating CodeTours for codes that could be confusing without context/explanation. ([VSC Marketplace: CodeTour Extension](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour))
+I like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/codetour), this is a VSC Extension that will allow the code author to give you a "tour" of their code. Essentially, it's like adding comments to your code, but differently. I will try to get in the habit of creating CodeTours for codes that could be confusing without context/explanation. ([VSC Marketplace: CodeTour Extension](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour))
 
 # Things that are helpful to the internal Rock Admin
 1. [Button that navigates to the editor of the Current Page](./_code/Button-GoToCurrentPageEditor/)
