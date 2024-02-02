@@ -4,7 +4,7 @@
     This is [SystemCommunication] sc WHERE sc.Id = 16
     Thankfully, this sc.Id is the same in Rock Demo Site and VRL Rock Site
 
-    I am copy+pasting it here from the Rock Demo Site, just to compare.
+    I am copy+pasting this here from the VRL Rock Site.
     I copy+pasted this on 02-FEB-2024
 -/
 
@@ -15,15 +15,14 @@
 </p>
 
 <p>
-    We wanted to make you aware of additional individuals who have taken the next step to connect with your {{ Group.Name }} group. The individuals' names and contact information can be found below. Our
-    goal is to contact new members within 24-48 hours of receiving this email.
+    Great news!  An individual has taken the next step and wants to receive more information about your Life Group. The individuals' names and contact information can be found below. Our goal is to contact new members within 24-48 hours of receiving this e-mail. 
 </p>
 
 <table cellpadding="25">
 {% for pendingIndividual in PendingIndividuals %}
     <tr><td>
         <strong>{{ pendingIndividual.FullName }}</strong><br />
-        {%- assign mobilePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 12 | Select:'NumberFormatted' -%}
+        {%- assign mobilePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 136 | Select:'NumberFormatted' -%}
         {%- assign homePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 13 | Select:'NumberFormatted' -%}
         {%- assign homeAddress = pendingIndividual | Address:'Home' -%}
 
@@ -51,11 +50,15 @@
 </table>
 
 <p>
-    Once you have connected with these individuals, please mark them as active.
+    Once you have connected with these individuals, please log into your group at <a href="https://www.vrl.church/">vrl.church</a> and take one of the following actions in this individuals profile:
 </p>
+<ul>
+    <li>ACTIVE = They have decided to join your group</li>
+    <li>ARCHIVE = They have decided NOT to join your group</li>
+</ul>
 
 <p>
-    Thank you for your ongoing commitment to {{ 'Global' | Attribute:'OrganizationName' }}.
+    Thank you for your on-going commitment to connecting the unconnected at {{ 'Global' | Attribute:'OrganizationName' }}.
 </p>
 
 {{ 'Global' | Attribute:'EmailFooter' }}
