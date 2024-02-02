@@ -28,5 +28,7 @@ Tim created this repository in order to contain all the things about VRL's Rock 
 # Some Templates
 1. [Email Template for Background Check Consent](./_code/EmailTemplates/Background%20Check%20Consent)
    - This is only necessary because I don't have the new PMM Rock Plugin yet
+1. [Email Template for notifying LG Leaders that they have a new Pending GroupMember](./_code/EmailTemplates/Pending%20Group%20Members%20Notification.lava)
+   - i created this in order to keep version control over how our Email Template is different from Core Rock's template.
 
 <hr>
