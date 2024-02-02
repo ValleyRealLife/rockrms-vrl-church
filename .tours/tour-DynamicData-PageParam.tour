@@ -3,17 +3,17 @@
   "title": "tour-DynamicData-PageParam",
   "steps": [
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "'coachGuid' is the lava variable i'm declaring here, 'LGCoach' is the Key that i already defined in the Page Parameter Filter block.",
       "line": 1
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "Line 3 is essentially \"turning on\" the SQL query when the corresponding PageParamenter has been selected.\n\nIn other words, \"Hey, the whole SQL query between lines 3 and 34? Don't run that SQL query unless PageParameter has been selected!\"",
       "line": 3
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "The SELECT statement \"selects\" which columns to show to the user in the front. (this is literally the 'Fields' you select in a Rock Report).\n\n- Note 1: Columns follow a \"table-dot-column\" kind of syntax. So you'll see me typing a letter, a dot, and then the column name.\n- Note 2: Any Column name can be overwritten with the AS statement followed by a single-quote string.\n- Note 3: Columns can only be selected if they are available in the FROM statement below.",
       "line": 4,
       "selection": {
@@ -28,7 +28,7 @@
       }
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "The FROM statement defines the Entities (aka tables) to select from. (this is similar to the Entity that you choose in the 'Applies To' field of a Data View, the only difference being that we get to JOIN more than one Entity)\n\n- Note 1: the Table names can be found in Rock > Admin Tools > Power Tools > Model Map.\n- Note 2: Note the Key in the Model Map. Some properties are available as \"columns\" in SQL, some are not.",
       "line": 11,
       "selection": {
@@ -43,22 +43,22 @@
       }
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "The JOIN on line 14 is probably the trickest part of this SQL query, I'm essentially looking in the [AttributeValue] table and searching for any where the 'Entity' is a Group (in other words, an attribute value where the attribute is specifically a Group Attribute). I also happen to narrow it by 'AttributeValue', but this is probably not necessary.",
       "line": 14
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "The WHERE statement is exactly the 'Filters' you define in a Rock Data View.",
       "line": 18
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "The 'Value' column from the [AttributeValue] table. In this context, this refers to the 'Group Coach' value (which is the PersonAliasGUID of the Group Coach) that I'm looking for.",
       "line": 25
     },
     {
-      "file": "DynamicData-PageParam/DynamicData-Query.lava",
+      "file": "./_code/DynamicData-PageParam/DynamicData-Query.lava",
       "description": "GROUP BY statements are a bit tricky to explain, but the tldr version is that we need to include GROUP BY statements if the SELECT portion includes any summary or aggregate functions. In this context, we have the COUNT() function (which is a type of aggregate function) in lines 8 and 9, so we need to include a GROUP BY portion.\n\n- Note that we need to GRUOP BY all the column names in SELECT, with the exception of the aggregate ones.",
       "line": 26
     }
