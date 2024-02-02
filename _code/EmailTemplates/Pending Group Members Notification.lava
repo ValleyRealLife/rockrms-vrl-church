@@ -19,7 +19,10 @@
 </p>
 
 <table cellpadding="25">
-{% for pendingIndividual in PendingIndividuals %}
+    <tr>
+        <th>{{ Group.Name }}</th>
+    </tr>
+    {% for pendingIndividual in PendingIndividuals %}
     <tr><td>
         <strong>{{ pendingIndividual.FullName }}</strong><br />
         {%- assign mobilePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 136 | Select:'NumberFormatted' -%}
@@ -46,7 +49,7 @@
         </p>
 
     </td></tr>
-{% endfor %}
+    {% endfor %}
 </table>
 
 <p>
