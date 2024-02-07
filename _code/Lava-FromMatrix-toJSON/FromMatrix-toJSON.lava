@@ -15,7 +15,7 @@
 {% endsql %}
 
 //- This is how we get the "columns" of our AttributeMatrix
-{% sql return:'AttrMat-Col' %}
+{% sql return:'AttrMat_Col' %}
     SELECT
         attr.Id
         , attr.FieldTypeId
@@ -33,7 +33,7 @@
 
 //- This is how we get the "rows" of our AttributeMatrix
 //- It's worth noting that i only use this SQL query in order to know the number of "rows" we have, and nothing else.
-{% sql return:'AttrMat-Row' %}
+{% sql return:'AttrMat_Row' %}
     SELECT
         ami.Id
     FROM
@@ -46,23 +46,23 @@
 //- This is how we get the values for each of the "rows" of our AttributeMatrix, and format it as a JSON string
 {% capture jsonString %}
 { "AttributeMatrixId": {{ AttributeMatrix[0] | Property:'Id' }}, "Rows": [
-{% for row in AttrMat-Row %}
+{% for row in AttrMat_Row %}
     {% assign r = forloop.index0 %}
-    { "AttributeMatrixItemId": {{ AttrMat-Row[r] | Property:'Id' }},
-    {% for col in AttrMat-Col %}
+    { "AttributeMatrixItemId": {{ AttrMat_Row[r] | Property:'Id' }},
+    {% for col in AttrMat_Col %}
         {% assign c = forloop.index0 %}
-        {% sql return:'attrmat-row-value' %}
+        {% sql return:'attrmat_row_value' %}
             SELECT
                 attrval.Value
             FROM
                 [AttributeValue] attrval
             WHERE
-                attrval.AttributeId = {{ AttrMat-Col[c] | Property:'Id' }}
+                attrval.AttributeId = {{ AttrMat_Col[c] | Property:'Id' }}
                 AND
-                attrval.EntityId = {{ AttrMat-Row[r] | Property:'Id' }}
+                attrval.EntityId = {{ AttrMat_Row[r] | Property:'Id' }}
             ;
         {% endsql %}
-        "{{ AttrMat-Col[c] | Property:'Key' }}": "{{ attrmat-row-value[0] | Property:'Value' }}"{% if forloop.last != true %},{% endif %}
+        "{{ AttrMat_Col[c] | Property:'Key' }}": "{{ attrmat_row_value[0] | Property:'Value' }}"{% if forloop.last != true %},{% endif %}
     {% endfor %}
     }{% if forloop.last != true %},{% endif %}
 {% endfor %}
