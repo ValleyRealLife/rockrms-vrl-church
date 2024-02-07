@@ -32,10 +32,10 @@
 {% endsql %}
 
 //- This is how we get the "rows" of our AttributeMatrix
+//- It's worth noting that i only use this SQL query in order to know the number of "rows" we have, and nothing else.
 {% sql return:'AttrMat-Row' %}
     SELECT
         ami.Id
-        , ami.AttributeMatrixId
     FROM
         [AttributeMatrixItem] ami
     WHERE
