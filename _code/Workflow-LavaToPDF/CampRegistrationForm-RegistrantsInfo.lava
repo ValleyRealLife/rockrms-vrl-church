@@ -1,0 +1,182 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <style>
+
+            .break-before {
+                page-break-before: always;
+            }
+
+            .break-avoid {
+                page-break-inside:avoid;
+            }
+
+            .bordered{
+                border:solid 1px black;
+                width:30px;
+                height:30px;
+                text-align:center;
+            }
+
+            .table-spaced{
+                border-spacing: 3px;
+            }
+
+            table {
+                width:100%;
+                margin-bottom:16px;
+            }
+
+            td {
+                border-top: 1px solid #eee;
+                padding:8px;
+            }
+
+            .rotate {
+                display:inline-block;
+                transform: rotate(90deg);
+                -webkit-transform: rotate(90deg);
+            }
+
+            body {
+                font-family: Helvetica, Arial, Sans-Serif;
+            }
+
+            table {
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .checked {
+                font-family: Helvetica, Arial, Sans-Serif;
+                font-weight:900;
+                font-size:28px
+            }
+
+            h3 {
+                margin-top:25px;
+                border-bottom:solid 1px black;
+            }
+
+			p {
+				line-height: 1.6;
+			}
+        </style>
+    </head>
+
+    <body>
+        {% assign registrationInstanceId = Workflow | Attribute:'var_RegInsId' %}
+
+        {% registrationinstance where:'Id == "{{registrationInstanceId}}"' limit:1 %}
+            {% assign instanceId = registrationinstance.Id %}
+            {% assign template = registrationinstance.RegistrationTemplate %}
+        {% endregistrationinstance %}
+
+        {% registration dataview:'772' where:'RegistrationInstanceId == {{instanceId}}' securityenabled:'false'  %}
+            {% for reg in registrationItems %}
+                {% for registrant in reg.Registrants %}
+                    {% assign person = registrant.PersonAlias.Person %}
+                    {% assign groupMember = registrant.GroupMember %}
+                    <div class="break-before">
+                    <div class="text-with-space">
+                    <h2>{{ reg.RegistrationInstance.Name }}</h2>
+                    <h1>Registrant:{{ registrant.PersonAlias.Person.FullName }}</h1>
+                    <p>
+                        Registered By: {{reg.PersonAlias.Person.FullName}} ({{reg.PersonAlias.Person.Email}})<br/>
+                        Submission Date: {{ reg.CreatedDateTime | Date:'M/d/yyyy' }} @ {{ reg.CreatedDateTime | Date:'h:mmm:ss tt' }}<br/>
+                    </p>
+
+                    {% for form in template.Forms %}
+                        {% assign formFields = '' %}
+
+                        {% if forloop.first %}
+                            {% capture formFields %}
+                                <b>Birthdate:</b> {{ person.BirthDate | Date:'M/d/yyyy' }}<br/>
+                                <b>Gender:</b> {{ person.Gender }}<br/>
+                                {% capture raceEthnicity %}{{ person.RaceValue.Value }}/{{ person.EthnicityValue.Value }}{% endcapture %}
+                                {% assign raceEthnicity = raceEthnicity | Split:'/' | Join:'/' %}
+                                {% if raceEthnicity != '' %}<b>Race/Ethnicity:</b> {{ raceEthnicity }}<br/>{% endif %}
+                                <b>Campus:</b> {{ person.PrimaryCampus.Name }}<br/>
+                            {% endcapture %}
+                        {% endif %}
+
+                        {% for field in form.Fields %}
+                            {% assign fieldName = field.Attribute.Name %}
+                            {% assign fieldValue = '' %}
+                            {% if field.FieldSource == 0 %}
+                                {% case field.PersonFieldType %}
+                                    {% when 3 %}
+                                        {% assign fieldName = 'Address' %}
+                                        {% assign fieldValue = person | Address:'Home' %}
+                                    {% when 4 %}
+                                        {% assign fieldName = 'Email' %}
+                                        {% assign fieldValue = person.Email %}
+                                    {% when 7 %}
+                                        {% assign fieldName = 'Marital Status' %}
+                                        {% assign fieldValue = person.MaritalstatusValue.Value %}
+                                    {% when 8 %}
+                                        {% assign fieldName = 'Mobile Phone' %}
+                                        {% assign fieldValue = person | PhoneNumber:'Mobile' %}
+                                    {% when 9 %}
+                                        {% assign fieldName = 'Home Phone' %}
+                                        {% assign fieldValue = person | PhoneNumber:'Home' %}
+                                    {% when 10 %}
+                                        {% assign fieldName = 'Work Phone' %}
+                                        {% assign fieldValue = person | PhoneNumber:'Work' %}
+                                    {% when 12 %}
+                                        {% assign fieldName = 'Connection Status' %}
+                                        {% assign fieldValue = person.ConnectionStatusValue.Value %}
+                                    {% when 13 %}
+                                        {% assign fieldName = 'Middle Name' %}
+                                        {% assign fieldValue = person.MiddleName %}
+                                    {% when 14 %}
+                                        {% assign fieldName = 'Anniversary' %}
+                                        {% assign fieldValue = person.AnniversaryDate | Date:'MM/dd/yyyy' %}
+                                {% endcase %}
+                            {% elseif field.FieldSource == 1 %}
+                                {% assign fieldValue = person | Attribute:field.Attribute.Key %}
+                            {% elseif field.FieldSource == 2 %}
+                                {% assign fieldValue = groupMember | Attribute:field.Attribute.Key %}
+                            {% elseif field.FieldSource == 4 %}
+                                {% assign fieldValue = registrant | Attribute:field.Attribute.Key %}
+                            {% endif %}
+
+                            {% if fieldValue and fieldValue != '' %}
+                                {% capture formFields %}
+                                    {{ formFields }}
+                                    <b>{{ fieldName }}:</b> {{ fieldValue }}<br/>
+                                {% endcapture %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if formFields != '' %}
+                            {% assign tempvar = form.Name %}
+                            {% if tempvar == 'Default Form' %}
+                                <h3>General Section</h3>
+                            {% else %}
+                                <h3>{{ form.Name }}</h3>
+                            {% endif %}
+                            <p>
+                                {{ formFields }}
+                            </p>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% assign feeCount = registrant.Fees | Size %}
+                    {% if feeCount > 0 %}
+                        <h3>Fees</h3>
+                        <p>
+                        {% for fee in registrant.Fees %}
+                            <b>{{ fee.RegistrationTemplateFee.Name }}:</b> {{ fee.Option }}: {{ fee.Cost | FormatAsCurrency }}
+                        {% endfor %}
+                        </p>
+                    {% endif %}
+
+                    </div>
+                    <br>
+                {% endfor %}
+            {% endfor %}
+        {% endregistration %}
+    </body>
+</html>
