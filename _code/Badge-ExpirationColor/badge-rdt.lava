@@ -1,4 +1,4 @@
-{% assign var1 = Person | Attribute:'date_RDT' %}
+{% assign var1 = Person | Attribute:'date_RDT_nextstep' %}
 {% assign var2 = var1 | DateAdd: 2, 'y' | Date: 'M/d/yyyy' %}
 {% assign var_today = 'Now' | Date:'M/d/yyyy' %}
 {% assign var_datediff = var_today | DateDiff: var2, 'Y' %}
