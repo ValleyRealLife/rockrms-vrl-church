@@ -13,7 +13,7 @@
     {% assign var_1 = var_DNARefresher %}
 {% endif %}
 
-{% assign var_2 = var_1 | DateAdd: 2, 'y' | Date: 'M/d/yyyy' %}
+{% assign var_2 = var_1 | DateAdd: 1, 'y' | Date: 'M/d/yyyy' %}
 {% assign var_today = 'Now' | Date:'M/d/yyyy' %}
 {% assign var_datediff = var_today | DateDiff: var_2, 'Y' %}
 {% assign var_badge_color = '' %}
@@ -23,12 +23,12 @@
 {% if var_1 == blank %}
     {% assign var_badge_color = 'rockbadge-disabled' %}
     {% assign var_tooltip_text = var_person_nickname | Append: ' has not taken the DNA course.' %}
-{% elseif var_datediff <= 2 %}
+{% elseif var_datediff <= 1 %}
     {% assign var_badge_color = 'bg-green-500' %}
     {% assign var_tooltip_text = var_person_nickname | Append: ' has taken the DNA course on ' | Append: var_1 %}
-{% elseif var_datediff > 2 %}
+{% elseif var_datediff > 1 %}
 {% assign var_badge_color = 'bg-orange-400' %}
-{% assign var_tooltip_text = var_person_nickname | Append:' has taken the DNA course more than 2 years ago.' %}
+{% assign var_tooltip_text = var_person_nickname | Append:' has taken the DNA course more than 1 year ago.' %}
 {% endif %}
 
 <div class="rockbadge rockbadge-icon rockbadge-membership {{ var_badge_color }}" data-toggle="tooltip" data-title="{{ var_tooltip_text }}">
