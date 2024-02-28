@@ -1,0 +1,72 @@
+/------------------------------------------------------------
+    This Lava is found in
+    WorkflowTypeId=173, [Send Email] > Compose Email
+
+    I am copy+pasting this here from the VRL Rock Site.
+    I copy+pasted this on 28-FEB-2024
+------------------------------------------------------------/
+
+{% assign var_Person = Workflow | Attribute:'var_Person' | PersonByAliasGuid %}
+{% assign var_ConnectionRequest = Workflow | Attribute:'var_ConnReq', 'RawValue' %}
+{% assign var_ConnectionRequest_Id = '' %}
+{% assign var_ConnectionOpportunityId = '' %}
+{% assign var_Attribute_1 = '' %}
+{% assign var_AttributeValue_1 = '' %}
+{% assign var_AttributeValue_1_plurality = '' %}
+{% assign var_Attribute_2 = '' %}
+{% assign var_AttributeValue_2 = '' %}
+{% assign var_AttributeValue_2_plurality = '' %}
+
+{% connectionrequest where:'Guid == "{{ var_ConnectionRequest }}"' securityenabled:'false' %}
+    {% assign var_ConnectionRequest_Id = connectionrequest.Id %}
+    {% assign var_ConnectionOpportunityId = connectionrequest.ConnectionOpportunityId %}
+{% endconnectionrequest %}
+
+{% attribute where:'Key == "service" && EntityTypeQualifierColumn == "ConnectionOpportunityId" && EntityTypeQualifierValue == {{ var_ConnectionOpportunityId }}' securityenabled:'false' %}
+    {% assign var_Attribute_1 = attribute.Id %}
+{% endattribute %}
+
+{% attribute where:'Key == "AreasToServe" && EntityTypeQualifierColumn == "ConnectionOpportunityId" && EntityTypeQualifierValue == {{ var_ConnectionOpportunityId }}' securityenabled:'false' %}
+    {% assign var_Attribute_2 = attribute.Id %}
+{% endattribute %}
+
+{% attributevalue where:'EntityId == "{{ var_ConnectionRequest_Id }}" && AttributeId == {{ var_Attribute_1 }}' securityenabled:'false' %}
+    {% assign var_AttributeValue_1 = attributevalue.PersistedTextValue %}
+    {% assign temp_var_1 = attributevalue.Value | AsString  %}
+    {% if temp_var_1 contains ',' %}
+        {% assign var_AttributeValue_1_plurality = 2 %}
+    {% else %}
+        {% assign var_AttributeValue_1_plurality = 1 %}
+    {% endif %}
+{% endattributevalue %}
+
+{% attributevalue where:'EntityId == "{{ var_ConnectionRequest_Id }}" && AttributeId == {{ var_Attribute_2 }}' securityenabled:'false' %}
+    {% assign var_AttributeValue_2 = attributevalue.PersistedTextValue %}
+    {% assign temp_var_2 = attributevalue.Value | AsString  %}
+    {% if temp_var_2 contains ',' %}
+        {% assign var_AttributeValue_2_plurality = 2 %}
+    {% else %}
+        {% assign var_AttributeValue_2_plurality = 1 %}
+    {% endif %}
+{% endattributevalue %}
+
+Hello {{ var_Person.NickName }}!
+<br><br>
+Thank you for signing up to volunteer at Valley Real Life for Christmas Eve this year. We are excited to celebrate the birth of our savior Jesus Christ with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service {% if var_AttributeValue_1_plurality > 1 %}times{% else %}time{% endif %}:
+{% assign AttributeValue_1_Parts = var_AttributeValue_1 | Split:'m, ' %}
+<ul>
+{% for item in AttributeValue_1_Parts %}
+    <li>{{ item }}{% if forloop.last != true %}m{% endif %}</li>
+{% endfor %}
+</ul>
+In {% if var_AttributeValue_2_plurality > 1 %}these{% else %}this{% endif %} serving {% if var_AttributeValue_1_plurality > 1 %}areas{% else %}area{% endif %}:
+{% assign AttributeValue_2_Parts = var_AttributeValue_2 | Split:', ' %}
+<ul>
+{% for item in AttributeValue_2_Parts %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+Over the next week you will be receiving additional information including directions and a confirmation of your service time and service assignment.  If you have any questions in the meantime, please contact {{ Activity | Attribute:'text_ConnectorFullName' }} at <a href="mailto:{{ Activity | Attribute:'text_ConnectorEmailAddress' }}">{{ Activity | Attribute:'text_ConnectorEmailAddress' }}</a>.
+<br><br>
+Thank you for joining our Christmas Eve Serve teams and we look forward to seeing you!
+<br><br>
