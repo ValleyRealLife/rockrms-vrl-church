@@ -52,7 +52,7 @@
 
 Hello {{ var_Person.NickName }}!
 <br><br>
-Thank you for signing up to volunteer at Valley Real Life for Christmas Eve this year. We are excited to celebrate the birth of our savior Jesus Christ with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service {% if var_AttributeValue_1_plurality > 1 %}times{% else %}time{% endif %}:
+Thank you for signing up to volunteer at Valley Real Life for Easter this year. We are excited to celebrate the birth of our savior Jesus Christ with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service {% if var_AttributeValue_1_plurality > 1 %}times{% else %}time{% endif %}:
 {% assign AttributeValue_1_Parts = var_AttributeValue_1 | Split:'m, ' %}
 <ul>
 {% for item in AttributeValue_1_Parts %}
@@ -68,5 +68,5 @@ In {% if var_AttributeValue_2_plurality > 1 %}these{% else %}this{% endif %} ser
 </ul>
 Over the next week you will be receiving additional information including directions and a confirmation of your service time and service assignment.  If you have any questions in the meantime, please contact {{ Activity | Attribute:'text_ConnectorFullName' }} at <a href="mailto:{{ Activity | Attribute:'text_ConnectorEmailAddress' }}">{{ Activity | Attribute:'text_ConnectorEmailAddress' }}</a>.
 <br><br>
-Thank you for joining our Christmas Eve Serve teams and we look forward to seeing you!
+Thank you for joining our Easter Serve teams and we look forward to seeing you!
 <br><br>
