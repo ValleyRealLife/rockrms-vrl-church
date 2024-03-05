@@ -6,7 +6,7 @@
 ## About
 Currently, most of the Badges in our Rock instance are for the [Person] Entity. Therefore, the 'Type' column in the <a href="https://rock.vrl.church/admin/general/badges">Badge List</a> will say "Person". i only make note of this because i foresee VRL might find it useful to create some badges for the [Group] and [GroupMember] Entities too.
 
-The [idea.lava](./idea.lava) is where i keep a general idea of a template.
+The [idea.lava](./idea.lava) is where i keep a general idea of a template, which is to standardize the colors to mean something: 'Gray' means requirements are blank, 'Red' means requirements failed, 'Green' means requirements succeeded, and 'Orange' means requirements were once successful but are now outdated.
 
 ## Index
 That being said, here's a description of the Lava Badges that i created or modified thus far:
