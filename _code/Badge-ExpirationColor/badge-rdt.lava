@@ -42,5 +42,5 @@ In other words, among all these variables, you only need var_Today and var_Perso
 {% endif %}
 
 <div class="rockbadge rockbadge-icon rockbadge-membership {{ var_Badge_Color }}" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
-    <i class="badge-icon fas fa-apple-alt"></i>
+    <i class="badge-icon fa fa-hiking"></i>
 </div>
