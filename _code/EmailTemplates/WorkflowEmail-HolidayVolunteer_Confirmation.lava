@@ -3,7 +3,7 @@
     WorkflowTypeId=173, [Send Email] > Compose Email
 
     I am copy+pasting this here from the VRL Rock Site.
-    I copy+pasted this on 28-FEB-2024
+    I copy+pasted this on 6-Mar-2024
 ------------------------------------------------------------/
 
 {% assign var_Person = Workflow | Attribute:'var_Person' | PersonByAliasGuid %}
@@ -52,7 +52,7 @@
 
 Hello {{ var_Person.NickName }}!
 <br><br>
-Thank you for signing up to volunteer at Valley Real Life for Easter this year. We are excited to celebrate the birth of our savior Jesus Christ with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service {% if var_AttributeValue_1_plurality > 1 %}times{% else %}time{% endif %}:
+Thank you for signing up to volunteer at Valley Real Life for Easter this year. We are excited to celebrate the resurrection with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service {% if var_AttributeValue_1_plurality > 1 %}times{% else %}time{% endif %}:
 {% assign AttributeValue_1_Parts = var_AttributeValue_1 | Split:'m, ' %}
 <ul>
 {% for item in AttributeValue_1_Parts %}
