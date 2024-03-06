@@ -1,0 +1,42 @@
+/--------------------------------------------------------------------------------
+Note:
+Lines 7-14 are all the variables needed in this script.
+Because of the way Lava works, you technically don't need to "declare" the variables up front.
+In other words, among all these variables, you only need var_Today and var_Person_Nickname when you copy+paste this code into the 'Display Text' of the Lava Badge
+--------------------------------------------------------------------------------/
+{% assign var_Badge_Color = '' %}
+{% assign var_Badge_Date = '' %}
+{% assign var_DateDiff = '' %}
+{% assign var_FamilyCommitmentSignature = '' %}
+{% assign var_FamilyCommitmentSignature_Size = 0 %}
+{% assign var_Today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_Tooltip_Text = '' %}
+{% assign var_Person_Nickname = Person.NickName %}
+
+//- The StepTypeId==8 corresponds to the 'Family Commitment' Step within the 'VRL Journey' Program
+//- The StepStatusId==3 is the 'Completed' Status in the 'VRL Journey' Program
+{% step where:'PersonAliasId == {{ Person.PrimaryAliasId }} && StepTypeId == 8 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
+    {% assign var_FamilyCommitmentSignature_Size = stepItems | Size %}
+    {% if var_FamilyCommitmentSignature_Size > 0 %}
+        {% assign var_FamilyCommitmentSignature = stepItems %}
+    {% endif %}
+{% endstep %}
+
+{% assign var_Badge_Date = var_FamilyCommitmentSignature[0].CompletedDateTime | Date:'M/d/yyyy' %}
+
+//- Past_Date DateDiff TODAY results in a positive number. Therefore, var_DateDiff will have a positive number of years
+{% assign var_DateDiff = var_Badge_Date | DateDiff: var_Today, 'Y' %}
+
+{% if var_FamilyCommitmentSignature_Size == 0 %} //- No 'Family Commitment' Step
+    {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has not signed the Family Commitment Form.' %}
+    <div class="rockbadge rockbadge-icon rockbadge-membership fa-stack" style="background: #EDEDED; vertical-align: top;" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
+        <i class="fa fa-file-signature fa-stack-2x" style="color: #EEF7EF;"></i>
+        <i class="fa fa-dna fa-stack-1x" style="color: #FFFFFF; position: relative; top: -5px; left: -8px; font-size: 0.7em;"></i>
+    </div>
+{% elseif var_FamilyCommitmentSignature_Size > 0 %} //- Yes 'Family Commitment' Step
+    {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has signed the Family Commitment Form on ' | Append: var_Badge_Date %}
+    <div class="rockbadge rockbadge-icon rockbadge-membership fa-stack" style="background: #353535; vertical-align: top;" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
+        <i class="fa fa-file-signature fa-stack-2x" style="color: #EEF7EF;"></i>
+        <i class="fa fa-dna fa-stack-1x" style="color: #8CC33A; position: relative; top: -5px; left: -8px; font-size: 0.7em;"></i>
+    </div>
+{% endif %}
