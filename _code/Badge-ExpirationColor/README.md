@@ -16,4 +16,5 @@ That being said, here's a description of the Lava Badges that i created or modif
 | Cat Course | [ badge-cat.lava ]( ./badge-cat.lava ) | Shows whether the person has taken the Child Abuse Training course |
 | DNA | [ badge-DNAcourse.lava ]( ./badge-DNAcourse.lava ) | Shows whether the person has taken the DNA course or the DNA Refresher course. |
 | RDT | [ badge-rdt.lava ]( ./badge-rdt.lava ) | Shows whether the person has taken the Real Discipleship Training class. |
-| VRL Membership | [badge-VRLmembership.lava](./badge-VRLmembership.lava) | Shows whether the person has signed the Family Commitment Form provided to them at the end of the DNA Course. |
+| Family Commitment | [ badge-FamilyCommitmentSigned.lava ]( ./badge-FamilyCommitmentSigned.lava ) | Shows whether the person has signed the Family Commitment Form. |
+| ~~VRL Membership~~ | [badge-VRLmembership.lava](./badge-VRLmembership.lava) | ~~Shows whether the person has signed the Family Commitment Form provided to them at the end of the DNA Course.~~ |
