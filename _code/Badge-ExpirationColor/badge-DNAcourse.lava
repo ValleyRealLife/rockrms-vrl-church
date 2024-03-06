@@ -1,0 +1,71 @@
+/--------------------------------------------------------------------------------
+Note:
+Lines 7-17 are all the variables needed in this script.
+Because of the way Lava works, you technically don't need to "declare" the variables up front.
+In other words, among all these variables, you only need var_Today and var_Person_Nickname when you copy+paste this code into the 'Display Text' of the Lava Badge
+--------------------------------------------------------------------------------/
+{% assign var_Badge_Color = '' %}
+{% assign var_Badge_Date = '' %}
+{% assign var_Control = '' %}
+{% assign var_DateDiff = '' %}
+{% assign var_DNACourse = '' %}
+{% assign var_DNACourse_Size = 0 %}
+{% assign var_DNARefresher = '' %}
+{% assign var_DNARefresher_Size = 0 %}
+{% assign var_Today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_Tooltip_Text = '' %}
+{% assign var_Person_Nickname = Person.NickName %}
+
+//- The StepTypeId==5 corresponds to the 'DNA Course' Step within the 'VRL Journey' Program
+//- The StepStatusId==3 is the 'Completed' Status in the 'VRL Journey' Program
+{% step where:'PersonAliasId == {{ Person.PrimaryAliasId }} && StepTypeId == 5 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
+    {% assign var_DNACourse_Size = stepItems | Size %}
+    {% if var_DNACourse_Size > 0 %}
+        {% assign var_DNACourse = stepItems %}
+    {% endif %}
+{% endstep %}
+
+//- The StepTypeId==6 corresponds to the 'DNA Refresher' Step within the 'VRL Journey' Program
+//- The StepStatusId==3 is the 'Completed' Status in the 'VRL Journey' Program
+{% step where:'PersonAliasId == {{ Person.PrimaryAliasId }} && StepTypeId == 6 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
+    {% assign var_DNARefresher_Size = stepItems | Size %}
+    {% if var_DNARefresher_Size > 0 %}
+        {% assign var_DNARefresher = stepItems %}
+    {% endif %}
+{% endstep %}
+
+{% if var_DNACourse_Size == 0 and var_DNARefresher_Size == 0 %} //- No DNA Courses
+    {% assign var_Control = 'No' %}
+{% elseif var_DNARefresher_Size > 0 %} //- DNA Refresher(s) taken
+    {% assign var_Control = 'DNA-Refresher' %}
+    {% assign var_Badge_Date = var_DNARefresher[0].CompletedDateTime | Date:'M/d/yyyy' %}
+{% elseif var_DNACourse_Size > 0 %} //- DNA Course taken
+    {% assign var_Control = 'DNA-Course' %}
+    {% assign var_Badge_Date = var_DNACourse[0].CompletedDateTime | Date:'M/d/yyyy' %}
+{% endif %}
+
+//- Past_Date DateDiff TODAY results in a positive number. Therefore, var_DateDiff will have a positive number of years
+{% assign var_DateDiff = var_Badge_Date | DateDiff: var_Today, 'Y' %}
+
+{% if var_Control == 'No' %} //- No DNA Courses
+    {% assign var_Badge_Color = 'rockbadge-disabled' %}
+    {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has not taken DNA nor DNA Refresher.' %}
+{% elseif var_DateDiff < 1 %} //- DNA or DNA Refresher taken within a year from TODAY
+    {% assign var_Badge_Color = 'bg-green-500' %}
+    {% if var_Control == 'DNA-Refresher' %}
+        {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA Refresher on ' | Append: var_Badge_Date %}
+    {% elseif var_Control == 'DNA-Course' %}
+        {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA course on ' | Append: var_Badge_Date %}
+    {% endif %}
+{% elseif var_DateDiff >= 1 %} //- DNA or DNA Refresher taken a year ago or older
+    {% assign var_Badge_Color = 'bg-orange-400' %}
+    {% if var_Control == 'DNA-Refresher' %}
+        {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA Refresher on ' | Append: var_Badge_Date %}
+    {% elseif var_Control == 'DNA-Course' %}
+        {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA course on ' | Append: var_Badge_Date %}
+    {% endif %}
+{% endif %}
+
+<div class="rockbadge rockbadge-icon rockbadge-membership {{ var_Badge_Color }}" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
+    <i class="badge-icon fas fa-dna"></i>
+</div>
