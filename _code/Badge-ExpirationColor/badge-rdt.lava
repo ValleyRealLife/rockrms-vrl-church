@@ -1,22 +1,46 @@
-{% assign var1 = Person | Attribute:'date_RDT_nextstep' %}
-{% assign var2 = var1 | DateAdd: 1, 'y' | Date: 'M/d/yyyy' %}
-{% assign var_today = 'Now' | Date:'M/d/yyyy' %}
-{% assign var_datediff = var_today | DateDiff: var2, 'Y' %}
-{% assign var_badge_color = '' %}
-{% assign var_tooltip_text = '' %}
-{% assign var_person_nickname = Person.NickName %}
+/--------------------------------------------------------------------------------
+Note:
+Lines 7-14 are all the variables needed in this script.
+Because of the way Lava works, you technically don't need to "declare" the variables up front.
+In other words, among all these variables, you only need var_Today and var_Person_Nickname when you copy+paste this code into the 'Display Text' of the Lava Badge
+--------------------------------------------------------------------------------/
+{% assign var_Badge_Color = '' %}
+{% assign var_Badge_Date = '' %}
+{% assign var_DateDiff = '' %}
+{% assign var_RDTCourse = '' %}
+{% assign var_RDTCourse_Size = 0 %}
+{% assign var_Today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_Tooltip_Text = '' %}
+{% assign var_Person_Nickname = Person.NickName %}
 
-{% if var1 == blank %}
-    {% assign var_badge_color = 'rockbadge-disabled' %}
-    {% assign var_tooltip_text = var_person_nickname | Append: ' has not taken the RDT course.' %}
-{% elseif var_datediff <= 1 %}
-    {% assign var_badge_color = 'bg-green-500' %}
-    {% assign var_tooltip_text = var_person_nickname | Append: ' has taken the RDT course on ' | Append: var1 %}
-{% elseif var_datediff > 1 %}
-{% assign var_badge_color = 'bg-orange-400' %}
-{% assign var_tooltip_text = var_person_nickname | Append:' has taken the RDT course more than 1 year ago.' %}
+//- The StepTypeId==7 corresponds to the 'RDT' Step within the 'VRL Journey' Program
+//- The StepStatusId==3 is the 'Completed' Status in the 'VRL Journey' Program
+{% step where:'PersonAliasId == {{ Person.PrimaryAliasId }} && StepTypeId == 7 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
+    {% assign var_RDTCourse_Size = stepItems | Size %}
+    {% if var_RDTCourse_Size > 0 %}
+        {% assign var_RDTCourse = stepItems %}
+    {% endif %}
+{% endstep %}
+
+{% assign var_Badge_Date = var_RDTCourse[0].CompletedDateTime | Date:'M/d/yyyy' %}
+
+//- Past_Date DateDiff TODAY results in a positive number. Therefore, var_DateDiff will have a positive number of years
+{% assign var_DateDiff = var_Badge_Date | DateDiff: var_Today, 'Y' %}
+
+{% if var_RDTCourse_Size == 0 %} //- No RDT Courses
+    {% assign var_Badge_Color = 'rockbadge-disabled' %}
+    {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has not taken the RDT Course.' %}
+{% elseif var_RDTCourse_Size > 0 %} //- RDT Course taken
+    //- Check how long ago the RDT Course was taken
+    {% if var_DateDiff < 1 %} //- RDT Course was taken less than 1 year ago from TODAY
+        {% assign var_Badge_Color = 'bg-green-500' %}
+        {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the RDT Course on ' | Append: var_Badge_Date %}
+    {% elseif var_DateDiff >= 1 %} //- RDT Course was taken a year ago or older
+        {% assign var_Badge_Color = 'bg-orange-400' %}
+        {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the RDT course on ' | Append: var_Badge_Date %}
+    {% endif %}
 {% endif %}
 
-<div class="rockbadge rockbadge-icon badge_BackgroundCheck {{ var_badge_color }}" data-toggle="tooltip" data-title="{{ var_tooltip_text }}">
+<div class="rockbadge rockbadge-icon rockbadge-membership {{ var_Badge_Color }}" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
     <i class="badge-icon fas fa-apple-alt"></i>
 </div>
