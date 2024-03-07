@@ -29,14 +29,12 @@ In other words, among all these variables, you only need var_Today and var_Perso
 
 {% if var_FamilyCommitmentSignature_Size == 0 %} //- No 'Family Commitment' Step
     {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has not signed the Family Commitment Form.' %}
-    <div class="rockbadge rockbadge-icon rockbadge-membership fa-stack" style="background: #EDEDED; vertical-align: top;" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
-        <i class="fa fa-file-signature fa-stack-2x" style="color: #EEF7EF;"></i>
-        <i class="fa fa-dna fa-stack-1x" style="color: #FFFFFF; position: relative; top: -5px; left: -8px; font-size: 0.7em;"></i>
+    <div class="rockbadge rockbadge-icon rockbadge-membership rockbadge-disabled" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
+        <i class="badge-icon VRLicon VRLicon-V-Logo" style="font-size: 0.6em;"></i>
     </div>
 {% elseif var_FamilyCommitmentSignature_Size > 0 %} //- Yes 'Family Commitment' Step
     {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has signed the Family Commitment Form on ' | Append: var_Badge_Date %}
-    <div class="rockbadge rockbadge-icon rockbadge-membership fa-stack" style="background: #353535; vertical-align: top;" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
-        <i class="fa fa-file-signature fa-stack-2x" style="color: #EEF7EF;"></i>
-        <i class="fa fa-dna fa-stack-1x" style="color: #8CC33A; position: relative; top: -5px; left: -8px; font-size: 0.7em;"></i>
+    <div class="rockbadge rockbadge-icon rockbadge-membership bg-green-500" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
+        <i class="badge-icon VRLicon VRLicon-V-Logo" style="font-size: 0.6em;"></i>
     </div>
 {% endif %}
