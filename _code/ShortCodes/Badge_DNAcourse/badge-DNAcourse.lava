@@ -30,7 +30,7 @@ This ShortCode necessitates the 'person_id' Parameter to be configured.
 
 //- The StepTypeId==6 corresponds to the 'DNA Refresher' Step within the 'VRL Journey' Program
 //- The StepStatusId==3 is the 'Completed' Status in the 'VRL Journey' Program
-{% step where:'PersonAliasId == {{ Person.PrimaryAliasId }} && StepTypeId == 6 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
+{% step where:'PersonAliasId == {{ var_Person.PrimaryAliasId }} && StepTypeId == 6 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
     {% assign var_DNARefresher_Size = stepItems | Size %}
     {% if var_DNARefresher_Size > 0 %}
         {% assign var_DNARefresher = stepItems %}
