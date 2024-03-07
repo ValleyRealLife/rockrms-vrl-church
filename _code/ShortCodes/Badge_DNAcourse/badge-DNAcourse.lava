@@ -1,8 +1,10 @@
 /--------------------------------------------------------------------------------
 Note:
-Lines 7-17 are all the variables needed in this script.
+Lines 9-20 are all the variables needed in this script.
 Because of the way Lava works, you technically don't need to "declare" the variables up front.
-In other words, among all these variables, you only need var_Today and var_Person_Nickname when you copy+paste this code into the 'Display Text' of the Lava Badge
+In other words, among all these variables, you only need var_Today, var_Person, and var_Person_Nickname when you copy+paste this code into the 'Display Text' of the Lava Badge
+Also:
+This ShortCode necessitates the 'person_id' Parameter to be configured.
 --------------------------------------------------------------------------------/
 {% assign var_Badge_Color = '' %}
 {% assign var_Badge_Date = '' %}
@@ -14,11 +16,12 @@ In other words, among all these variables, you only need var_Today and var_Perso
 {% assign var_DNARefresher_Size = 0 %}
 {% assign var_Today = 'Now' | Date:'M/d/yyyy' %}
 {% assign var_Tooltip_Text = '' %}
+{% assign var_Person = person_id | PersonById %}
 {% assign var_Person_Nickname = Person.NickName %}
 
 //- The StepTypeId==5 corresponds to the 'DNA Course' Step within the 'VRL Journey' Program
 //- The StepStatusId==3 is the 'Completed' Status in the 'VRL Journey' Program
-{% step where:'PersonAliasId == {{ Person.PrimaryAliasId }} && StepTypeId == 5 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
+{% step where:'PersonAliasId == {{ var_Person.PrimaryAliasId }} && StepTypeId == 5 && StepStatusId == 3' limit:'3' sort:'CompletedDateTime desc' %}
     {% assign var_DNACourse_Size = stepItems | Size %}
     {% if var_DNACourse_Size > 0 %}
         {% assign var_DNACourse = stepItems %}
