@@ -23,11 +23,11 @@ This ShortCode necessitates the 'person_id' Parameter to be configured.
     {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
     {% assign var_Badge_Color = 'rockbadge-disabled' %}
     {% assign var_Tooltip_Text = 'BackgroundCheckResult isblank' %}
-{% elseif var_BackgroundCheckResult == 'Pass' and var_DateDiff < 2 %}
+{% elseif var_BackgroundCheckResult == 'Pass' and var_DateDiff <= 2 %}
     {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
     {% assign var_Badge_Color = 'bg-green-500' %}
     {% assign var_Tooltip_Text = 'Background Check passed on ' | Append: var_BackgroundCheckDate %}
-{% elseif var_BackgroundCheckResult == 'Pass' and var_DateDiff >= 2 %}
+{% elseif var_BackgroundCheckResult == 'Pass' and var_DateDiff > 2 %}
     {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
     {% assign var_Badge_Color = 'bg-orange-400' %}
     {% assign var_Tooltip_Text = 'It has been more than 2 years since the Background Check' %}
