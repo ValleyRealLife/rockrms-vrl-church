@@ -35,10 +35,10 @@ This ShortCode necessitates the 'person_id' Parameter to be configured.
     {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has not taken the RDT Course.' %}
 {% elseif var_RDTCourse_Size > 0 %} //- RDT Course taken
     //- Check how long ago the RDT Course was taken
-    {% if var_DateDiff < 1 %} //- RDT Course was taken less than 1 year ago from TODAY
+    {% if var_DateDiff <= 1 %} //- RDT Course was taken less than 1 year ago from TODAY
         {% assign var_Badge_Color = 'bg-green-500' %}
         {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the RDT Course on ' | Append: var_Badge_Date %}
-    {% elseif var_DateDiff >= 1 %} //- RDT Course was taken a year ago or older
+    {% elseif var_DateDiff > 1 %} //- RDT Course was taken a year ago or older
         {% assign var_Badge_Color = 'bg-orange-400' %}
         {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the RDT course on ' | Append: var_Badge_Date %}
     {% endif %}
