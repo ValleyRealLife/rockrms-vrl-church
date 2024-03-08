@@ -1,26 +1,46 @@
-{% assign var1 = Person | Attribute:'BackgroundCheckResult' %}
-{% assign var2 = Person | Attribute:'BackgroundCheckDate' %}
-{% assign var3 = var2 | DateAdd:2,'y' | Date:'M/d/yyyy' %} //- As of 31-AUG-2023, this must be a lowercase 'y'
-{% assign var_today = 'Now' | Date:'M/d/yyyy' %}
-{% assign var_datediff = var3 | DateDiff: var_today, 'd' %} //- As of 31-AUG-2023, this must be a lowercase 'd'
-{% assign var_badge_color = '' %}
-{% assign var_tooltip_text = '' %}
-{% assign var_person_nickname = Person.NickName %}
+/--------------------------------------------------------------------------------
+Note:
+Lines 9-17 are all the variables needed in this script.
+Because of the way Lava works, you technically don't need to "declare" the variables up front.
+In other words, among all these variables, you can omit the empty assignations when you copy+paste this code into the 'Shortcode Markup' of the Lava Shortcode
+Also:
+This ShortCode necessitates the 'person_id' Parameter to be configured.
+--------------------------------------------------------------------------------/
+{% assign var_BackgroundCheckResult = var_Person | Attribute:'BackgroundCheckResult' %}
+{% assign var_BackgroundCheckDate = var_Person | Attribute:'BackgroundCheckDate' %}
+{% assign var_Badge_Color = '' %}
+{% assign var_Badge_Icon = '' %}
+{% assign var_DateDiff = '' %}
+{% assign var_Person = person_id | PersonById %}
+{% assign var_Person_Nickname = var_Person.NickName %}
+{% assign var_Today = 'Now' | Date:'M/d/yyyy' %}
+{% assign var_Tooltip_Text = '' %}
 
-{% if var1 == blank %}                            //- This means they need a background check
-    {% assign var_badge_color = 'rockbadge-disabled' %}
-    {% assign var_tooltip_text = 'BackgroundCheckResult isblank' %}
-{% elseif var1 == 'Pass' and var_datediff < 1 %}  //- This means their background check is good
-    {% assign var_badge_color = 'bg-green-500' %}
-    {% assign var_tooltip_text = 'Background Check passed on ' | Append: var2 %}
-{% elseif var1 == 'Pass' and var_datediff >= 1 %} //- This means their background check is outdated
-    {% assign var_badge_color = 'bg-orange-400' %}
-    {% assign var_tooltip_text = 'It has been more than 2 years since the Background Check' %}
-{% elseif var1 == 'Fail' %}                       //- This means they have previously failed a background check
-    {% assign var_badge_color = 'bg-red-600' %}
-    {% assign var_tooltip_text = 'Background Check failed on ' | Append: var2 %}
+//- Past_Date DateDiff TODAY results in a positive number. Therefore, var_DateDiff will have a positive number of years
+{% assign var_DateDiff = var_BackgroundCheckDate | DateDiff: var_Today, 'Y' %}
+
+{% if var_BackgroundCheckResult == blank && var_BackgroundCheckDate == blank%}
+    {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
+    {% assign var_Badge_Color = 'rockbadge-disabled' %}
+    {% assign var_Tooltip_Text = 'BackgroundCheckResult isblank' %}
+{% elseif var_BackgroundCheckResult == 'Pass' and var_DateDiff < 2 %}
+    {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
+    {% assign var_Badge_Color = 'bg-green-500' %}
+    {% assign var_Tooltip_Text = 'Background Check passed on ' | Append: var_BackgroundCheckDate %}
+{% elseif var_BackgroundCheckResult == 'Pass' and var_DateDiff >= 2 %}
+    {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
+    {% assign var_Badge_Color = 'bg-orange-400' %}
+    {% assign var_Tooltip_Text = 'It has been more than 2 years since the Background Check' %}
+{% elseif var_BackgroundCheckResult == 'Fail' %}
+    {% assign var_Badge_Icon = 'fa fa-shield-alt' %}
+    {% assign var_Badge_Color = 'bg-red-600' %}
+    {% assign var_Tooltip_Text = 'Background Check failed on ' | Append: var_BackgroundCheckDate %}
+{% else %}
+    {% assign var_Badge_Icon = 'fa fa-exclamation-circle' %}
+    {% assign var_Badge_Color = 'bg-yellow-500' %}
+    {% assign var_Tooltip_Text = 'Error: One of the fields is blank.' %}
 {% endif %}
 
-<div class="rockbadge rockbadge-icon rockbadge-circle badge_BackgroundCheck {{ var_badge_color }}" data-toggle="tooltip" data-title="{{ var_tooltip_text }}">
-    <i class="badge-icon fas fa-shield-alt"></i>
+<div class="rockbadge rockbadge-icon rockbadge-circle badge_BackgroundCheck {{ var_Badge_Color }}" data-toggle="tooltip" data-title="{{ var_Tooltip_Text }}">
+    <i class="badge-icon {{ var_Badge_Icon }}"></i>
 </div>
