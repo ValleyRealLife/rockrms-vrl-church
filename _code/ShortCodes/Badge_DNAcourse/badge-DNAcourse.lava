@@ -53,14 +53,14 @@ This ShortCode necessitates the 'person_id' Parameter to be configured.
 {% if var_Control == 'No' %} //- No DNA Courses
     {% assign var_Badge_Color = 'rockbadge-disabled' %}
     {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has not taken DNA nor DNA Refresher.' %}
-{% elseif var_DateDiff < 1 %} //- DNA or DNA Refresher taken within a year from TODAY
+{% elseif var_DateDiff <= 1 %} //- DNA or DNA Refresher taken within a year from TODAY
     {% assign var_Badge_Color = 'bg-green-500' %}
     {% if var_Control == 'DNA-Refresher' %}
         {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA Refresher on ' | Append: var_Badge_Date %}
     {% elseif var_Control == 'DNA-Course' %}
         {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA course on ' | Append: var_Badge_Date %}
     {% endif %}
-{% elseif var_DateDiff >= 1 %} //- DNA or DNA Refresher taken a year ago or older
+{% elseif var_DateDiff > 1 %} //- DNA or DNA Refresher taken a year ago or older
     {% assign var_Badge_Color = 'bg-orange-400' %}
     {% if var_Control == 'DNA-Refresher' %}
         {% assign var_Tooltip_Text = var_Person_Nickname | Append: ' has taken the DNA Refresher on ' | Append: var_Badge_Date %}
