@@ -2,7 +2,7 @@
 Note:
 Lines 9-20 are all the variables needed in this script.
 Because of the way Lava works, you technically don't need to "declare" the variables up front.
-In other words, among all these variables, you only need var_Today, var_Person, and var_Person_Nickname when you copy+paste this code into the 'Display Text' of the Lava Badge
+In other words, among all these variables, you only need var_Today, var_Person, and var_Person_Nickname when you copy+paste this code into the 'Shortcode Markup' of the Lava Shortcode
 Also:
 This ShortCode necessitates the 'person_id' Parameter to be configured.
 --------------------------------------------------------------------------------/
