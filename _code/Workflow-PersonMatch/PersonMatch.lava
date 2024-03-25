@@ -13,8 +13,8 @@
 
 //- count_1 is FirstName and LastName
 {% sql return:'query_1_result' %}
-    SELECT
-        COUNT(p.[Guid]) AS 'Count'
+    SELECT TOP 5
+        p.[Guid]
     FROM
         [Person] p
     WHERE
@@ -26,13 +26,13 @@
         p.[LastName] LIKE '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
 {% endsql %}
 
-{% assign var_count_1 = query_1_result[0].Count %}
+{% assign var_count_1 = query_1_result | Size %}
 
 //- count_2 is FirstName, LastName, and MobilePhone
 {% if var_count_1 > 1 %}
     {% sql return:'query_2_result' %}
-        SELECT
-            COUNT(p.[Guid]) AS 'Count'
+        SELECT TOP 5
+            p.[Guid]
         FROM
             [Person] p
             INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
@@ -47,14 +47,14 @@
             pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
     {% endsql %}
 
-    {% assign var_count_2 = query_2_result[0].Count %}
+    {% assign var_count_2 = query_2_result | Size %}
 {% endif %}
 
 //- count_3 is FirstName, LastName, and Email
 {% if var_count_2 > 1 %}
     {% sql return:'query_3_result' %}
-        SELECT
-            COUNT(p.[Guid]) AS 'Count'
+        SELECT TOP 5
+            p.[Guid]
         FROM
             [Person] p
         WHERE
@@ -68,14 +68,14 @@
             p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
     {% endsql %}
 
-    {% assign var_count_3 = query_3_result[0].Count %}
+    {% assign var_count_3 = query_3_result | Size %}
 {% endif %}
 
 //- count_4 is FirstName, LastName, Email, and MobilePhone
 {% if var_count_3 > 1 %}
     {% sql return:'query_4_result' %}
-        SELECT
-            COUNT(p.[Guid]) AS 'Count'
+        SELECT TOP 5
+            p.[Guid]
         FROM
             [Person] p
             INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
@@ -92,7 +92,7 @@
             pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
     {% endsql %}
 
-    {% assign var_count_4 = query_4_result[0].Count %}
+    {% assign var_count_4 = query_4_result | Size %}
 {% endif %}
 
 {% if var_count_1 == 0 %}          //- No Matches found, create Person
