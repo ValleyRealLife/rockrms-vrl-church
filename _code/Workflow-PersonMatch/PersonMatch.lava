@@ -18,12 +18,12 @@
     FROM
         [Person] p
     WHERE
-        (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+        (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
         OR
-        p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+        p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
         )
         AND
-        p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+        p.LastName LIKE '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
 {% endsql %}
 
 {% for item in query_1_result %}
@@ -39,9 +39,9 @@
             [Person] p
             INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
@@ -62,9 +62,9 @@
         FROM
             [Person] p
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
@@ -86,9 +86,9 @@
             [Person] p
             INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
@@ -125,9 +125,9 @@
             [Person] p
             INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
@@ -150,9 +150,9 @@
             INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
             INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
@@ -176,9 +176,9 @@
             [Person] p
             INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
@@ -203,9 +203,9 @@
             INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
             INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
         WHERE
-            (p.NickName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName like '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
             p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
