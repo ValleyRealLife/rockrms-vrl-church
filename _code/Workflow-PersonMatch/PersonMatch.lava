@@ -14,16 +14,16 @@
 //- count_1 is FirstName and LastName
 {% sql return:'query_1_result' %}
     SELECT
-        COUNT(p.Guid) AS 'Count'
+        COUNT(p.[Guid]) AS 'Count'
     FROM
         [Person] p
     WHERE
-        (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+        (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
         OR
-        p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+        p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
         )
         AND
-        p.LastName LIKE '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+        p.[LastName] LIKE '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
 {% endsql %}
 
 {% for item in query_1_result %}
@@ -34,19 +34,19 @@
 {% if var_count_1 > 1 %}
     {% sql return:'query_2_result' %}
         SELECT
-            COUNT(p.Guid) AS 'Count'
+            COUNT(p.[Guid]) AS 'Count'
         FROM
             [Person] p
-            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+            INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
-            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+            pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
     {% endsql %}
 
     {% for item in query_2_result %}
@@ -58,18 +58,18 @@
 {% if var_count_2 > 1 %}
     {% sql return:'query_3_result' %}
         SELECT
-            COUNT(p.Guid) AS 'Count'
+            COUNT(p.[Guid]) AS 'Count'
         FROM
             [Person] p
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
-            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+            p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
     {% endsql %}
 
     {% for item in query_3_result %}
@@ -81,21 +81,21 @@
 {% if var_count_3 > 1 %}
     {% sql return:'query_4_result' %}
         SELECT
-            COUNT(p.Guid) AS 'Count'
+            COUNT(p.[Guid]) AS 'Count'
         FROM
             [Person] p
-            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+            INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
-            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+            p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
             AND
-            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+            pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
     {% endsql %}
 
     {% for item in query_4_result %}
@@ -123,15 +123,15 @@
             pa.Guid
         FROM
             [Person] p
-            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
+            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
-        ORDER BY p.CreatedDateTime ASC
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% for item in query_result %}
@@ -144,21 +144,21 @@
     {% sql return:'query_result' %}
         SELECT
             Top 1
-            pa.Guid
+            pa.[Guid]
         FROM
             [Person] p
-            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
-            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
+            INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
-            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
-        ORDER BY p.CreatedDateTime ASC
+            pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% for item in query_result %}
@@ -171,20 +171,20 @@
     {% sql return:'query_result' %}
         SELECT
             Top 1
-            pa.Guid
+            pa.[Guid]
         FROM
             [Person] p
-            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
+            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
-            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
-        ORDER BY p.CreatedDateTime ASC
+            p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% for item in query_result %}
@@ -197,23 +197,23 @@
     {% sql return:'query_result' %}
         SELECT
             Top 1
-            pa.Guid
+            pa.[Guid]
         FROM
             [Person] p
-            INNER JOIN [PersonAlias] pa ON p.Id = pa.PersonId
-            INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
+            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
+            INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
         WHERE
-            (p.NickName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             OR
-            p.FirstName LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
+            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
             )
             AND
-            p.LastName = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
-            p.Email = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+            p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
             AND
-            pn.NumberFormatted = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
-        ORDER BY p.CreatedDateTime ASC
+            pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% for item in query_result %}
