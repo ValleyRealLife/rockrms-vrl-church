@@ -78,9 +78,10 @@
 {% if var_count_3 > 1 %}
     {% sql return:'query_4_result' %}
         SELECT TOP 5
-            p.[Guid]
+            pa.[Guid]
         FROM
             [Person] p
+            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
             INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
         WHERE
             (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
@@ -127,28 +128,7 @@
 
 //- If query_4 is >= 1
 {% if var_option == '4' %}
-    {% sql return:'query_result' %}
-        SELECT TOP 1
-            pa.[Guid]
-        FROM
-            [Person] p
-            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
-            INNER JOIN [PhoneNumber] pn ON p.[Id] = pn.[PersonId]
-        WHERE
-            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
-            OR
-            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
-            )
-            AND
-            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
-            AND
-            p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
-            AND
-            pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
-        ORDER BY p.[CreatedDateTime] ASC
-    {% endsql %}
-
-    {% assign var_PersonAliasGuid = query_result[0].Guid %}
+    {% assign var_PersonAliasGuid = query_4_result[0].Guid %}
 {% endif %}
 
 {{ var_PersonAliasGuid }}
