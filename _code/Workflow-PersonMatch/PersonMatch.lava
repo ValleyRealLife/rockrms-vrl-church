@@ -1,5 +1,10 @@
+/----------------------------------------------------------------------------------------------------
+    This Lava is found in
+    WorkflowTypeId=195, [Backend - No Existing Families] > Try to retrieve (PersonAlias_GUID)
+----------------------------------------------------------------------------------------------------/
+
 //- Define some Variables
-{% assign var_PersonAliasGuid = '' %}
+{% assign var_PersonAliasGuid = 'tim_blank' %}
 {% assign var_option = '' %}
 {% assign var_count_1 = 0 %}
 {% assign var_count_2 = 0 %}
