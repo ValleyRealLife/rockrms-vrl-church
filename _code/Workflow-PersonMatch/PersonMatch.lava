@@ -23,7 +23,7 @@
         p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
         )
         AND
-        p.[LastName] LIKE '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+        p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
 {% endsql %}
 
 {% assign var_count_1 = query_1_result | Size %}
