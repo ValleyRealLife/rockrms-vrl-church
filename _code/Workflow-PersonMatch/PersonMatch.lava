@@ -25,6 +25,7 @@
         )
         AND
         p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
+    ORDER BY p.[CreatedDateTime] ASC
 {% endsql %}
 
 {% assign var_count_1 = query_1_result | Size %}
@@ -47,6 +48,7 @@
             p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
             pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% assign var_count_2 = query_2_result | Size %}
@@ -69,6 +71,7 @@
             p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
             AND
             p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% assign var_count_3 = query_3_result | Size %}
@@ -94,6 +97,7 @@
             p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
             AND
             pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
+        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% assign var_count_4 = query_4_result | Size %}
