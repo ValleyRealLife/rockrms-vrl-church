@@ -14,7 +14,7 @@
 //- count_1 is FirstName and LastName
 {% sql return:'query_1_result' %}
     SELECT
-        COUNT(p.Guid) AS Count
+        COUNT(p.Guid) AS 'Count'
     FROM
         [Person] p
     WHERE
@@ -34,7 +34,7 @@
 {% if var_count_1 > 1 %}
     {% sql return:'query_2_result' %}
         SELECT
-            COUNT(p.Guid) AS Count
+            COUNT(p.Guid) AS 'Count'
         FROM
             [Person] p
             INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
@@ -58,7 +58,7 @@
 {% if var_count_2 > 1 %}
     {% sql return:'query_3_result' %}
         SELECT
-            COUNT(p.Guid) AS Count
+            COUNT(p.Guid) AS 'Count'
         FROM
             [Person] p
         WHERE
@@ -81,7 +81,7 @@
 {% if var_count_3 > 1 %}
     {% sql return:'query_4_result' %}
         SELECT
-            COUNT(p.Guid) AS Count
+            COUNT(p.Guid) AS 'Count'
         FROM
             [Person] p
             INNER JOIN [PhoneNumber] pn ON p.Id = pn.PersonId
