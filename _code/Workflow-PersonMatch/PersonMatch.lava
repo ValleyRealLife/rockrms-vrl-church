@@ -110,7 +110,7 @@
 //- If query_1 had one match
 {% if var_option == '1' %}
     {% sql return:'query_result' %}
-        SELECT TOP 1
+        SELECT
             pa.[Guid]
         FROM
             [Person] p
