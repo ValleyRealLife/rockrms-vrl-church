@@ -122,7 +122,6 @@
             )
             AND
             p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
-        ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
     {% assign var_PersonAliasGuid = query_result[0].Guid %}
