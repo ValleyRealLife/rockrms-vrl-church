@@ -14,9 +14,10 @@
 //- count_1 is FirstName and LastName
 {% sql return:'query_1_result' %}
     SELECT TOP 5
-        p.[Guid]
+        pa.[Guid]
     FROM
         [Person] p
+        INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
     WHERE
         (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
         OR
@@ -109,22 +110,7 @@
 
 //- If query_1 had one match
 {% if var_option == '1' %}
-    {% sql return:'query_result' %}
-        SELECT TOP 1
-            pa.[Guid]
-        FROM
-            [Person] p
-            INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
-        WHERE
-            (p.[NickName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
-            OR
-            p.[FirstName] LIKE '%{{ Workflow | Attribute:'Form_FirstName' | SanitizeSql }}%'
-            )
-            AND
-            p.[LastName] = '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
-    {% endsql %}
-
-    {% assign var_PersonAliasGuid = query_result[0].Guid %}
+    {% assign var_PersonAliasGuid = query_1_result[0].Guid %}
 {% endif %}
 
 //- If query_2 had one match
