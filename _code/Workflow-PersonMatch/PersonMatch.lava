@@ -110,8 +110,7 @@
 //- If query_1 had one match
 {% if var_option == '1' %}
     {% sql return:'query_result' %}
-        SELECT
-            Top 1
+        SELECT TOP 1
             pa.[Guid]
         FROM
             [Person] p
@@ -132,8 +131,7 @@
 //- If query_2 had one match
 {% if var_option == '2' %}
     {% sql return:'query_result' %}
-        SELECT
-            Top 1
+        SELECT TOP 1
             pa.[Guid]
         FROM
             [Person] p
@@ -157,8 +155,7 @@
 //- If query_3 had one match
 {% if var_option == '3' %}
     {% sql return:'query_result' %}
-        SELECT
-            Top 1
+        SELECT TOP 1
             pa.[Guid]
         FROM
             [Person] p
@@ -181,8 +178,7 @@
 //- If query_4 is >= 1
 {% if var_option == '4' %}
     {% sql return:'query_result' %}
-        SELECT
-            Top 1
+        SELECT TOP 1
             pa.[Guid]
         FROM
             [Person] p
