@@ -115,6 +115,8 @@
     {% assign var_option = '4' %}
 {% endif %}
 
+//- Note: If queries return 0, then var_PersonAliasGuid will remain as 'tim_blank'
+
 //- If query_1 had one match
 {% if var_option == '1' %}
     {% assign var_PersonAliasGuid = query_1_result[0].Guid %}
