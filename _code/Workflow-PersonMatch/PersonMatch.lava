@@ -26,9 +26,7 @@
         p.[LastName] LIKE '{{ Workflow | Attribute:'Form_LastName' | SanitizeSql }}'
 {% endsql %}
 
-{% for item in query_1_result %}
-    {% assign var_count_1 = item.Count %}
-{% endfor %}
+{% assign var_count_1 = query_1_result[0].Count %}
 
 //- count_2 is FirstName, LastName, and MobilePhone
 {% if var_count_1 > 1 %}
@@ -49,9 +47,7 @@
             pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
     {% endsql %}
 
-    {% for item in query_2_result %}
-        {% assign var_count_2 = item.Count %}
-    {% endfor %}
+    {% assign var_count_2 = query_2_result[0].Count %}
 {% endif %}
 
 //- count_3 is FirstName, LastName, and Email
@@ -72,9 +68,7 @@
             p.[Email] = '{{ Workflow | Attribute:'Form_EmailAddress' | SanitizeSql }}'
     {% endsql %}
 
-    {% for item in query_3_result %}
-        {% assign var_count_3 = item.Count %}
-    {% endfor %}
+    {% assign var_count_3 = query_3_result[0].Count %}
 {% endif %}
 
 //- count_4 is FirstName, LastName, Email, and MobilePhone
@@ -98,9 +92,7 @@
             pn.[NumberFormatted] = '{{ Workflow | Attribute:'Form_MobilePhone' | SanitizeSql }}'
     {% endsql %}
 
-    {% for item in query_4_result %}
-        {% assign var_count_4 = item.Count %}
-    {% endfor %}
+    {% assign var_count_4 = query_4_result[0].Count %}
 {% endif %}
 
 {% if var_count_1 == 0 %}          //- No Matches found, create Person
@@ -120,7 +112,7 @@
     {% sql return:'query_result' %}
         SELECT
             Top 1
-            pa.Guid
+            pa.[Guid]
         FROM
             [Person] p
             INNER JOIN [PersonAlias] pa ON p.[Id] = pa.[PersonId]
@@ -134,9 +126,7 @@
         ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
-    {% for item in query_result %}
-        {% assign var_PersonAliasGuid = item.Guid %}
-    {% endfor %}
+    {% assign var_PersonAliasGuid = query_result[0].Guid %}
 {% endif %}
 
 //- If query_2 had one match
@@ -161,9 +151,7 @@
         ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
-    {% for item in query_result %}
-        {% assign var_PersonAliasGuid = item.Guid %}
-    {% endfor %}
+    {% assign var_PersonAliasGuid = query_result[0].Guid %}
 {% endif %}
 
 //- If query_3 had one match
@@ -187,9 +175,7 @@
         ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
-    {% for item in query_result %}
-        {% assign var_PersonAliasGuid = item.Guid %}
-    {% endfor %}
+    {% assign var_PersonAliasGuid = query_result[0].Guid %}
 {% endif %}
 
 //- If query_4 is >= 1
@@ -216,9 +202,7 @@
         ORDER BY p.[CreatedDateTime] ASC
     {% endsql %}
 
-    {% for item in query_result %}
-        {% assign var_PersonAliasGuid = item.Guid %}
-    {% endfor %}
+    {% assign var_PersonAliasGuid = query_result[0].Guid %}
 {% endif %}
 
 {{ var_PersonAliasGuid }}
