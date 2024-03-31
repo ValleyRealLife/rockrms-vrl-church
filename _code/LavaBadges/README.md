@@ -12,9 +12,9 @@ The [idea.lava](./idea.lava) is where i keep a general idea of a template, which
 That being said, here's a description of the Lava Badges that i created or modified thus far:
 | Badge Name | Lava File | Description |
 |---|---|---|
-| Background Check | [ badge-backgroundcheck.lava ]( ./badge-backgroundcheck.lava ) | Shows whether the person has passed a Background Check |
-| Cat Course | [ badge-cat.lava ]( ./badge-cat.lava ) | Shows whether the person has taken the Child Abuse Training course |
-| DNA | [ badge-DNAcourse.lava ]( ./badge-DNAcourse.lava ) | Shows whether the person has taken the DNA course or the DNA Refresher course. |
-| RDT | [ badge-rdt.lava ]( ./badge-rdt.lava ) | Shows whether the person has taken the Real Discipleship Training class. |
-| Family Commitment | [ badge-FamilyCommitmentSigned.lava ]( ./badge-FamilyCommitmentSigned.lava ) | Shows whether the person has signed the Family Commitment Form. |
+| Background Check | [ badge-backgroundcheck.lava ]( ../ShortCodes/Badge_BackgroundCheck/badge-backgroundcheck.lava ) | Shows whether the person has passed a Background Check. Note: I moved this file to a different directory. |
+| Cat Course | [ badge-cat.lava ]( ../ShortCodes/Badge_CATcourse/badge-cat.lava ) | Shows whether the person has taken the Child Abuse Training course. Note: I moved this file to a different directory. |
+| DNA | [ badge-DNAcourse.lava ]( ../ShortCodes/Badge_DNAcourse/badge-DNAcourse.lava ) | Shows whether the person has taken the DNA course or the DNA Refresher course. Note: I moved this file to a different directory. |
+| RDT | [ badge-rdt.lava ]( ../ShortCodes/Badge_RDTcourse/badge-RDTcourse.lava ) | Shows whether the person has taken the Real Discipleship Training class. Note: I moved this file to a different directory. |
+| Family Commitment | [ badge-FamilyCommitmentSigned.lava ]( ../ShortCodes/Badge_FamilyCommitmentSigned/badge-FamilyCommitmentSigned.lava ) | Shows whether the person has signed the Family Commitment Form. Note: I moved this file to a different directory. |
 | ~~VRL Membership~~ | [badge-VRLmembership.lava](./badge-VRLmembership.lava) | ~~Shows whether the person has signed the Family Commitment Form provided to them at the end of the DNA Course.~~ |
