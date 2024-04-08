@@ -1,6 +1,6 @@
 # WorkflowType Info
 
-Admin Tools > [General Settings](https://rock.vrl.church/admin/general) > [Workflow Configuration](https://rock.vrl.church/admin/general/workflows), the 'Main' Zone has an *HTML Content* Block titled, 'Workflowtype Info'.
+Admin Tools > [General Settings](https://rock.vrl.church/admin/general) > [Workflow Configuration](https://rock.vrl.church/admin/general/workflows), the 'Main' Zone has an **HTML Content** Block titled, 'Workflowtype Info'.
 
 i forget exactly where i got the Lava for this, but i know i didn't come up with it.
 
