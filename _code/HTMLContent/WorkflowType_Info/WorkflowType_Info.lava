@@ -5,17 +5,17 @@
     DECLARE @workflowTypeId int = {{ 'Global' | PageParameter:'WorkflowTypeId' | AsInteger }}
     SELECT
         'Workflow Entry Form' AS 'Resource',
-        p.InternalName AS 'Name',
-        '/page/' + CAST(p.Id AS VARCHAR(10)) AS 'Link'
+        p.[InternalName] AS 'Name',
+        '/page/' + CAST(p.[Id] AS VARCHAR(10)) AS 'Link'
     FROM
         [Attribute] a
-        JOIN [AttributeValue] av ON av.AttributeId = a.Id
-        JOIN [Block] b ON b.id = av.EntityId
-        JOIN [Page] p ON p.id = b.PageId
+        JOIN [AttributeValue] av ON av.[AttributeId] = a.[Id]
+        JOIN [Block] b ON b.[Id] = av.[EntityId]
+        JOIN [Page] p ON p.[Id] = b.[PageId]
     WHERE
-        a.FieldTypeId IN (36, 73) --Workflow Type and Workflow Types
+        a.[FieldTypeId] IN (36, 73) --Workflow Type and Workflow Types
         AND
-        a.EntityTypeQualifierValue = '264'
+        a.[EntityTypeQualifierValue] = '264'
         AND
         av.[Value] LIKE '%' + (
             SELECT
@@ -23,22 +23,22 @@
             FROM
                 [WorkflowType]
             WHERE
-                id = @workflowTypeId
+                [Id] = @workflowTypeId
         ) + '%'
     UNION ALL
     SELECT
         'Block' AS 'Resource',
-        p.InternalName AS 'Name',
-        '/page/' + CAST(p.Id AS VARCHAR(10)) AS 'Link'
+        p.[InternalName] AS 'Name',
+        '/page/' + CAST(p.[Id] AS VARCHAR(10)) AS 'Link'
     FROM
         [Attribute] a
-        JOIN [AttributeValue] av ON av.AttributeId = a.Id
-        JOIN [Block] b ON b.id = av.EntityId
-        JOIN [Page] p ON p.id = b.PageId
+        JOIN [AttributeValue] av ON av.[AttributeId] = a.[Id]
+        JOIN [Block] b ON b.[Id] = av.[EntityId]
+        JOIN [Page] p ON p.[Id] = b.[PageId]
     WHERE
-        a.FieldTypeId IN (36, 73) --Workflow Type and Workflow Types
+        a.[FieldTypeId] IN (36, 73) --Workflow Type and Workflow Types
         AND
-        a.EntityTypeQualifierValue <> '264'
+        a.[EntityTypeQualifierValue] <> '264'
         AND
         av.[Value] LIKE '%' + (
             SELECT
@@ -46,53 +46,53 @@
             FROM
                 [WorkflowType]
             WHERE
-                id = @workflowTypeId
+                [Id] = @workflowTypeId
         ) + '%'
     UNION ALL
     SELECT DISTINCT
         'Connections' AS 'Resource'
-        , ISNULL(ct.Name, co.ConnectionType) + ' ' + co.Name AS 'Name'
+        , ISNULL(ct.[Name], co.[ConnectionType]) + ' ' + co.[Name] AS 'Name'
         , CASE
-            WHEN co.Id IS NOT NULL THEN '/page/949?ConnectionOpportunityId=' + CAST(co.Id AS NVARCHAR) + '&ConnectionTypeId=' + CAST(co.ConnectionTypeId AS NVARCHAR)
-            WHEN ct.Id IS NOT NULL THEN '/page/948?ConnectionTypeId=' + CAST(ct.Id AS NVARCHAR)
+            WHEN co.[Id] IS NOT NULL THEN '/page/949?ConnectionOpportunityId=' + CAST(co.[Id] AS NVARCHAR) + '&ConnectionTypeId=' + CAST(co.[ConnectionTypeId] AS NVARCHAR)
+            WHEN ct.[Id] IS NOT NULL THEN '/page/948?ConnectionTypeId=' + CAST(ct.[Id] AS NVARCHAR)
             ELSE NULL
         END AS 'Link'
     FROM
         [ConnectionWorkflow] cw
         OUTER APPLY (
             SELECT
-                ct.Name
-                , ct.Id
+                ct.[Name]
+                , ct.[Id]
             FROM
                 [ConnectionType] ct
             WHERE
-                cw.ConnectionTypeId = ct.Id
+                cw.[ConnectionTypeId] = ct.[Id]
         ) ct
         OUTER APPLY (
             SELECT
-                co.Name
-                , co.Id
-                , ct2.Name AS 'ConnectionType'
-                , ct2.Id AS 'ConnectionTypeId'
+                co.[Name]
+                , co.[Id]
+                , ct2.[Name] AS 'ConnectionType'
+                , ct2.[Id] AS 'ConnectionTypeId'
             FROM
                 [ConnectionOpportunity] co
-                INNER JOIN [ConnectionType] ct2 ON co.ConnectionTypeId = ct2.Id
+                INNER JOIN [ConnectionType] ct2 ON co.[ConnectionTypeId] = ct2.[Id]
             WHERE
-                cw.ConnectionOpportunityId = co.Id
+                cw.[ConnectionOpportunityId] = co.[Id]
         ) co
     WHERE
-        cw.WorkflowTypeId = @workflowTypeId
+        cw.[WorkflowTypeId] = @workflowTypeId
     UNION ALL
     SELECT
         'Registration Template' AS 'Resource',
         [Name] AS 'Name',
-        '/page/403?RegistrationTemplateId=' + CAST(Id AS VARCHAR(10)) AS 'Link'
+        '/page/403?RegistrationTemplateId=' + CAST([Id] AS VARCHAR(10)) AS 'Link'
     FROM
         [RegistrationTemplate]
     WHERE
-        RegistrationWorkflowTypeId = @workflowTypeId
+        [RegistrationWorkflowTypeId] = @workflowTypeId
         OR
-        RegistrantWorkflowTypeId = @workflowTypeId
+        [RegistrantWorkflowTypeId] = @workflowTypeId
     UNION ALL
     SELECT
         'Registration Instance' AS 'Resource',
@@ -101,13 +101,13 @@
     FROM
         [RegistrationInstance]
     WHERE
-        RegistrationWorkflowTypeId = @workflowTypeId
+        [RegistrationWorkflowTypeId] = @workflowTypeId
     {% endsql %}
 
     {% assign count = output | Size %}
     {% if count > 0 %}
     <div class='alert alert-default'>
-        <b>This Workflow is currently referenced by :</b><br />
+        <b>This WorkflowType is currently referenced by :</b><br />
         <ul>
             {% for item in output %}
             <li>
