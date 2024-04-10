@@ -22,6 +22,7 @@
     {% endfor %}
 </ul>
 
+{% comment %}
 {% if AdditionalFieldsNeeded %}
     <p>
         <strong>Addition information is needed in order to process this registration. Please visit the
@@ -29,6 +30,7 @@
         online registration page</a> to complete the registration.</strong>
     </p>
 {% endif %}
+{% endcomment %}
 
 {% if Registration.BalanceDue > 0 %}
     <p>
