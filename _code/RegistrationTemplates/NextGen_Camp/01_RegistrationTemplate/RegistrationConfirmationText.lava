@@ -81,14 +81,15 @@
 
 {% if var_RegInsId == '597' %} //- MOVE 2024
 <p>
-    Please take a moment to fill review and submit <a href="https://ciy.jotform.com/ciy.registration/MOV24OR2?=churchNumber=220834&churchYou=Valley%20Real%20Life%20Church&churchCity=Greenacres&churchState=WA&groupLeaders=Tyler%20Lane&groupLeaders25=awohl@vrl.church" target="_blank">this waiver for CIY</a> concerning MOVE 2024.
+    Please take a moment to fill review and submit <a href="https://ciy.jotform.com/ciy.registration/MOV24OR2?=churchNumber=220834&churchYou=Valley%20Real%20Life%20Church&churchCity=Greenacres&churchState=WA&groupLeaders=Tyler%20Lane&groupLeaders25=awohl@vrl.church" target="_blank">this waiver for CIY</a> concerning MOVE 2024.<br>
     Also, please refer to this <a href="https://www.vrl.church/Content/NextGenCampResources/MOVE_packinglist_2024.pdf" target="_blank">Packing List for MOVE 2024</a>.
 </p>
 {% endif %}
 
 {% if var_RegInsId == '598' %} //- MIX 2024
 <p>
-    Please refer to this <a href="https://www.vrl.church/Content/NextGenCampResources/MIX_packinglist_2024.pdf" target="_blank">Packing List for MIX 2024</a>.
+    Please take a moment to fill review and submit <a href="https://ciy.jotform.com/ciy.registration/MIX24OR2?=churchNumber=220909&churchYou=Valley%20Real%20Life%20Church&churchCity=Greenacres&churchState=WA&groupLeaders=Emma%20Russow&groupLeaders25=awohl@vrl.church" target="_blank">this waiver for CIY</a> concerning MIX 2024.<br>
+    Also, please refer to this <a href="https://www.vrl.church/Content/NextGenCampResources/MIX_packinglist_2024.pdf" target="_blank">Packing List for MIX 2024</a>.
 </p>
 {% endif %}
 
