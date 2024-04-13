@@ -1,0 +1,48 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1921, [Dynamic Data Block] > Query
+
+    I am copy+pasting this here from the VRL Rock Site.
+    I copy+pasted this on 12-APR-2024
+------------------------------------------------------------/
+
+{% assign var_GroupId = PageParameter.GroupId | SanitizeSql %}
+
+{% if var_GroupId != empty and var_GroupId != null %}
+SELECT
+    p.[Id]
+    {%- if var_GroupId contains "," -%}
+  , g.[Name] AS 'Group Name'
+    {%- endif -%}
+  , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person Name'
+  , s5.[CompletedDateTime] AS 'DNA Date'
+  , s6.[CompletedDateTime] AS 'DNA Refresher'
+    {%- if var_GroupId contains "," -%}
+  , CONCAT('<a title="Person Profile" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/person/', p.[Id], '/steps/" target="_blank"><i class="fa fa-user-alt"></i></a>', ' ', '<a title="Group Viewer" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/page/697?GroupId=', g.[Id], '/" target="_blank"><i class="fa fa-users"></i></a>') AS 'Person and Group'
+    {%- else -%}
+  , CONCAT('<a title="Person Profile" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/person/', p.[Id], '/steps/" target="_blank"><i class="fa fa-user-alt"></i></a>') AS 'Person Profile'
+    {%- endif -%}
+FROM
+    [Person] p
+    LEFT JOIN [GroupMember] gm ON gm.[PersonId] = p.[Id]
+    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+    LEFT JOIN [Step] s5 ON s5.[PersonAliasId] = pa.[Id] AND s5.[StepTypeId] = 5
+    LEFT JOIN (
+        SELECT [PersonAliasId], MAX([CompletedDateTime]) AS 'CompletedDateTime'
+        FROM [Step]
+        WHERE [StepTypeId] = 6
+        GROUP BY [PersonAliasId]
+    ) AS s6 ON s6.[PersonAliasId] = pa.[Id]
+WHERE
+    gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
+ORDER BY
+    {%- if var_GroupId contains "," -%}
+    g.[Id],
+    {%- endif -%}
+    s6.[CompletedDateTime] DESC
+  , s5.[CompletedDateTime] DESC
+  , p.[LastName] ASC
+  , p.[NickName] ASC
+;
+{% endif %}
