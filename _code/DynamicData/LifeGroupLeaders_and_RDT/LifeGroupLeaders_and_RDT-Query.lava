@@ -1,0 +1,61 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1923, [Dynamic Data Block] > Query
+
+    I am copy+pasting this here from the VRL Rock Site.
+    I copy+pasted this on 15-APR-2024
+------------------------------------------------------------/
+
+{% assign var_GroupId = PageParameter.GroupId | SanitizeSql %}
+
+{% if var_GroupId != empty and var_GroupId != null %}
+DECLARE @RdtCourses TABLE (
+    [PersonAliasId] INT PRIMARY KEY NOT NULL,
+    [RdtCourse] DATETIME NOT NULL
+);
+
+INSERT INTO @RdtCourses (
+    [PersonAliasId],
+    [RdtCourse]
+)
+SELECT
+    stp.[PersonAliasId],
+    MAX(stp.[CompletedDateTime])
+FROM
+    [Step] stp
+WHERE
+    stp.[StepTypeId] = 7
+GROUP BY
+    stp.[PersonAliasId]
+;
+
+SELECT
+    p.[Id]
+    {%- if var_GroupId contains "," -%}
+  , g.[Name] AS 'Group Name'
+    {%- endif -%}
+  , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person Name'
+  , gtr.[Name] AS 'Role'
+  , rdt.[RdtCourse] AS 'Most Recent RDT'
+  , CONCAT('<a title="Person Profile" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/person/', p.[Id], '/steps/" target="_blank"><i class="fa fa-user-alt"></i></a>', ' ', '<a title="Group Viewer" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/page/697?GroupId=', g.[Id], '" target="_blank"><i class="fa fa-users"></i></a>') AS 'Person and Group'
+FROM
+    [Person] p
+    LEFT JOIN [GroupMember] gm ON gm.[PersonId] = p.[Id]
+    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+    LEFT JOIN [GroupTypeRole] gtr ON gtr.[GroupTypeId] = gm.[GroupTypeId] AND gtr.[Id] = gm.[GroupRoleId]
+    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+    LEFT JOIN @RdtCourses rdt ON rdt.[PersonAliasId] = pa.[Id]
+WHERE
+    gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
+    AND
+    gm.[IsArchived] = 0
+ORDER BY
+    {%- if var_GroupId contains "," -%}
+    g.[Id],
+    {%- endif -%}
+    gtr.[Order] ASC
+  , rdt.[RdtCourse] DESC
+  , p.[LastName] ASC
+  , p.[NickName] ASC
+;
+{% endif %}
