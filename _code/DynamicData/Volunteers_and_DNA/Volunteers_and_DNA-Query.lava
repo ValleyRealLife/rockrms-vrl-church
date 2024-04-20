@@ -38,6 +38,8 @@ WHERE
     gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
     AND
     gm.[IsArchived] = 0
+    AND
+    gm.[GroupMemberStatus] <> 0
 ORDER BY
     {%- if var_GroupId contains "," -%}
     g.[Id],
