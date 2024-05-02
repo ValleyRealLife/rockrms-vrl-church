@@ -9,6 +9,26 @@
 {% assign var_GroupId = PageParameter.GroupId | SanitizeSql %}
 
 {% if var_GroupId != empty and var_GroupId != null %}
+DECLARE @dnaRefreshers TABLE (
+    [PersonAliasId] INT PRIMARY KEY NOT NULL,
+    [CompletedDateTime] DATETIME
+);
+
+INSERT INTO @dnaRefreshers (
+    [PersonAliasId],
+    [CompletedDateTime]
+)
+SELECT
+    stp.[PersonAliasId],
+    MAX(stp.[CompletedDateTime])
+FROM
+    [Step] stp
+WHERE
+    stp.[StepTypeId] = 6
+GROUP BY
+    stp.[PersonAliasId]
+;
+
 SELECT
     p.[Id]
     {%- if var_GroupId contains "," -%}
@@ -24,12 +44,7 @@ FROM
     LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
     LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
     LEFT JOIN [Step] s5 ON s5.[PersonAliasId] = pa.[Id] AND s5.[StepTypeId] = 5
-    LEFT JOIN (
-        SELECT [PersonAliasId], MAX([CompletedDateTime]) AS 'CompletedDateTime'
-        FROM [Step]
-        WHERE [StepTypeId] = 6
-        GROUP BY [PersonAliasId]
-    ) AS s6 ON s6.[PersonAliasId] = pa.[Id]
+    LEFT JOIN @dnaRefreshers s6 ON s6.[PersonAliasId] = pa.[Id]
 WHERE
     gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
     AND
