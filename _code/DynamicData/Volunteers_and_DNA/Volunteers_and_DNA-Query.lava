@@ -10,17 +10,17 @@
 
 {% if var_GroupId != empty and var_GroupId != null %}
 DECLARE @dnaRefreshers TABLE (
-    [PersonAliasId] INT PRIMARY KEY NOT NULL,
-    [CompletedDateTime] DATETIME
+    [PersonAliasId] INT PRIMARY KEY NOT NULL
+  , [CompletedDateTime] DATETIME
 );
 
 INSERT INTO @dnaRefreshers (
-    [PersonAliasId],
-    [CompletedDateTime]
+    [PersonAliasId]
+  , [CompletedDateTime]
 )
 SELECT
-    stp.[PersonAliasId],
-    MAX(stp.[CompletedDateTime])
+    stp.[PersonAliasId]
+  , MAX(stp.[CompletedDateTime])
 FROM
     [Step] stp
 WHERE
