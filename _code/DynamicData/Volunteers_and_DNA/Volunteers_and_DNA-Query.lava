@@ -79,7 +79,7 @@ SELECT
     {%- endif -%}
   , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person Name'
   , evd.[DateTimeAdded] AS 'Earliest Volunteer Team Date'
-  , evt1.[Name] AS 'Earliest Volunteer Team'
+  --, evt1.[Name] AS 'Earliest Volunteer Team'
   , s5.[CompletedDateTime] AS 'DNA Date'
   , s6.[CompletedDateTime] AS 'DNA Refresher'
   , CONCAT('<a title="Person Profile" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/person/', p.[Id], '/steps/" target="_blank"><i class="fa fa-user-alt"></i></a>', ' ', '<a title="Group Viewer" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/page/697?GroupId=', g.[Id], '" target="_blank"><i class="fa fa-users"></i></a>') AS 'Person and Group'
