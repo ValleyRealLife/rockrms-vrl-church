@@ -24,6 +24,11 @@ DECLARE @earliestVolunteerTeams TABLE (
   , [GroupId] INT
 );
 
+DECLARE @totalVolunteerTeams TABLE (
+    [PersonId] INT PRIMARY KEY NOT NULL
+  , [CountOfTeams] INT
+);
+
 INSERT INTO @dnaRefreshers (
     [PersonAliasId]
   , [CompletedDateTime]
@@ -72,12 +77,40 @@ ORDER BY
     gm.[GroupId]
 ;
 
+INSERT INTO @totalVolunteerTeams (
+    [PersonId]
+  , [CountOfTeams]
+)
+SELECT
+    gm.[PersonId]
+  , COUNT(GroupId)
+FROM
+    [GroupMember] gm
+    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+WHERE
+    gm.[GroupTypeId] = 23
+    AND
+    gm.[GroupMemberStatus] = 1
+    AND
+    gm.[IsArchived] = 0
+    AND
+    g.[IsArchived] = 0
+GROUP BY
+    gm.[PersonId]
+ORDER BY
+    gm.[PersonId] ASC
+;
+
 SELECT
     p.[Id]
     {%- if var_GroupId contains "," -%}
   , g.[Name] AS 'Group Name'
     {%- endif -%}
   , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person Name'
+  , CASE
+        WHEN tvt.[CountOfTeams] > 1 THEN 'Yes'
+        ELSE 'No'
+    END AS 'Multiple Volunteer Teams'
   , evd.[DateTimeAdded] AS 'Earliest Volunteer Team Date'
   --, evt1.[Name] AS 'Earliest Volunteer Team'
   , s5.[CompletedDateTime] AS 'DNA Date'
@@ -93,6 +126,7 @@ FROM
     LEFT JOIN @earliestVolunteerDates evd ON evd.[PersonId] = gm.[PersonId]
     LEFT JOIN @earliestVolunteerTeams evt ON evt.[PersonId] = gm.[PersonId]
     LEFT JOIN [Group] evt1 ON evt1.[Id] = evt.[GroupId]
+    LEFT JOIN @totalVolunteerTeams tvt ON tvt.[PersonId] = gm.[PersonId]
 WHERE
     gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
     AND
