@@ -19,6 +19,11 @@ DECLARE @earliestVolunteerDates TABLE (
   , [DateTimeAdded] DATETIME
 );
 
+DECLARE @earliestVolunteerTeams TABLE (
+    [PersonId] INT PRIMARY KEY NOT NULL
+  , [GroupId] INT
+);
+
 INSERT INTO @dnaRefreshers (
     [PersonAliasId]
   , [CompletedDateTime]
@@ -51,6 +56,22 @@ ORDER BY
     gm.[PersonId]
 ;
 
+INSERT INTO @earliestVolunteerTeams (
+    [PersonId]
+  , [GroupId]
+)
+SELECT
+    gm.[PersonId]
+  , gm.[GroupId]
+FROM
+    [GroupMember] gm
+    INNER JOIN @earliestVolunteerDates evd ON evd.[PersonId] = gm.[PersonId] AND evd.[DateTimeAdded] = gm.[DateTimeAdded]
+WHERE
+    gm.[GroupTypeId] = 23
+ORDER BY
+    gm.[GroupId]
+;
+
 SELECT
     p.[Id]
     {%- if var_GroupId contains "," -%}
@@ -58,6 +79,7 @@ SELECT
     {%- endif -%}
   , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person Name'
   , evd.[DateTimeAdded] AS 'Earliest Volunteer Team Date'
+  , evt1.[Name] AS 'Earliest Volunteer Team'
   , s5.[CompletedDateTime] AS 'DNA Date'
   , s6.[CompletedDateTime] AS 'DNA Refresher'
   , CONCAT('<a title="Person Profile" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/person/', p.[Id], '/steps/" target="_blank"><i class="fa fa-user-alt"></i></a>', ' ', '<a title="Group Viewer" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/page/697?GroupId=', g.[Id], '" target="_blank"><i class="fa fa-users"></i></a>') AS 'Person and Group'
@@ -69,6 +91,8 @@ FROM
     LEFT JOIN [Step] s5 ON s5.[PersonAliasId] = pa.[Id] AND s5.[StepTypeId] = 5
     LEFT JOIN @dnaRefreshers s6 ON s6.[PersonAliasId] = pa.[Id]
     LEFT JOIN @earliestVolunteerDates evd ON evd.[PersonId] = gm.[PersonId]
+    LEFT JOIN @earliestVolunteerTeams evt ON evt.[PersonId] = gm.[PersonId]
+    LEFT JOIN [Group] evt1 ON evt1.[Id] = evt.[GroupId]
 WHERE
     gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
     AND
