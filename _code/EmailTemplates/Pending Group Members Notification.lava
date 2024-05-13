@@ -1,4 +1,4 @@
-/-
+/------------------------------------------------------------
     This Lava is found in
     Communications > System Communications > "Pending Group Members Notification"
     This is [SystemCommunication] sc WHERE sc.Id = 16
@@ -6,7 +6,7 @@
 
     I am copy+pasting this here from the VRL Rock Site.
     I copy+pasted this on 02-FEB-2024
--/
+------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}
 
