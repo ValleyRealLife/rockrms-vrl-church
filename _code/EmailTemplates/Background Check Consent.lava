@@ -1,3 +1,8 @@
+/------------------------------------------------------------
+    This Lava is found in
+    SystemCommunications, Id=56 [Background Check Consent]
+------------------------------------------------------------/
+
 {{ 'Global' | Attribute:'EmailHeader' }}
 
 <p>Hey {{ Person.NickName }}!</p>
@@ -7,7 +12,7 @@
 
 <h3 class="separator">Details</h3>
 
-{% for attribute in Action.FormAttributes %}    
+{% for attribute in Action.FormAttributes %}
     {% if attribute.IsVisible and attribute.Value != '' %}
         <div>
             <strong>{{ attribute.Name }}:</strong>
