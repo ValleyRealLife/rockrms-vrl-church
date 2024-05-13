@@ -1,0 +1,13 @@
+/------------------------------------------------------------
+    This Lava is found in
+    WorkflowTypeId=203, ActivityTypeId=686, > Set (str_CurrentSchoolYear)
+------------------------------------------------------------/
+
+{% assign var_Month = 'Now' | Date:'MM' | AsInteger %}
+{% assign var_Year = 'Now' | Date:'yyyy' | AsInteger %}
+
+{% if var_Month > 3 %}
+    {{ var_Year }}-{{ var_Year | Plus:1 }}
+{% else %}
+    {{ var_Year | Minus:1 }}-{{ var_Year }}
+{% endif %}
