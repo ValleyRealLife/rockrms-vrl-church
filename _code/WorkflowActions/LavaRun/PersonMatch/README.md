@@ -12,15 +12,15 @@ For situations where the user is not logged in, we could potentially use the 'Pe
 Therefore, I wrote a Lava script that takes advantage of the `{% sql %}` command in order to do our own PersonMatch.
 
 # Necessary Lava Commands
-[ ] All
-[ ] Cache
-[ ] Calendar Events
-[ ] Event Scheduled Instance
-[ ] Execute
-[ ] Interaction Content Channel Item Write
-[ ] Interaction Write
-[ ] Rock Entity
-[ ] Search
-[x] Sql
-[ ] Web Request
-[ ] Workflow Activate
+[ ] All  
+[ ] Cache  
+[ ] Calendar Events  
+[ ] Event Scheduled Instance  
+[ ] Execute  
+[ ] Interaction Content Channel Item Write  
+[ ] Interaction Write  
+[ ] Rock Entity  
+[ ] Search  
+[x] Sql  
+[ ] Web Request  
+[ ] Workflow Activate  
