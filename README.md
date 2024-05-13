@@ -3,34 +3,43 @@ Tim created this repository in order to contain all the things about VRL's Rock 
 
 I like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/codetour), this is a VSC Extension that will allow the code author to give you a "tour" of their code. Essentially, it's like adding comments to your code, but differently. I will try to get in the habit of creating CodeTours for codes that could be confusing without context/explanation. ([VSC Marketplace: CodeTour Extension](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour))
 
-# Things that are helpful to the internal Rock Admin
-1. [Button that navigates to the editor of the Current Page](./_code/Button-GoToCurrentPageEditor/)
-   - I got this from Drew Young, and then I added `target="_blank"`
-1. [HTML for Forms](./_code/Format-FormFields/)
-   - [When I want to hide the Attriute Name, and use the Pre-HTML as the Field Label](./_code/Format-FormFields/FormFields-Label.md)
-   - [When I want to put two Attributes next to each other](./_code/Format-FormFields/FormFields-SideToSide.md)
-1. [Hide Certain Blocks from my Internal Rock users](./_code/Format-HideBlock/)
-1. [Lava that converts from Matrix to JSON](./_code/Lava-FromMatrix-toJSON/)
-   - This is what we intuitively thought Matrices would work like
-1. [Lava that refreshes currentPage using JavaScript](./_code/Lava-JS-RefreshCurrentPage/)
-   - This one is janky
-1. [LavaToPDF (reference)](./_code/Workflow-LavaToPDF/)
-1. [ShortCode that replicates a Workflow as a PDF](./_code/ShortCode-ReplicateWorkflowAsForm/)
-1. [Two ways to add IFTHEN to SQL in Rock](./_code/ShortCode-SQL-IFTHEN/)
-1. [Workflow Action that matches Person](./_code/Workflow-PersonMatch/)
-    - I was proud of this when I wrote it, but now I realize this is dangerous
+# How to Use this Repository
+1. The [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme) is recommended.
+2. The [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) Extension is recommended.
+3. Inside the `_code` Folder,
+   1. the Folders where the name begins with an underline is akin to footnotes or margin-notes.
+   2. the other Folders try to denote an Entity or Context where the code snippet is used.
+      - For the sake of making it easier to navigate in GitHub, each Folder should have its own README.
+      - Each Lava file should start with a comment block that denotes where this snippet is being used. See 'Lava Header Examples' below.
 
-# Things that are helpful to my Internal Rock users
-1. [Badge: Same badge, different colors](./_code/Badge-ExpirationColor/)
-   - Rather than using different colors for different badges, we standardized what the colors mean
-1. [Dynamic Data (reference)](./_code/DynamicData-PageParam/)
-   - DynamicData and PageParam allow me to write SQL in a way that my Internal Rock users can easily swap-in some variables
-1. [Lava that improves the PrayerRequestList](./_code/Lava-PrayerRequestList/)
+# Lava Header Example
+## Header for files in this GitHub Repo
+The Lava file in this GitHub repo should begin with a comment block like this:
+```
+/------------------------------------------------------------
+    This Lava is found in
+    RegistrationTemplateId=93, [Terms/Text] > Registration Confirmation Text
+------------------------------------------------------------/
+```
 
-# Some Templates
-1. [Email Template for Background Check Consent](./_code/EmailTemplates/Background%20Check%20Consent)
-   - This is only necessary because I don't have the new PMM Rock Plugin yet
-1. [Email Template for notifying LG Leaders that they have a new Pending GroupMember](./_code/EmailTemplates/Pending%20Group%20Members%20Notification.lava)
-   - i created this in order to keep version control over how our Email Template is different from Core Rock's template.
+If the Lava file was created by copy+pasting an existing Lava Template (maybe it was written by SparkDev or Triumph in core Rock), then please make note of it like this:
+```
+/------------------------------------------------------------
+    This Lava is found in
+    RegistrationTemplateId=93, [Terms/Text] > Registration Confirmation Text
+
+    I am copy+pasting this here from the VRL Rock Site.
+    I copy+pasted this on 09-APR-2024
+------------------------------------------------------------/
+```
+
+## Header for Lava in our Rock instance
+Similarly, the corresponding location in Rock should have its Lava Template begin with a comment block like this:
+```
+/------------------------------------------------------------
+    GitHub
+    rockrms-vrl-church/blob/main/_code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/RegistrationConfirmationText.lava
+------------------------------------------------------------/
+```
 
 <hr>
