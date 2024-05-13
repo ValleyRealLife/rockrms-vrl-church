@@ -1,3 +1,8 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=136, BlockId=4596 [WorkflowType Info] > HTML
+------------------------------------------------------------/
+
 {% assign WorkflowTypeId = 'Global' | PageParameter:'WorkflowTypeId' | AsInteger %}
 
 {% if WorkflowTypeId != null and WorkflowTypeId != '' %}
