@@ -1,6 +1,7 @@
 /------------------------------------------------------------
     This Lava is found in
-    SystemCommunications, Id=56 [Background Check Consent]
+    Communications > System Communications > "Background Check Consent"
+    This is [SystemCommunication] sc WHERE sc.Id = 56
 ------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}
