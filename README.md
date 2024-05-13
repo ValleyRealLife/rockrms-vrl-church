@@ -7,12 +7,12 @@ I like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/code
 1. The [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme) is recommended.
 2. The [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) Extension is recommended.
 3. Inside the `_code` Folder,
-   1. the Folders where the name begins with an underline is akin to footnotes or margin-notes.
+   1. the Folders where the name begins with an underline (e.g. the `_attachments` Folder) is akin to footnotes or margin-notes.
    2. the other Folders try to denote an Entity or Context where the code snippet is used.
       - For the sake of making it easier to navigate in GitHub, each Folder should have its own README.
       - Each Lava file should start with a comment block that denotes where this snippet is being used. See 'Lava Header Examples' below.
 
-# Lava Header Example
+# Lava Header Examples
 ## Header for files in this GitHub Repo
 The Lava file in this GitHub repo should begin with a comment block like this:
 ```
