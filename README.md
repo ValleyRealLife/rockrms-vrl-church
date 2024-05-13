@@ -38,7 +38,7 @@ Similarly, the corresponding location in Rock should have its Lava Template begi
 ```
 /------------------------------------------------------------
     GitHub
-    rockrms-vrl-church/blob/main/_code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/RegistrationConfirmationText.lava
+    rockrms-vrl-church/_code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/RegistrationConfirmationText.lava
 ------------------------------------------------------------/
 ```
 
