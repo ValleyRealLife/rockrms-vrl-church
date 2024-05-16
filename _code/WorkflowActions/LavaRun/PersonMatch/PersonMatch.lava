@@ -134,7 +134,8 @@
 
 //- If query_1 had one match
 {% if var_option == '1' %}
-    {% assign var_PersonAliasGuid = query_1_result[0].Guid %}
+    //- {% assign var_PersonAliasGuid = query_1_result[0].Guid %}
+    //- If "John Doe" has exactly one match, then we should go ahead and create a new Person record. Because matching based on there only being one match with this FirstName LastName is too risky.
 {% endif %}
 
 //- If query_2 had one match
