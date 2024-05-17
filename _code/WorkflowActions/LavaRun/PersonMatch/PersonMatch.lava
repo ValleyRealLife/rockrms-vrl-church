@@ -4,6 +4,7 @@
     WorkflowTypeId=195, [Backend - No Existing Families] > Try to retrieve (PersonAlias_GUID)
     WorkflowTypeId=203, [Backend - Person not logged in] > Try to retrieve (PersonAlias_GUID)
     WorkflowTypeId=210, [Backend - Find Person 1] > Try to retrieve (PersonAlias_GUID)
+    WorkflowTypeId=210, [Backend - Find Person 2] > Try to retrieve (PersonAlias_GUID)
 ----------------------------------------------------------------------------------------------------/
 
 //- Define some Variables
