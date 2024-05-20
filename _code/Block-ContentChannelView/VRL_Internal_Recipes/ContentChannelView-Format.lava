@@ -6,6 +6,10 @@
 {% for item in Items %}
     {% assign author = item.CreatedByPersonId | PersonById %}
 
+    {% following where:'EntityTypeId == 208 && EntityId == "{{ item.Id }}"' securityenabled:'false' count:'true' %}
+    {% assign votes = count %}
+    {% endfollowing %}
+
     {% attributevalue where:'AttributeId == 15028 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
     {% comment %}//- i use the values from this Entity Command later, by using the 'cci_av_Department' iterator{% endcomment %}
     {% endattributevalue %}
@@ -32,9 +36,9 @@
                             <span class="label label-info" style="margin-right: 5px;">{{ row.PersistedHtmlValue }}</span>
                             {% endfor %}<br>
                             <span class="label label-success" style="margin-right: 5px;">{{ cci_av_Category[0].PersistedHtmlValue }}</span>
-                            <span class="badge badge-default text-color">
+                            <span class="badge badge-default">
                                 <i class="far fa-thumbs-up"></i>
-                                4
+                                <span>{{ votes }}</span>
                             </span>
                         </div>
                     </div>
