@@ -1,0 +1,58 @@
+/----------------------------------------------------------------------------------------------------
+    This Lava is found in
+    PageId=1927, [Content Channel View] Block > Format
+----------------------------------------------------------------------------------------------------/
+
+{% for item in Items %}
+    {% assign author = item.CreatedByPersonId | PersonById %}
+
+    {% attributevalue where:'AttributeId == 15028 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
+    {% comment %}//- i use the values from this Entity Command later, by using the 'cci_av_Department' iterator{% endcomment %}
+    {% endattributevalue %}
+
+    {% attributevalue where:'AttributeId == 15029 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_Category' %}
+    {% comment %}//- i use the values from this Entity Command later, by using the 'cci_av_Category' iterator{% endcomment %}
+    {% endattributevalue %}
+
+    {% attributevalue where:'AttributeId == 15030 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_SecurityRoles' %}
+    {% comment %}//- i am currently not using the values from this Entity Command, i just wrote this in here for future reference in case i change my mind{% endcomment %}
+    {% endattributevalue %}
+
+    <article class="col-12 mb-4 " id="recipe-{{ item.Id }}">
+        <div class="card h-100 border-panel " style="border-left: 4px solid #e4e4e4 !important;">
+            <div class="card-body p-4 d-flex align-items-sm-center">
+                <div class="flex-shrink-0 mr-3">
+                    <img src="{{ author.PhotoUrl }}" class="avatar avatar-lg rounded-circle" style="width:48px;height:48px;" alt="Photo of {{ author.FullName }}">
+                </div>
+                <div class="flex-fill">
+                    <div class="d-flex flex-column align-items-md-start justify-content-md-between flex-md-row">
+                        <h3 class="font-weight-bold my-0 flex-fill"><a href="/page/1929?ContentChannelItemId={{ item.Id }}" class="stretched-link text-color">{{ item.Title }}</a></h3>
+                        <div class="d-flex flex-wrap justify-content-md-end pull-right label-gap mt-2 mt-md-0">
+                            {% for row in cci_av_Department %}
+                            <span class="label label-info" style="margin-right: 5px;">{{ row.PersistedHtmlValue }}</span>
+                            {% endfor %}<br>
+                            <span class="label label-success" style="margin-right: 5px;">{{ cci_av_Category[0].PersistedHtmlValue }}</span>
+                            <span class="badge badge-default text-color">
+                                <i class="far fa-thumbs-up"></i>
+                                4
+                            </span>
+                        </div>
+                    </div>
+                    <div class="metadata leading-normal mt-1 mt-md-0 text-color">
+                        <p>
+                            {% assign var_DaysSince = item.ModifiedDateTime | DaysSince %}
+                            <strong class=""d-inline-block mr-1">Author: </strong>{{ author.FullName }}<br>
+                            <time datetime="{{ item.CreatedDateTime }}" class="text-muted" data-updated-at="{{ item.ModifiedDateTime }}">
+                                {% if var_DaysSince >= 1 %}
+                                {{ var_DaysSince }} {{ 'day' | PluralizeForQuantity: var_DaysSince }} ago
+                                {% elseif var_DaysSince == 0 %}
+                                Today
+                                {% endif %}
+                            </time>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+{% endfor %}
