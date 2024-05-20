@@ -14,6 +14,10 @@
     {% assign content = contentchannelitem.Content %}
 {% endcontentchannelitem %}
 
+{% following where:'EntityTypeId == 208 && EntityId == "{{ cci_Id }}"' securityenabled:'false' count:'true' %}
+    {% assign votes = count %}
+{% endfollowing %}
+
 {% attributevalue where:'AttributeId == 15028 && EntityId == {{ cci_Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
     //- i use the values from this Entity Command later, by using the 'cci_av_Department' iterator
 {% endattributevalue %}
@@ -79,7 +83,7 @@
             <div class="btn btn-lg btn-square btn-default" style="width: 100%; height: 100%;">
                 <a href="/WorkflowEntry?WorkflowTypeId=123">
                     <i class="fa fa-lg fa-thumbs-up" style="width: 100%; height: 50%;"></i>
-                    <div style="width: 100%; height: 50%;">4</div>
+                    <div style="width: 100%; height: 50%;">{{ votes }}</div>
                 </a>
             </div>
         </div>
