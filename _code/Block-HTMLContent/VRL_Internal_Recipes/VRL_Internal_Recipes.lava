@@ -1,0 +1,127 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1929, [HTML Content] Block
+------------------------------------------------------------/
+
+{% assign cci_Id = PageParameter.ContentChannelItemId %}
+
+{% contentchannelitem where:'Id == {{ cci_Id }}' securityenabled:'false' %}
+    {% assign author_Id = contentchannelitem.CreatedByPersonId %}
+    {% assign author = contentchannelitem.CreatedByPersonId | PersonById %}
+    {% assign title = contentchannelitem.Title %}
+    {% assign createdDT = contentchannelitem.CreatedDateTime %}
+    {% assign modifiedDT = contentchannelitem.ModifiedDateTime %}
+    {% assign content = contentchannelitem.Content %}
+{% endcontentchannelitem %}
+
+{% attributevalue where:'AttributeId == 15028 && EntityId == {{ cci_Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
+    //- i use the values from this Entity Command later, by using the 'cci_av_Department' iterator
+{% endattributevalue %}
+
+{% attributevalue where:'AttributeId == 15029 && EntityId == {{ cci_Id }}' securityenabled:'false' iterator:'cci_av_Category' %}
+    //- i use the values from this Entity Command later, by using the 'cci_av_Category' iterator
+{% endattributevalue %}
+
+{% attributevalue where:'AttributeId == 15030 && EntityId == {{ cci_Id }}' securityenabled:'false' iterator:'cci_av_SecurityRoles' %}
+    //- i am currently not using the values from this Entity Command, i just wrote this in here for future reference in case i change my mind
+{% endattributevalue %}
+
+<style>
+    .recipe-container {
+        display: flex;
+    }
+
+    .recipe-left-column {
+        width: 100px;
+    }
+
+    .recipe-right-column {
+        flex-grow: 1;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #ffffff;
+    }
+
+    .recipe-left-column-box {
+        width: 80px;
+        height: 80px;
+        margin: 10px auto;
+    }
+
+    .recipe-right-column-box {
+        position:relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .recipe-author-avatar {
+        width: 100%;
+        height: 100%;
+    }
+
+    .recipe-content-edit {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        height: 2em;
+        width: 5em;
+        border-radius: 3px;
+    }
+</style>
+
+<div class="recipe-container" style="margin-bottom: 20px;">
+    <div class="recipe-left-column">
+        <div class="recipe-left-column-box">
+            <img src="{{ author.PhotoUrl }}" class="recipe-author-avatar avatar" alt="Photo of {{ author.FullName }}">
+        </div>
+        <div class="recipe-left-column-box thumbsup-group">
+            <div class="btn btn-lg btn-square btn-default" style="width: 100%; height: 100%;">
+                <a href="/WorkflowEntry?WorkflowTypeId=123">
+                    <i class="fa fa-lg fa-thumbs-up" style="width: 100%; height: 50%;"></i>
+                    <div style="width: 100%; height: 50%;">4</div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="recipe-right-column">
+        <div class="recipe-right-column-box">
+            <div class="title-group">
+                {% if author_Id == CurrentPerson.Id %}
+                <a href="/page/1928?ContentItemId={{ cci_Id }}&ContentChannelId=344" class="recipe-content-edit btn btn-lg btn-square btn-primary">Edit</a>
+                {% endif %}
+                <h1 class="h1 margin-t-none">{{ title }}</h1>
+                <div class="metadata">
+                    <div>
+                        <span>
+                            Shared by <a href="https://rock.vrl.church/person/{{ author_Id }}" target="_blank">{{ author.FullName }}</a> |
+                        </span>
+                        <span>
+                            {% assign var_DaysSince = modifiedDT | DaysSince %}
+                            <time datetime="{{ createdDT }}" data-updated-at="{{ modifiedDT }}">
+                                {% if var_DaysSince >= 1 %}
+                                {{ var_DaysSince }} {{ 'day' | PluralizeForQuantity: var_DaysSince }} ago
+                                {% elseif var_DaysSince == 0 %}
+                                Today
+                                {% endif %}
+                            </time>
+                        </span>
+                    </div>
+                </div>
+                <div class="margin-b-md">
+                    <span class="label label-success" style="margin-right: 5px;">{{ cci_av_Category[0].PersistedHtmlValue }}</span>
+                    {% for row in cci_av_Department %}
+                    <span class="label label-info" style="margin-right: 5px;">{{ row.PersistedHtmlValue }}</span>
+                    {% endfor %}
+                    {% for row in cci_av_SecurityRoles %}
+                    <br><span class="label label-warning" style="margin-right: 5px; margin-top: 5px;">{{ row.PersistedHtmlValue }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr>
+            <div class="post-content">
+                {{ content }}
+            </div>
+        </div>
+    </div>
+</div>
