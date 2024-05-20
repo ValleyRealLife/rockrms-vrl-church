@@ -6,6 +6,7 @@
 {% assign cci_Id = PageParameter.ContentChannelItemId %}
 
 {% contentchannelitem where:'Id == {{ cci_Id }}' securityenabled:'false' %}
+    {% assign cci_guid = contentchannelitem.Guid %}
     {% assign author_Id = contentchannelitem.CreatedByPersonId %}
     {% assign author = contentchannelitem.CreatedByPersonId | PersonById %}
     {% assign title = contentchannelitem.Title %}
@@ -81,7 +82,7 @@
         </div>
         <div class="recipe-left-column-box thumbsup-group">
             <div class="btn btn-lg btn-square btn-default" style="width: 100%; height: 100%;">
-                <a href="/WorkflowEntry?WorkflowTypeId=123">
+                <a href="/workflowentry/211?ContentChannelItem={{ cci_guid }}&ReturnUrl={{ 'Global' | Page:'Url' }}">
                     <i class="fa fa-lg fa-thumbs-up" style="width: 100%; height: 50%;"></i>
                     <div style="width: 100%; height: 50%;">{{ votes }}</div>
                 </a>
