@@ -7,7 +7,7 @@
     {% assign author = item.CreatedByPersonId | PersonById %}
 
     {% following where:'EntityTypeId == 208 && EntityId == "{{ item.Id }}"' securityenabled:'false' count:'true' %}
-    {% assign votes = count %}
+        {% assign votes = count %}
     {% endfollowing %}
 
     {% attributevalue where:'AttributeId == 15028 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
