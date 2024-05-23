@@ -44,13 +44,14 @@
                     </div>
                     <div class="metadata leading-normal mt-1 mt-md-0 text-color">
                         <p>
-                            {% assign var_DaysSince = item.ModifiedDateTime | DaysSince %}
                             <strong class=""d-inline-block mr-1">Author: </strong>{{ author.FullName }}<br>
                             <time datetime="{{ item.CreatedDateTime }}" class="text-muted" data-updated-at="{{ item.ModifiedDateTime }}">
-                                {% if var_DaysSince >= 1 %}
-                                {{ var_DaysSince }} {{ 'day' | PluralizeForQuantity: var_DaysSince }} ago
-                                {% elseif var_DaysSince == 0 %}
-                                Today
+                                {% assign var_CreatedDate = item.CreatedDateTime | Date:'M/d/yyyy' %}
+                                {% assign var_ModifiedDate = item.ModifiedDateTime | Date:'M/d/yyyy' %}
+                                {% if var_CreatedDate == var_ModifiedDate %}
+                                    Created {{ item.CreatedDateTime | HumanizeDateTime }}
+                                {% else %}
+                                    Created {{ item.CreatedDateTime | HumanizeDateTime }}. Updated {{ item.ModifiedDateTime | HumanizeDateTime }}.
                                 {% endif %}
                             </time>
                         </p>
