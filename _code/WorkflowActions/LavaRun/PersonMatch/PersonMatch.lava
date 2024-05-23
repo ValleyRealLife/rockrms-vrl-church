@@ -42,7 +42,7 @@
 
 //- count_2 is FirstName, LastName, and MobilePhone
 //- The NumberTypeValueIds are 12, 13, 136, and 1015. Of these, 12 is "Mobile Phone", therefore, ORDER BY [NumberTypeValueId] ASC ensures that the TOP result will be MobilePhone, if any
-{% if var_count_1 > 1 and var_Person_MobilePhone != empty %}
+{% if var_count_1 >= 1 and var_Person_MobilePhone != empty %}
     {% sql return:'query_2_result' %}
         SELECT TOP 5
             pa.[Guid]
