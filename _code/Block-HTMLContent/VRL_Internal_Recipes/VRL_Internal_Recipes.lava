@@ -13,6 +13,7 @@
     {% assign createdDT = contentchannelitem.CreatedDateTime %}
     {% assign modifiedDT = contentchannelitem.ModifiedDateTime %}
     {% assign content = contentchannelitem.Content %}
+    {% assign var_RunLava = contentchannelitem | Attribute:'var_RunLava' | AsBoolean %}
 {% endcontentchannelitem %}
 
 {% following where:'EntityTypeId == 208 && EntityId == "{{ cci_Id }}"' securityenabled:'false' count:'true' %}
@@ -125,7 +126,11 @@
             </div>
             <hr>
             <div class="post-content">
+                {% if var_RunLava == true %}
+                {{ content | RunLava }}
+                {% else %}
                 {{ content }}
+                {% endif %}
             </div>
         </div>
     </div>
