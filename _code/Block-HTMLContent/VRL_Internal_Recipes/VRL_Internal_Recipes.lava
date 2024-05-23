@@ -103,12 +103,13 @@
                             Shared by <a href="https://rock.vrl.church/person/{{ author_Id }}" target="_blank">{{ author.FullName }}</a> |
                         </span>
                         <span>
-                            {% assign var_DaysSince = modifiedDT | DaysSince %}
                             <time datetime="{{ createdDT }}" data-updated-at="{{ modifiedDT }}">
-                                {% if var_DaysSince >= 1 %}
-                                {{ var_DaysSince }} {{ 'day' | PluralizeForQuantity: var_DaysSince }} ago
-                                {% elseif var_DaysSince == 0 %}
-                                Today
+                                {% assign var_CreatedDate = createdDT | Date:'M/d/yyyy' %}
+                                {% assign var_ModifiedDate = modifiedDT | Date:'M/d/yyyy' %}
+                                {% if var_CreatedDate == var_ModifiedDate %}
+                                    Created {{ createdDT | HumanizeDateTime }}
+                                {% else %}
+                                    Created {{ createdDT | HumanizeDateTime }}. Updated {{ modifiedDT | HumanizeDateTime }}.
                                 {% endif %}
                             </time>
                         </span>
