@@ -30,7 +30,7 @@
                 </div>
                 <div class="flex-fill">
                     <div class="d-flex flex-column align-items-md-start justify-content-md-between flex-md-row">
-                        <h3 class="font-weight-bold my-0 flex-fill"><a href="/page/1929?ContentChannelItemId={{ item.Id }}" class="stretched-link text-color">{{ item.Title }}</a></h3>
+                        <h3 class="font-weight-bold my-0 flex-fill"><a href="/recipes/read/{{ item.PrimarySlug }}" class="stretched-link text-color">{{ item.Title }}</a></h3>
                         <div class="d-flex flex-wrap justify-content-md-end pull-right label-gap mt-2 mt-md-0">
                             {% for row in cci_av_Department %}
                             <span class="label label-info" style="margin-right: 5px;">{{ row.PersistedHtmlValue }}</span>
