@@ -107,7 +107,7 @@
         <div class="recipe-right-column-box">
             <div class="title-group">
                 {% if author_Id == CurrentPerson.Id %}
-                <a href="/page/1928?ContentItemId={{ cci_Id }}&ContentChannelId=344" class="recipe-content-edit btn btn-lg btn-square btn-primary">Edit</a>
+                <a href="/recipes/edit/344/{{ cci_Id }}" class="recipe-content-edit btn btn-lg btn-square btn-primary">Edit</a>
                 {% endif %}
                 <h1 class="h1 margin-t-none">{{ title }}</h1>
                 <div class="metadata">
