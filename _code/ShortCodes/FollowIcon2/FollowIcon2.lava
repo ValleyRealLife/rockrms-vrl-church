@@ -1,0 +1,69 @@
+{% if CurrentPerson %}
+    {% assign entitytypeguid = entitytypeguid | Trim %}
+    {% assign entityguid = entityguid | Trim %}
+    {% assign entitytypeid = entitytypeid | Trim %}
+    {% assign entityid = entityid | Trim %}
+    {% if entitytypeguid != '' and entityguid != '' %}
+    {% assign entitytype = entitytypeguid %}
+    {% assign entity = entityguid %}
+    {% else %}
+    {% assign entitytype = entitytypeid %}
+    {% assign entity = entityid %}
+    {% endif %}
+    {% assign purposekey = purposekey | Trim %}
+    {% assign suppresswarnings = suppresswarnings | AsBoolean %}
+    {% assign isfollowed = isfollowed | AsBoolean %}
+
+    {% if entitytype != '' and entity != '' %}
+        <div class="followicon js-followicon {% if isfollowed %}isfollowed{% endif %}" data-entitytype="{{ entitytype }}" data-entity="{{ entity }}" {% if purposekey != '' %}data-purpose-key="{{ purposekey }}"{% endif %} data-followed="{{ isfollowed }}">
+            {{ blockContent }}
+        </div>
+
+        {% javascript id:'followicon' disableanonymousfunction:'true'%}
+            $( document ).ready(function() {
+                $('.js-followicon').click(function(e) {
+                    e.preventDefault();
+                    var icon = $(this);
+                    var entityType = icon.data('entitytype');
+                    var entity = icon.data('entity');
+                    var purpose = icon.data('purpose-key');
+                    if (purpose != undefined && purpose != '') {
+                        purpose = '?purposeKey=' + purpose;
+                    } else {
+                        purpose = '';
+                    }
+                    icon.toggleClass('isfollowed');
+                    if ( icon.hasClass('isfollowed') ) {
+                        var actionType = 'POST';
+                    } else {
+                        var actionType = 'DELETE';
+                    }
+                    $.ajax({
+                        url: '/api/Followings/' + entityType + '/' + entity + purpose,
+                        type: actionType,
+                        statusCode: {
+                            201: function() {
+                                icon.attr('data-followed', 'true');
+                                location.reload();
+                            },
+                            204: function() {
+                                icon.attr('data-followed', 'false');
+                                location.reload();
+                            },
+                            500: function() {
+                                {% unless suppresswarnings %}
+                                alert('Error: Check your Rock security settings and try again.');
+                                {% endunless %}
+                            }
+                        },
+                        error: function() {
+                            icon.toggleClass('isfollowing');
+                        }
+                    });
+                });
+            });
+        {% endjavascript %}
+    {% else %}
+        <!-- Follow Icon Shortcode is missing entitytype and/or entity. Note: Guids or Ids must be provided  -->
+    {% endif %}
+{% endif %}
