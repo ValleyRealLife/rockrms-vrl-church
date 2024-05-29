@@ -1,20 +1,19 @@
 /------------------------------------------------------------
     This Lava is found in
-    PageId=1929, [HTML Content] Block
+    PageId=1929, [ContentChannelItemView] Block
 ------------------------------------------------------------/
 
-{% assign cci_Id = PageParameter.ContentChannelItemId %}
+{% assign cci_Id = Item.Id %}
 
-{% contentchannelitem where:'Id == {{ cci_Id }}' securityenabled:'false' %}
-    {% assign cci_guid = contentchannelitem.Guid %}
-    {% assign author_Id = contentchannelitem.CreatedByPersonId %}
-    {% assign author = contentchannelitem.CreatedByPersonId | PersonById %}
-    {% assign title = contentchannelitem.Title %}
-    {% assign createdDT = contentchannelitem.CreatedDateTime %}
-    {% assign modifiedDT = contentchannelitem.ModifiedDateTime %}
-    {% assign content = contentchannelitem.Content %}
-    {% assign var_RunLava = contentchannelitem | Attribute:'var_RunLava' | AsBoolean %}
-{% endcontentchannelitem %}
+{% assign contentchannelitem = Item %}
+{% assign cci_guid = contentchannelitem.Guid %}
+{% assign author_Id = contentchannelitem.CreatedByPersonId %}
+{% assign author = contentchannelitem.CreatedByPersonId | PersonById %}
+{% assign title = contentchannelitem.Title %}
+{% assign createdDT = contentchannelitem.CreatedDateTime %}
+{% assign modifiedDT = contentchannelitem.ModifiedDateTime %}
+{% assign content = contentchannelitem.Content %}
+{% assign var_RunLava = contentchannelitem | Attribute:'var_RunLava' | AsBoolean %}
 
 //- How many Follows in total?
 {% following where:'EntityTypeId == 208 && EntityId == "{{ cci_Id }}"' securityenabled:'false' count:'true' %}
