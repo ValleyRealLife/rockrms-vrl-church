@@ -16,8 +16,14 @@
     {% assign var_RunLava = contentchannelitem | Attribute:'var_RunLava' | AsBoolean %}
 {% endcontentchannelitem %}
 
+//- How many Follows in total?
 {% following where:'EntityTypeId == 208 && EntityId == "{{ cci_Id }}"' securityenabled:'false' count:'true' %}
-    {% assign votes = count %}
+    {% assign var_votes = count %}
+{% endfollowing %}
+
+//- Does CurrentPerson Follow this ContentChannelItem?
+{% following where:'EntityTypeId == 208 && EntityId == "{{ cci_Id }}" && PersonAliasId == "{{ CurrentPerson.PrimaryAlias.Id }}"' securityenabled:'false' count:'true' %}
+    {% assign var_CurrentPerson_isFollowing = count | AsBoolean %}
 {% endfollowing %}
 
 {% attributevalue where:'AttributeId == 15028 && EntityId == {{ cci_Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
@@ -49,8 +55,8 @@
     }
 
     .recipe-left-column-box {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
         margin: 10px auto;
     }
 
@@ -74,6 +80,14 @@
         width: 5em;
         border-radius: 3px;
     }
+
+    .followicon[data-followed="true"] .fa-thumbs-up {
+        color: #98BE4B;
+    }
+
+    .followicon[data-followed="false"] .fa-thumbs-up {
+        color: #8E8E8E;
+    }
 </style>
 
 <div class="recipe-container" style="margin-bottom: 20px;">
@@ -82,12 +96,12 @@
             <img src="{{ author.PhotoUrl }}" class="recipe-author-avatar avatar" alt="Photo of {{ author.FullName }}">
         </div>
         <div class="recipe-left-column-box thumbsup-group">
-            <div class="btn btn-lg btn-square btn-default" style="width: 100%; height: 100%;">
-                <a href="/workflowentry/211?ContentChannelItem={{ cci_guid }}&ReturnUrl={{ 'Global' | Page:'Url' }}">
-                    <i class="fa fa-lg fa-thumbs-up" style="width: 100%; height: 50%;"></i>
-                    <div style="width: 100%; height: 50%;">{{ votes }}</div>
-                </a>
-            </div>
+            {[ followicon2 entitytypeguid:'bf12ae64-21fb-433b-a8a4-e40e8c426dda' entityguid:'{{ cci_guid }}' purposekey:'like' isfollowed:'{{ var_CurrentPerson_isFollowing }}' ]}
+                <div class="btn btn-lg btn-square btn-default" style="width: 100%; height: 100%;">
+                    <i class="fa fa-lg fa-thumbs-up followicon" style="width: 100%; height: 50%;"></i>
+                    <div style="width: 100%; height: 50%;">{{ var_votes }}</div>
+                </div>
+            {[ endfollowicon2 ]}
         </div>
     </div>
     <div class="recipe-right-column">
