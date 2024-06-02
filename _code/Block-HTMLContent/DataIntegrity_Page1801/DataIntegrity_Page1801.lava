@@ -1,0 +1,97 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1801, BlockId=4695 [Data Integrity ChildPages] > HTML
+------------------------------------------------------------/
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .tim-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            padding: 20px;
+            background: #FFFFFF;
+            border: 1px solid #EBEBEB;
+            border-radius: 5px;
+        }
+        .tim-container .tim-block {
+            flex: 1; /* Distribute equal space to each div */
+            padding: 10px;
+            margin: 10px;
+            max-width: 300px;
+            min-width: 300px;
+            max-height: 150px;
+            min-height: 150px;
+            box-sizing: border-box;
+            background: #F3F3F3;
+            border: 1px solid #DBDBDD;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .tim-block:hover {
+            background: gray;
+            color: white;
+        }
+        .tim-block .tim-icon {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            margin: auto;
+            box-sizing: border-box;
+            font-size: 20px;
+            text-align: center;
+            }
+        .tim-block .tim-icon i {
+            max-width: 35px;
+            min-width: 35px;
+            max-height: 35px;
+            min-height: 35px;
+            font-size: 35px;
+        }
+        .tim-block .tim-count {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            margin: 1px;
+            font-size: 35px;
+            box-sizing: border-box;
+        }
+        .tim-count .badge-pill {
+            font-size: 35px;
+        }
+    </style>
+</head>
+<body>
+    {% person where:'RecordTypeValueId == 1 && RecordStatusValueId == 5' securityenabled:'false' count:'true' %}
+        {% assign count_PendingPersons = count %}
+    {% endperson %}
+
+    <div class="tim-container">
+        <a class="tim-block" href="/page/1803" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-user-clock"></i></div>
+            <div class="tim-icon">Pending Persons</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_PendingPersons }}</span></div>
+        </a>
+        <a class="tim-block" href="/page/1802" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-user-friends"></i></div>
+            <div class="tim-icon">Rock's Duplicate Finder</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info"></span></div>
+        </a>
+        <a class="tim-block" href="/page/1805" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-circle"></i></div>
+            <div class="tim-icon">Deceased Persons with Transactions</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info"></span></div>
+        </a>
+        <a class="tim-block" href="/page/1851" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-circle"></i></div>
+            <div class="tim-icon">Deceased Persons with Scheduled Transactions</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info"></span></div>
+        </a>
+    </div>
+</body>
