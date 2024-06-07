@@ -1,0 +1,83 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=100, BlockId=4704 [Info for ConnOppId=63] > HTML
+------------------------------------------------------------/
+
+{% assign var_ConnectionOpportunityId = PageParameter.ConnectionOpportunityId %}
+
+{% if var_ConnectionOpportunityId == 63 %}
+
+<!-- Internal CSS -->
+<style>
+    .timcustom-modal-dialog {
+        display: inline-block;
+        float: left;
+        margin-right: 20px;
+        width: 500px;
+    }
+
+    .info {
+        align-items: center;
+        display: flex;
+        margin-top: 15px;
+        border-radius: 15px;
+        min-height: 30px;
+        font-size: 15px;
+        transition: all .5s ease;
+        width: auto;
+    }
+
+    .extra-info {
+        font-size: 15px;
+        margin-left: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding-right: 5px;
+        transition: all .5s ease;
+        visibility: hidden;
+        white-space: nowrap;
+        width: 0;
+    }
+
+    .info:hover {
+        background-color: white;
+        text-align: left;
+    }
+
+    .info:hover .extra-info {
+        margin-left: 10px;
+        opacity: 1;
+        visibility: visible;
+        width: auto;
+    }
+</style>
+
+<!-- Button that triggers the Modal -->
+<button type="button" class="info" data-toggle="modal" data-target="#tim-helptext-autoassign-ConnOpp63">
+    <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+    <span class="extra-info">
+        About Round-Robin Connector
+    </span>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="tim-helptext-autoassign-ConnOpp63" tabindex="-1" role="dialog"
+    aria-labelledby="tim-helptext-autoassign-ConnOpp63-label">
+    <div class="modal-dialog timcustom-modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="tim-helptext-autoassign-ConnOpp63-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body timcustom-modal-body">
+                <p>
+                    If a Connection Request in this Connection Opportunity does not have a Connector, WorkflowTypeId=217
+                    will round-robin a Connector by choosing a GroupMember from this Group.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
