@@ -1,0 +1,42 @@
+/----------------------------------------------------------------------------------------------------
+    This Lava is found in
+    WorkflowTypeId=217, [Assign ConnReq to a Connector] > Set (Connector)
+----------------------------------------------------------------------------------------------------/
+
+{% assign ConnReq = Workflow | Attribute:'ConnectionRequest','Object' %}
+
+{% if ConnReq.CampusId != null and ConnReq.CampusId != empty %}
+    {% capture filter_CampusId %}
+    && CampusId == {{ ConnReq.CampusId }}
+    {% endcapture %}
+{% else %}
+    {% capture filter_CampusId %}
+    && CampusId == 1
+    {% endcapture %}
+{% endif %}
+
+{% connectionopportunityconnectorgroup expression:'ConnectionOpportunityId == {{ ConnReq.ConnectionOpportunityId }}{{ filter_CampusId }}' securityenabled:'false' limit:'1' %}
+    {% assign var_ConnectorGroup = connectionopportunityconnectorgroup.ConnectorGroup %}
+{% endconnectionopportunityconnectorgroup %}
+
+{% connectionrequest where:'ConnectionState == 0 && ConnectionOpportunityId == {{ ConnReq.ConnectionOpportunityId }}' securityenabled:'false' iterator:'ActiveConnReqs' %}
+    {% capture connectors %}
+    [
+        {%- for groupMember in var_ConnectorGroup.Members -%}
+        {
+            "Connector": {{ groupMember.Person.PrimaryAlias.Guid | ToJSON }},
+            "ConnReqs": {{ ActiveConnReqs | Where:'ConnectorPersonAliasId', groupMember.Person.PrimaryAliasId | Size }}
+        }{%- unless forloop.last %},{% endunless -%}
+        {%- endfor -%}
+    ]
+    {% endcapture %}
+
+    {% assign connectors = connectors | FromJSON | Where:'Connector','','notequal' %}
+    {% assign connectorCount = connectors | Size %}
+
+    {% if connectorCount > 0 %}
+        {{- connectors| OrderBy:'ConnReqs' | First | Property:'Connector' -}}
+    {% else %}
+        {{ var_ConnectorGroup.Members | Select:'PersonId' | First | PersonById | Property:'PrimaryAlias.Guid' }}
+    {% endif %}
+{% endconnectionrequest %}
