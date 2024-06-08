@@ -72,6 +72,26 @@
         {% assign count_PendingPersons = count %}
     {% endperson %}
 
+    {% sql return:'sql_DuplicatePersons' %}
+    DECLARE @LowScore INT = 58
+    DECLARE @HighScore INT = 80
+    SELECT
+        COUNT(DISTINCT(pa.[Id])) AS 'Count'
+    FROM
+        [PersonDuplicate] pd
+        INNER JOIN [PersonAlias] pa ON pa.[Id] = pd.[PersonAliasId]
+        INNER JOIN [Person] p ON p.[Id] = pa.[PersonId]
+    WHERE
+        pd.[ConfidenceScore] > @LowScore
+        AND
+        pd.[ConfidenceScore] < @HighScore
+        AND
+        p.[RecordStatusValueId] <> 4 -- Not Inactive
+        AND
+        p.[RecordTypeValueId] <> 2 -- Business
+    ;
+    {% endsql %}
+
     <div class="tim-container">
         <a class="tim-block" href="/page/1803" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-user-clock"></i></div>
@@ -81,7 +101,7 @@
         <a class="tim-block" href="/page/1802" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-user-friends"></i></div>
             <div class="tim-icon">Rock's Duplicate Finder</div>
-            <div class="tim-count"><span class="badge badge-pill badge-info"></span></div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ sql_DuplicatePersons[0].Count }}</span></div>
         </a>
         <a class="tim-block" href="/page/1805" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-circle"></i></div>
