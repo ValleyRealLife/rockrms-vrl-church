@@ -82,9 +82,13 @@
         INNER JOIN [PersonAlias] pa ON pa.[Id] = pd.[PersonAliasId]
         INNER JOIN [Person] p ON p.[Id] = pa.[PersonId]
     WHERE
-        pd.[ConfidenceScore] > @LowScore
+        pd.[ConfidenceScore] >= @LowScore
         AND
-        pd.[ConfidenceScore] < @HighScore
+        pd.[ConfidenceScore] <= @HighScore
+        AND
+        pd.[IsConfirmedAsNotDuplicate] <> 1
+        AND
+        pd.[IgnoreUntilScoreChanges] <> 1
         AND
         p.[RecordStatusValueId] <> 4 -- Not Inactive
         AND
