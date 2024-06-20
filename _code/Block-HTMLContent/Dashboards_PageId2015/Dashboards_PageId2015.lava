@@ -1,0 +1,240 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=2015, [The HTML for the Data Visualization] > HTML
+------------------------------------------------------------/
+
+<style>
+    .tim-container {
+        display: grid;
+        gap: 10px;
+        height: 100vh;
+        background-color: #f0f0f0;
+        padding: 20px;
+    }
+    .tim-child {
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .tim-main-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+    .tim-left-column {
+        grid-row: 1 / 4;
+    }
+    .tim-right-column-1 {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .tim-right-column-2 {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    .tim-right-column-3 {
+        grid-column: 2;
+        grid-row: 3;
+    }
+    .tim-four-columns {
+        grid-template-columns: repeat(4, 1fr);
+        margin-top: 20px;
+    }
+</style>
+
+{% metricvalue where:'MetricId == 30' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
+    {% assign person_count_all = metricvalue.YValue %}
+    {% assign var_MetricDate = metricvalue.MetricValueDateTime %}
+{% endmetricvalue %}
+
+{% metricvalue where:'MetricId == 31' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
+    {% assign person_count_inactive = metricvalue.YValue %}
+{% endmetricvalue %}
+
+{% metricvalue where:'MetricId == 33' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
+    {% assign person_count_pending = metricvalue.YValue %}
+{% endmetricvalue %}
+
+{% metricvalue where:'MetricId == 35' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
+    {% assign person_count_active = metricvalue.YValue %}
+{% endmetricvalue %}
+
+{% person dataview:'828' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active = count %}
+{% endperson %}
+
+{% person dataview:'836' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_baptized = count %}
+    {% assign person_active_baptized_livepercent = person_livecount_active_baptized | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{% person dataview:'834' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_familycommitment = count %}
+    {% assign person_active_familycommitment_livepercent = person_livecount_active_familycommitment | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{% person dataview:'839' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_inLifeGroup = count %}
+    {% assign person_active_inLifeGroup_livepercent = person_livecount_active_inLifeGroup | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{% person dataview:'844' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_inVolunteerTeam = count %}
+    {% assign person_active_inVolunteerTeam_livepercent = person_livecount_active_inVolunteerTeam | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{% person dataview:'843' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_FinancialGiving_prevMonth = count %}
+    {% assign person_active_FinancialGiving_prevMonth_livepercent = person_livecount_active_FinancialGiving_prevMonth | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{% person dataview:'845' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_LeadingLifeGroup = count %}
+    {% assign person_active_LeadingLifeGroup_livepercent = person_livecount_active_LeadingLifeGroup | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{% person dataview:'846' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_active_courseRDT = count %}
+    {% assign person_active_courseRDT_livepercent = person_livecount_active_courseRDT | DividedBy:person_livecount_active | Times:100 | Format:'#,##0' %}
+{% endperson %}
+
+{[ panel title:'Person Records' icon:'fa fa-user' ]}
+<span><p style="color:gray">Please note: These numbers are not live. These numbers have been captured on {{ var_MetricDate | Date:'dd-MMM-yyyy' }} and they report what is true as of the end of {{ var_MetricDate | DateAdd:-1,'M' | Date:'MMM-yyyy' }}.</p></span>
+<div class="tim-container tim-main-layout" style="height: auto; background-color: transparent;">
+    <div class="tim-child tim-left-column kpi kpi-card text-yellow-700 border-yellow-500">
+        <div class="kpi-icon">
+            <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+            <div class="kpi-content"><i class="fa fa-fw fa fa-user"></i></div>
+        </div>
+        <div class="kpi-stat ">
+            <span class="kpi-value text-color">{{ person_count_all | Format:'#,##0' }}</span>
+            <span class="kpi-label">All Person Records</span>
+        </div>
+    </div>
+    <div class="tim-child tim-right-column-1 kpi kpi-card text-gray-700 border-gray-500">
+        <div class="kpi-icon">
+            <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+            <div class="kpi-content"><i class="fa fa-fw fa fa-user-slash"></i></div>
+        </div>
+        <div class="kpi-stat ">
+            <span class="kpi-value text-color">{{ person_count_inactive | Format:'#,##0' }}</span>
+            <span class="kpi-label">Inactive Person Records</span>
+        </div>
+    </div>
+    <div class="tim-child tim-right-column-2 kpi kpi-card text-yellow-700 border-yellow-500">
+        <div class="kpi-icon">
+            <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+            <div class="kpi-content"><i class="fa fa-fw fa fa-user-clock"></i></div>
+        </div>
+        <div class="kpi-stat ">
+            <span class="kpi-value text-color">{{ person_count_pending | Format:'#,##0' }}</span>
+            <span class="kpi-label">Pending Person Records</span>
+        </div>
+    </div>
+    <div class="tim-child tim-right-column-3 kpi kpi-card text-green-700 border-green-500">
+        <div class="kpi-icon">
+            <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+            <div class="kpi-content"><i class="fa fa-fw fa fa-user-check"></i></div>
+        </div>
+        <div class="kpi-stat ">
+            <span class="kpi-value text-color">{{ person_count_active | Format:'#,##0' }}</span>
+            <span class="kpi-label">Active Person Records</span>
+        </div>
+    </div>
+</div>
+{[ endpanel ]}
+
+{[ panel title:'ABCD' ]}
+<span><p style="color:gray">Please note: These numbers are live.</p></span>
+<div>
+    <p>
+        As of {{ 'Now' | Date:'dd-MMM-yyyy'}}, we have {{ person_livecount_active | Format:'#,##0' }} active person records.
+        And among all our active person records:
+    </p>
+</div>
+<div class="tim-container tim-four-columns" style="height: auto; background: transparent;">
+    <div class="tim-child">
+        <p>Accept</p>
+        <div class="tim-child kpi kpi-card" style="border-color: #3E8ED8;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_baptized_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#3E8ED8' ]}<span style="font-size:1em;">{{ person_active_baptized_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_baptized | Format:'#,##0' }}</span>
+                <span class="kpi-label">Are baptized</span>
+            </div>
+        </div>
+    </div>
+    <div class="tim-child"">
+        <p>Belong</p>
+        <div class="tim-child kpi kpi-card" style="border-color: #98BE4B;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_familycommitment_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ person_active_familycommitment_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_familycommitment | Format:'#,##0' }}</span>
+                <span class="kpi-label">Signed the Family Commitment</span>
+            </div>
+        </div>
+        <div class="tim-child kpi kpi-card" style="border-color: #0E2C54;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_inLifeGroup_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#0E2C54' ]}<span style="font-size:1em;">{{ person_active_inLifeGroup_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_inLifeGroup | Format:'#,##0' }}</span>
+                <span class="kpi-label">Are active in at least one Life Group</span>
+            </div>
+        </div>
+    </div>
+    <div class="tim-child"">
+        <p>Contribute</p>
+        <div class="tim-child kpi kpi-card" style="border-color: #EBCA5D;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_inVolunteerTeam_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#EBCA5D' ]}<span style="font-size:1em;">{{ person_active_inVolunteerTeam_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_inVolunteerTeam | Format:'#,##0' }}</span>
+                <span class="kpi-label">Are active in at least one Volunteer Team</span>
+            </div>
+        </div>
+        <div class="tim-child kpi kpi-card" style="border-color: green;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_FinancialGiving_prevMonth_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'green' ]}<span style="font-size:1em;">{{ person_active_FinancialGiving_prevMonth_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_FinancialGiving_prevMonth | Format:'#,##0' }}</span>
+                <span class="kpi-label">Gave financially at least once in {{ 'Now' | DateAdd:-1,'M' | Date:'MMM yyyy' }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="tim-child"">
+        <p>Disciple</p>
+        <div class="tim-child kpi kpi-card" style="border-color: #D2448A;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_LeadingLifeGroup_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#D2448A' ]}<span style="font-size:1em;">{{ person_active_LeadingLifeGroup_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_LeadingLifeGroup | Format:'#,##0' }}</span>
+                <span class="kpi-label">Are actively hosting and/or leading a Life Group</span>
+            </div>
+        </div>
+        <div class="tim-child kpi kpi-card" style="border-color: #7F5BD0;">
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ person_active_courseRDT_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#7F5BD0' ]}<span style="font-size:1em;">{{ person_active_courseRDT_livepercent }}%</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ person_livecount_active_courseRDT | Format:'#,##0' }}</span>
+                <span class="kpi-label">Have completed our RDT course</span>
+            </div>
+        </div>
+    </div>
+</div>
+{[ endpanel ]}
