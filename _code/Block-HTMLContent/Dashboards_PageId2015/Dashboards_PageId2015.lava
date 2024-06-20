@@ -4,13 +4,42 @@
 ------------------------------------------------------------/
 
 <style>
+    @media screen and (min-width:930px) {
+        .tim-four-columns {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media screen and (min-width:1410px) {
+        .tim-four-columns {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media screen and (min-width:1700px) {
+
+        .tim-four-columns {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .tim-four-columns .tim-child {
+        margin-bottom: 2.5rem;
+    }
+
+    .tim-main-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
     .tim-container {
-        display: grid;
-        gap: 10px;
-        height: 100vh;
+        /* min-height: 100dvh; */
         background-color: #f0f0f0;
         padding: 20px;
+        display: grid;
+        gap: 10px;
     }
+
     .tim-child {
         padding: 20px;
         background-color: #ffffff;
@@ -18,28 +47,28 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
-    .tim-main-layout {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto auto;
-    }
+
     .tim-left-column {
         grid-row: 1 / 4;
     }
+
     .tim-right-column-1 {
         grid-column: 2;
         grid-row: 1;
     }
+
     .tim-right-column-2 {
         grid-column: 2;
         grid-row: 2;
     }
+
     .tim-right-column-3 {
         grid-column: 2;
         grid-row: 3;
     }
-    .tim-four-columns {
-        grid-template-columns: repeat(4, 1fr);
-        margin-top: 20px;
+
+    .kpi-card .kpi-stat {
+        margin-left: 1.5rem;
     }
 </style>
 
@@ -100,7 +129,9 @@
 {% endperson %}
 
 {[ panel title:'Person Records' icon:'fa fa-user' ]}
-<span><p style="color:gray">Please note: These numbers are not live. These numbers have been captured on {{ var_MetricDate | Date:'dd-MMM-yyyy' }} and they report what is true as of the end of {{ var_MetricDate | DateAdd:-1,'M' | Date:'MMM-yyyy' }}.</p></span>
+<span>
+    <p style="color:gray">Please note: These numbers are not live. These numbers have been captured on {{ var_MetricDate | Date:'dd-MMM-yyyy' }} and they report what is true as of the end of {{ var_MetricDate | DateAdd:-1,'M' | Date:'MMM-yyyy' }}.</p>
+</span>
 <div class="tim-container tim-main-layout" style="height: auto; background-color: transparent;">
     <div class="tim-child tim-left-column kpi kpi-card text-yellow-700 border-yellow-500">
         <div class="kpi-icon">
@@ -146,11 +177,12 @@
 {[ endpanel ]}
 
 {[ panel title:'ABCD' ]}
-<span><p style="color:gray">Please note: These numbers are live.</p></span>
+<span>
+    <p style="color:gray">Please note: These numbers are live.</p>
+</span>
 <div>
     <p>
-        As of {{ 'Now' | Date:'dd-MMM-yyyy'}}, we have {{ person_livecount_active | Format:'#,##0' }} active person records.
-        And among all our active person records:
+        As of {{ 'Now' | Date:'dd-MMM-yyyy'}}, we have {{ person_livecount_active | Format:'#,##0' }} active person records. And among all our active person records:
     </p>
 </div>
 <div class="tim-container tim-four-columns" style="height: auto; background: transparent;">
@@ -169,7 +201,7 @@
     </div>
     <div class="tim-child"">
         <p>Belong</p>
-        <div class="tim-child kpi kpi-card" style="border-color: #98BE4B;">
+        <div class=" tim-child kpi kpi-card" style="border-color: #98BE4B;">
             <div class="kpi-icon">
                 <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
                 <div class="kpi-content">{[ easypie value:'{{ person_active_familycommitment_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ person_active_familycommitment_livepercent }}%</span>{[ endeasypie ]}</div>
@@ -179,20 +211,20 @@
                 <span class="kpi-label">Signed the Family Commitment</span>
             </div>
         </div>
-        <div class="tim-child kpi kpi-card" style="border-color: #0E2C54;">
-            <div class="kpi-icon">
-                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
-                <div class="kpi-content">{[ easypie value:'{{ person_active_inLifeGroup_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#0E2C54' ]}<span style="font-size:1em;">{{ person_active_inLifeGroup_livepercent }}%</span>{[ endeasypie ]}</div>
-            </div>
-            <div class="kpi-stat">
-                <span class="kpi-value text-color">{{ person_livecount_active_inLifeGroup | Format:'#,##0' }}</span>
-                <span class="kpi-label">Are active in at least one Life Group</span>
-            </div>
+    <div class="tim-child kpi kpi-card" style="border-color: #0E2C54;">
+        <div class="kpi-icon">
+            <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+            <div class="kpi-content">{[ easypie value:'{{ person_active_inLifeGroup_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#0E2C54' ]}<span style="font-size:1em;">{{ person_active_inLifeGroup_livepercent }}%</span>{[ endeasypie ]}</div>
         </div>
+        <div class="kpi-stat">
+            <span class="kpi-value text-color">{{ person_livecount_active_inLifeGroup | Format:'#,##0' }}</span>
+            <span class="kpi-label">Are active in at least one Life Group</span>
+        </div>
+    </div>
     </div>
     <div class="tim-child"">
         <p>Contribute</p>
-        <div class="tim-child kpi kpi-card" style="border-color: #EBCA5D;">
+        <div class=" tim-child kpi kpi-card" style="border-color: #EBCA5D;">
             <div class="kpi-icon">
                 <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
                 <div class="kpi-content">{[ easypie value:'{{ person_active_inVolunteerTeam_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#EBCA5D' ]}<span style="font-size:1em;">{{ person_active_inVolunteerTeam_livepercent }}%</span>{[ endeasypie ]}</div>
@@ -215,7 +247,7 @@
     </div>
     <div class="tim-child"">
         <p>Disciple</p>
-        <div class="tim-child kpi kpi-card" style="border-color: #D2448A;">
+        <div class=" tim-child kpi kpi-card" style="border-color: #D2448A;">
             <div class="kpi-icon">
                 <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
                 <div class="kpi-content">{[ easypie value:'{{ person_active_LeadingLifeGroup_livepercent }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#D2448A' ]}<span style="font-size:1em;">{{ person_active_LeadingLifeGroup_livepercent }}%</span>{[ endeasypie ]}</div>
