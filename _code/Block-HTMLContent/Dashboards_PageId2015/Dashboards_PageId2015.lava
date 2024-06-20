@@ -72,22 +72,17 @@
     }
 </style>
 
-{% metricvalue where:'MetricId == 30' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
-    {% assign person_count_all = metricvalue.YValue %}
-    {% assign var_MetricDate = metricvalue.MetricValueDateTime %}
-{% endmetricvalue %}
+{% person dataview:'827' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_all = count %}
+{% endperson %}
 
-{% metricvalue where:'MetricId == 31' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
-    {% assign person_count_inactive = metricvalue.YValue %}
-{% endmetricvalue %}
+{% person dataview:'829' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_inactive = count %}
+{% endperson %}
 
-{% metricvalue where:'MetricId == 33' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
-    {% assign person_count_pending = metricvalue.YValue %}
-{% endmetricvalue %}
-
-{% metricvalue where:'MetricId == 35' securityenabled:'false' sort:'MetricValueDateTime desc' limit:'1' %}
-    {% assign person_count_active = metricvalue.YValue %}
-{% endmetricvalue %}
+{% person dataview:'830' securityenabled:'false' count:'true' %}
+    {% assign person_livecount_pending = count %}
+{% endperson %}
 
 {% person dataview:'828' securityenabled:'false' count:'true' %}
     {% assign person_livecount_active = count %}
@@ -130,7 +125,7 @@
 
 {[ panel title:'Person Records' icon:'fa fa-user' ]}
 <span>
-    <p style="color:gray">Please note: These numbers are not live. These numbers have been captured on {{ var_MetricDate | Date:'dd-MMM-yyyy' }} and they report what is true as of the end of {{ var_MetricDate | DateAdd:-1,'M' | Date:'MMM-yyyy' }}.</p>
+    <p style="color:gray">Please note: These numbers are live.</p>
 </span>
 <div class="tim-container tim-main-layout" style="height: auto; background-color: transparent;">
     <div class="tim-child tim-left-column kpi kpi-card text-yellow-700 border-yellow-500">
@@ -139,7 +134,7 @@
             <div class="kpi-content"><i class="fa fa-fw fa fa-user"></i></div>
         </div>
         <div class="kpi-stat ">
-            <span class="kpi-value text-color">{{ person_count_all | Format:'#,##0' }}</span>
+            <span class="kpi-value text-color">{{ person_livecount_all | Format:'#,##0' }}</span>
             <span class="kpi-label">All Person Records</span>
         </div>
     </div>
@@ -149,7 +144,7 @@
             <div class="kpi-content"><i class="fa fa-fw fa fa-user-slash"></i></div>
         </div>
         <div class="kpi-stat ">
-            <span class="kpi-value text-color">{{ person_count_inactive | Format:'#,##0' }}</span>
+            <span class="kpi-value text-color">{{ person_livecount_inactive | Format:'#,##0' }}</span>
             <span class="kpi-label">Inactive Person Records</span>
         </div>
     </div>
@@ -159,7 +154,7 @@
             <div class="kpi-content"><i class="fa fa-fw fa fa-user-clock"></i></div>
         </div>
         <div class="kpi-stat ">
-            <span class="kpi-value text-color">{{ person_count_pending | Format:'#,##0' }}</span>
+            <span class="kpi-value text-color">{{ person_livecount_pending | Format:'#,##0' }}</span>
             <span class="kpi-label">Pending Person Records</span>
         </div>
     </div>
@@ -169,7 +164,7 @@
             <div class="kpi-content"><i class="fa fa-fw fa fa-user-check"></i></div>
         </div>
         <div class="kpi-stat ">
-            <span class="kpi-value text-color">{{ person_count_active | Format:'#,##0' }}</span>
+            <span class="kpi-value text-color">{{ person_livecount_active | Format:'#,##0' }}</span>
             <span class="kpi-label">Active Person Records</span>
         </div>
     </div>
@@ -184,6 +179,7 @@
     <p>
         As of {{ 'Now' | Date:'dd-MMM-yyyy'}}, we have {{ person_livecount_active | Format:'#,##0' }} active person records. And among all our active person records:
     </p>
+    <br>
 </div>
 <div class="tim-container tim-four-columns" style="height: auto; background: transparent;">
     <div class="tim-child">
