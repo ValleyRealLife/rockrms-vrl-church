@@ -1,0 +1,80 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=93, [QuickView for AdministrativeAssistants] > HTML
+------------------------------------------------------------/
+
+{% groupmember where:'GroupId == 103819 && PersonId == {{ CurrentPerson.Id }}' securityenabled:'false' count:'true' %}
+    {% assign var = count %}
+{% endgroupmember %}
+
+{% if var > 0 %}
+
+<style>
+    @media screen and (max-width: 646px) {
+        .admin-shortcut-persondetails {
+            display: none;
+        }
+    }
+
+    @media screen and (min-width: 647px) {
+        .admin-shortcut-persondetails {
+            display: block;
+        }
+    }
+
+    .admin-shortcut-persondetails {
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        border-color: #0E2C54;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .tim-twocolumn-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .tim-left-column {
+        grid-row: 1 / 4;
+        padding: 10px;
+    }
+
+    .tim-right-column {
+        grid-column: 2;
+        grid-row: 1 / 4;
+        padding: 10px;
+    }
+</style>
+
+{% assign var_gray = '#616A71' %}
+{% assign var_person = Context.Person %}
+
+<div class="admin-shortcut-persondetails">
+    <p><b>Admin Quick View:</b></p><hr>
+    <div class="tim-twocolumn-layout">
+        <div class="tim-left-column">
+            {% assign var_birthdate = var_person.BirthDate %}
+            {% if var_birthdate != null and var_birthdate != empty %}{{ var_person.BirthDate | DateDiff:'Now', 'Y' }} years old <span style="color:{{ var_gray }};">({{ var_person.BirthDate | AsDateTime | Date:'M/d/yyyy' }})</span><br>{% endif %}
+            {{ Person.MaritalStatusValue.Value }}<br><hr>
+            <span style="color:{{ var_gray }};">M: </span>{% assign var_phone_mobile = var_person | PhoneNumber:'Mobile' %}{% if var_phone_mobile != null and var_phone_mobile != empty %}{{ var_phone_mobile }}{% endif %}<br>
+            <span style="color:{{ var_gray }};">H: </span>{% assign var_phone_home = var_person | PhoneNumber:'Home' %}{% if var_phone_home != null and var_phone_home != empty %}{{ var_phone_home }}{% endif %}<br>
+            <span style="color:{{ var_gray }};">W: </span>{% assign var_phone_work = var_person | PhoneNumber:'Work' %}{% if var_phone_work != null and var_phone_work != empty %}{{ var_phone_work }}{% endif %}<br><hr>
+            {% assign var_emailaddress = var_person.Email %}{% if var_emailaddress != null and var_emailaddress != empty %}{{ var_emailaddress }}{% endif %}<br>
+        </div>
+        <div class="tim-right-column">
+            {% assign var_address_home_street1 = var_person | Address:'Home', '[[Street1]]' %}
+            {% if var_address_home_street1 != null and var_address_home_street1 != empty %}
+                {{ var_person | Address:'Home', '[[Street1]]' }}<br>
+                {% assign var_address_home_street2 = var_person | Address:'Home', '[[Street2]]' %}{% if var_address_home_street2 != null and var_address_home_street2 != empty %}{{ var_address_home_street2 }}<br>{% endif %}
+                {% assign var_address_home_city = var_person | Address:'Home', '[[City]]' %}{% if var_address_home_city != null and var_address_home_city != empty %}{{ var_address_home_city }}, {% endif %}
+                {% assign var_address_home_state = var_person | Address:'Home', '[[State]]' %}{% if var_address_home_state != null and var_address_home_state != empty %}{{ var_address_home_state }} {% endif %}
+                {% assign var_address_home_postalcode = var_person | Address:'Home', '[[PostalCode]]' %}{% if var_address_home_postalcode != null and var_address_home_postalcode != empty %}{{ var_address_home_postalcode }}{% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endif %}
