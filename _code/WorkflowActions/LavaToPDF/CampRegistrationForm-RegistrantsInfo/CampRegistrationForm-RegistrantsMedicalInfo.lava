@@ -3,183 +3,279 @@
     WorkflowTypeId=189, ActivityTypeId=625, > Lava to PDF
 ------------------------------------------------------------/
 
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <style>
-
-            .break-before {
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .header-table {
+                width: 100%;
+                margin-bottom: 20px;
+                border-collapse: collapse;
                 page-break-before: always;
             }
-
-            .break-avoid {
-                page-break-inside:avoid;
+            .header-table td {
+                text-align: left;
+                border: 0px none #f2f2f2;
             }
-
-            .bordered{
-                border:solid 1px black;
-                width:30px;
-                height:30px;
-                text-align:center;
+            .header-table-label-column {
+                width: 20%;
             }
-
-            .table-spaced{
-                border-spacing: 3px;
+            .medication-table-label-cell {
+                text-align: center;
+                width: 50px;
             }
-
-            table {
-                width:100%;
-                margin-bottom:16px;
+            .medication-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+                table-layout: auto;
             }
-
-            td {
-                border-top: 1px solid #eee;
-                padding:8px;
+            .medication-table th, td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
             }
-
-            .rotate {
-                display:inline-block;
-                transform: rotate(90deg);
-                -webkit-transform: rotate(90deg);
+            .bottom-div {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
             }
-
-            body {
-                font-family: Helvetica, Arial, Sans-Serif;
+            .returned-table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
             }
-
-            table {
-                border-collapse: separate;
-                border-spacing: 0;
+            .returned-table th, td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
             }
-
-            .checked {
-                font-family: Helvetica, Arial, Sans-Serif;
-                font-weight:900;
-                font-size:28px
-            }
-
-            h3 {
-                margin-top:25px;
-                border-bottom:solid 1px black;
-            }
-
-			p {
-				line-height: 1.6;
-			}
         </style>
     </head>
-
     <body>
-        {% assign registrationInstanceId = Workflow | Attribute:'var_RegInsId' %}
-
+    
+        {% assign registrationInstanceId = Workflow | Attribute:'var_RegInsId' %} 
         {% registrationinstance where:'Id == "{{registrationInstanceId}}"' limit:1 %}
             {% assign instanceId = registrationinstance.Id %}
             {% assign template = registrationinstance.RegistrationTemplate %}
         {% endregistrationinstance %}
-
+        
         {% registration dataview:'772' where:'RegistrationInstanceId == {{instanceId}}' securityenabled:'false'  %}
-            {% for reg in registrationItems %}
-                {% for registrant in reg.Registrants %}
+        
+            {% for regItem in registrationItems %}
+            
+                {% for registrant in regItem.Registrants %}
                     {% assign person = registrant.PersonAlias.Person %}
                     {% assign groupMember = registrant.GroupMember %}
-                    <div class="break-before">
-                    <div class="text-with-space">
-                    <h2>{{ reg.RegistrationInstance.Name }}</h2>
-                    <h1>Registrant:{{ registrant.PersonAlias.Person.FullName }}</h1>
-                    <p>
-                        Registered By: {{reg.PersonAlias.Person.FullName}} ({{reg.PersonAlias.Person.Email}})<br/>
-                        Submission Date: {{ reg.CreatedDateTime | Date:'M/d/yyyy' }} @ {{ reg.CreatedDateTime | Date:'h:mmm:ss tt' }}<br/>
-                    </p>
-
+                    
                     {% for form in template.Forms %}
-                        {% assign formFields = '' %}
-
-                        {% if forloop.first %}
-                            {% capture formFields %}
-                                <b>Birthdate:</b> {{ person.BirthDate | Date:'M/d/yyyy' }}<br/>
-                                <b>Gender:</b> {{ person.Gender }}<br/>
-                                {% capture raceEthnicity %}{{ person.RaceValue.Value }}/{{ person.EthnicityValue.Value }}{% endcapture %}
-                                {% assign raceEthnicity = raceEthnicity | Split:'/' | Join:'/' %}
-                                {% if raceEthnicity != '' %}<b>Race/Ethnicity:</b> {{ raceEthnicity }}<br/>{% endif %}
-                                <b>Campus:</b> {{ person.PrimaryCampus.Name }}<br/>
-                            {% endcapture %}
-                        {% endif %}
-
-                        {% for field in form.Fields %}
-                            {% assign fieldName = field.Attribute.Name %}
-                            {% assign fieldValue = '' %}
-                            {% if field.FieldSource == 0 %}
-                                {% case field.PersonFieldType %}
-                                    {% when 3 %}
-                                        {% assign fieldName = 'Address' %}
-                                        {% assign fieldValue = person | Address:'Home' %}
-                                    {% when 4 %}
-                                        {% assign fieldName = 'Email' %}
-                                        {% assign fieldValue = person.Email %}
-                                    {% when 7 %}
-                                        {% assign fieldName = 'Marital Status' %}
-                                        {% assign fieldValue = person.MaritalstatusValue.Value %}
-                                    {% when 8 %}
-                                        {% assign fieldName = 'Mobile Phone' %}
-                                        {% assign fieldValue = person | PhoneNumber:'Mobile' %}
-                                    {% when 9 %}
-                                        {% assign fieldName = 'Home Phone' %}
-                                        {% assign fieldValue = person | PhoneNumber:'Home' %}
-                                    {% when 10 %}
-                                        {% assign fieldName = 'Work Phone' %}
-                                        {% assign fieldValue = person | PhoneNumber:'Work' %}
-                                    {% when 12 %}
-                                        {% assign fieldName = 'Connection Status' %}
-                                        {% assign fieldValue = person.ConnectionStatusValue.Value %}
-                                    {% when 13 %}
-                                        {% assign fieldName = 'Middle Name' %}
-                                        {% assign fieldValue = person.MiddleName %}
-                                    {% when 14 %}
-                                        {% assign fieldName = 'Anniversary' %}
-                                        {% assign fieldValue = person.AnniversaryDate | Date:'MM/dd/yyyy' %}
-                                {% endcase %}
-                            {% elseif field.FieldSource == 1 %}
-                                {% assign fieldValue = person | Attribute:field.Attribute.Key %}
-                            {% elseif field.FieldSource == 2 %}
-                                {% assign fieldValue = groupMember | Attribute:field.Attribute.Key %}
-                            {% elseif field.FieldSource == 4 %}
-                                {% assign fieldValue = registrant | Attribute:field.Attribute.Key %}
-                            {% endif %}
-
-                            {% if fieldValue and fieldValue != '' %}
-                                {% capture formFields %}
-                                    {{ formFields }}
-                                    <b>{{ fieldName }}:</b> {{ fieldValue }}<br/>
-                                {% endcapture %}
-                            {% endif %}
+                    
+                        <table class="header-table">
+                            <tr>
+                                <td class="header-table-label-column">Student Name:</td>
+                                <td>{{ registrant.PersonAlias.Person.FullName }}</td>
+                            </tr>
+                            <tr>
+                                <td class="header-table-label-column">Allergies:</td>
+                                <td>{{ person | Attribute:'Allergies' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="header-table-label-column">Emergency Contact:</td>
+                                <td>{{ registrant | Attribute:'Registrant_EmergencyContact_Name' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="header-table-label-column">Cabin/Leader/Phone:</td>
+                                <td></td>
+                            </tr>
+                        </table>
+                        
+                        {% assign medications = person | Attribute:'CurrentMedications', 'RawValue' %}
+                        {% capture Medications_JSON %}
+                            {[ MatrixToJSON guid:'{{ medications }}' ]}
+                        {% endcapture %}
+                        {% assign Medications_Object = Medications_JSON | FromJSON %}
+                        {% assign PRN_Medications = "" %}
+                        {% assign AM_Medications = "" %}
+                        {% assign Noon_Medications = "" %}
+                        {% assign PM_Medications = "" %}
+                        {% for row in Medications_Object.Rows %}
+                            {% definedvalue where:'Guid == "{{ row.MedicationTime }}"' securityenabled:'false' %}
+                                {% if definedvalue.Value == "Morning" or definedvalue.Value == "Before Breakfast" or definedvalue.Value == "With Breakfast" or definedvalue.Value == "After Breakfast" %}
+                                    {% assign AM_Medications = AM_Medications | AddToArray:row %}
+                                {% elseif definedvalue.Value == "Before Lunch" or definedvalue.Value == "With Lunch" or definedvalue.Value == "After Lunch" %}
+                                    {% assign Noon_Medications = Noon_Medications | AddToArray:row %}
+                                {% elseif definedvalue.Value == "Afternoon" or definedvalue.Value == "Before Dinner" or definedvalue.Value == "With Dinner" or definedvalue.Value == "After Dinner" or definedvalue.Value == "Before Bed" %}
+                                    {% assign PM_Medications = PM_Medications | AddToArray:row %}
+                                {% else %}
+                                    {% assign PRN_Medications = PRN_Medications | AddToArray:row %}
+                                {% endif %}
+                            {% enddefinedvalue %}
                         {% endfor %}
-
-                        {% if formFields != '' %}
-                            {% assign tempvar = form.Name %}
-                            {% if tempvar == 'Default Form' %}
-                                <h3>General Section</h3>
-                            {% else %}
-                                <h3>{{ form.Name }}</h3>
-                            {% endif %}
-                            <p>
-                                {{ formFields }}
-                            </p>
-                        {% endif %}
-
+                        
+                        <table class="medication-table">
+                            <tr>
+                                <td rowspan="{{ AM_Medications | Size | Plus:1 }}" class="medication-table-label-cell">AM</td>
+                                <th>Medications</th>
+                                <th>Dosage</th>
+                                <th>Day 1</th>
+                                <th>Day 2</th>
+                                <th>Day 3</th>
+                                <th>Day 4</th>
+                                <th>Day 5</th>
+                                <th>Day 6</th>
+                                <th>Notes</th>
+                            </tr>
+                            {% for medication in AM_Medications %}
+                            <tr>
+                                <td>{{ medication.Medication_Name }}</td>
+                                <td>{{ medication.Medication_Dosage }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    Time: {% definedvalue where:'Guid == "{{ medication.MedicationTime }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Frequency: {% definedvalue where:'Guid == "{{ medication.MedicationFrequency }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Type: {% definedvalue where:'Guid == "{{ medication.MedicationType }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Notes: {{ medication.Notes }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        
+                        <table class="medication-table">
+                            <tr>
+                                <td rowspan="{{ Noon_Medications | Size | Plus:1 }}" class="medication-table-label-cell">Noon</td>
+                                <th>Medications</th>
+                                <th>Dosage</th>
+                                <th>Day 1</th>
+                                <th>Day 2</th>
+                                <th>Day 3</th>
+                                <th>Day 4</th>
+                                <th>Day 5</th>
+                                <th>Day 6</th>
+                                <th>Notes</th>
+                            </tr>
+                            {% for medication in Noon_Medications %}
+                            <tr>
+                                <td>{{ medication.Medication_Name }}</td>
+                                <td>{{ medication.Medication_Dosage }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    Time: {% definedvalue where:'Guid == "{{ medication.MedicationTime }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Frequency: {% definedvalue where:'Guid == "{{ medication.MedicationFrequency }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Type: {% definedvalue where:'Guid == "{{ medication.MedicationType }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Notes: {{ medication.Notes }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        
+                        <table class="medication-table">
+                            <tr>
+                                <td rowspan="{{ PM_Medications | Size | Plus:1 }}" class="medication-table-label-cell">PM</td>
+                                <th>Medications</th>
+                                <th>Dosage</th>
+                                <th>Day 1</th>
+                                <th>Day 2</th>
+                                <th>Day 3</th>
+                                <th>Day 4</th>
+                                <th>Day 5</th>
+                                <th>Day 6</th>
+                                <th>Notes</th>
+                            </tr>
+                            {% for medication in PM_Medications %}
+                            <tr>
+                                <td>{{ medication.Medication_Name }}</td>
+                                <td>{{ medication.Medication_Dosage }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    Time: {% definedvalue where:'Guid == "{{ medication.MedicationTime }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Frequency: {% definedvalue where:'Guid == "{{ medication.MedicationFrequency }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Type: {% definedvalue where:'Guid == "{{ medication.MedicationType }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Notes: {{ medication.Notes }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        
+                        <table class="medication-table">
+                            <tr>
+                                <td rowspan="{{ PRN_Medications | Size | Plus:1 }}" class="medication-table-label-cell">PRN</td>
+                                <th>Medications</th>
+                                <th>Dosage</th>
+                                <th>Day 1</th>
+                                <th>Day 2</th>
+                                <th>Day 3</th>
+                                <th>Day 4</th>
+                                <th>Day 5</th>
+                                <th>Day 6</th>
+                                <th>Notes</th>
+                            </tr>
+                            {% for medication in PRN_Medications %}
+                            <tr>
+                                <td>{{ medication.Medication_Name }}</td>
+                                <td>{{ medication.Medication_Dosage }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    Time: {% definedvalue where:'Guid == "{{ medication.MedicationTime }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Frequency: {% definedvalue where:'Guid == "{{ medication.MedicationFrequency }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Type: {% definedvalue where:'Guid == "{{ medication.MedicationType }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}
+                                    <br>Notes: {{ medication.Notes }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        
+                        <table class="returned-table">
+                            <tr>
+                                <th colspan="2">Returned controlled substances</th>
+                                <th style="border: 0px"></th>
+                                <th>Nurse Signature</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <br>
+                                    Medication Name:<br>
+                                    <br>
+                                    Nurse:<br>
+                                    <br>
+                                    Returned to:<br>
+                                    <br>
+                                    # of dropped:<br>
+                                    <br>
+                                    # of returned:<br>
+                                    <br>
+                                </td>
+                                <td>
+                                    Signature:
+                                </td>
+                                <td style="border: 0px"></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    
                     {% endfor %}
-
-                    {% assign feeCount = registrant.Fees | Size %}
-                    {% if feeCount > 0 %}
-                        <h3>Fees</h3>
-                        <p>
-                        {% for fee in registrant.Fees %}
-                            <b>{{ fee.RegistrationTemplateFee.Name }}:</b> {{ fee.Option }}: {{ fee.Cost | FormatAsCurrency }}
-                        {% endfor %}
-                        </p>
-                    {% endif %}
-
-                    </div>
-                    <br>
                 {% endfor %}
             {% endfor %}
         {% endregistration %}
