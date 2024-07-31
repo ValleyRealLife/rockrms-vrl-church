@@ -7,11 +7,9 @@
 {{ 'Global' | Attribute:'EmailHeader' }}
 
 <p>Hey {{ Person.NickName }}!</p>
-<p>Thanks for playing an important role in helping us be and make disciples of Jesus! Our priority in keeping our kids & students safe involves ensuring that the background checks of our volunteers are up to date. We re-run these background checks every 2 years and yours is ready for an update. Please follow the link below to enter your information and allow us to run your background check again. If you have any issues or questions, please reach out!<p>
-
+<p>Thanks for playing an important role in helping us be and make disciples of Jesus! You are receiving this email because you are involved in an area of our church that requires a background check. We are in the process of either initiating your first background check or renewing it (background checks are renewed every two years). Please follow the link below to enter your information and allow us to run your background check. If you have any issues or questions, please reach out!<p>
+<br>
 {% assign RequiredFields = false %}
-
-<h3 class="separator">Details</h3>
 
 {% for attribute in Action.FormAttributes %}
     {% if attribute.IsVisible and attribute.Value != '' %}
@@ -34,7 +32,7 @@
 <table width="100%">
     <tr>
         <td>
-    <table align="left" style="width: 29%; min-width: 190px; margin-bottom: 12px;" cellpadding="0" cellspacing="0">
+    <table align="center" style="width: 29%; min-width: 190px; margin-bottom: 12px;" cellpadding="0" cellspacing="0">
     <tr>
         <td>
             <div>
@@ -44,7 +42,8 @@
                 <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:normal;">View Details</center>
                 </v:roundrect>
                 <![endif]-->
-                <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}WorkflowEntry/{{ Workflow.WorkflowTypeId }}?WorkflowGuid={{ Workflow.Guid }}" style="background-color:#31b0d5;border:1px solid #269abc;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:14px;font-weight:normal;line-height:38px;text-align:center;text-decoration:none;width:175px;-webkit-text-size-adjust:none;mso-hide:all;">View Details</a>
+                {% assign var_token = Person | PersonTokenCreate %}
+                <a href="{{ 'Global' | Attribute:'PublicApplicationRoot' }}page/1848?WorkflowTypeId={{ Workflow.WorkflowTypeId }}&WorkflowGuid={{ Workflow.Guid }}&rckipid={{ var_token }}" style="background-color:#31b0d5;border:1px solid #269abc;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:14px;font-weight:normal;line-height:38px;text-align:center;text-decoration:none;width:175px;-webkit-text-size-adjust:none;mso-hide:all; margin: 0 auto;">Background Check Form</a>
             </div>
         </td>
     </tr>
@@ -65,5 +64,7 @@
         </td>
     </tr>
 </table>
-
+<br>
+<p>With gratitude,</p>
+<p>VRL Team</p>
 {{ 'Global' | Attribute:'EmailFooter' }}
