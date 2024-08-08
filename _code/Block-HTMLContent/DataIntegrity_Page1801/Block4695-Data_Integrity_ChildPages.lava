@@ -96,6 +96,22 @@
     ;
     {% endsql %}
 
+    {% person dataview:'43' securityenabled:'false' count:'true' %}
+        {% assign count_DuplicatePhoneNumbers = count %}
+    {% endperson %}
+
+    {% person dataview:'44' securityenabled:'false' count:'true' %}
+        {% assign count_DuplicateEmailAddresses = count %}
+    {% endperson %}
+
+    {% person dataview:'858' securityenabled:'false' count:'true' %}
+        {% assign count_KidsAloneFamily = count %}
+    {% endperson %}
+
+    {% group dataview:'867' securityenabled:'false' count:'true' %}
+        {% assign count_FamiliesWithDuplicateAddresses = count %}
+    {% endgroup %}
+
     <div class="tim-container">
         <a class="tim-block" href="/page/1803" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-user-clock"></i></div>
@@ -106,6 +122,26 @@
             <div class="tim-icon"><i class="fa fa-user-friends"></i></div>
             <div class="tim-icon">Rock's Duplicate Finder</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ sql_DuplicatePersons[0].Count }}</span></div>
+        </a>
+        <a class="tim-block" href="/page/3128" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-mobile-alt"></i></div>
+            <div class="tim-icon">Duplicate Phone Numbers</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_DuplicatePhoneNumbers }}</span></div>
+        </a>
+        <a class="tim-block" href="/page/3129" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-at"></i></div>
+            <div class="tim-icon">Duplicate Email Addresses</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_DuplicateEmailAddresses }}</span></div>
+        </a>
+        <a class="tim-block" href="/page/3130" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-child"></i></div>
+            <div class="tim-icon">Kids in their own Family!?</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_KidsAloneFamily }}</span></div>
+        </a>
+        <a class="tim-block" href="/page/3131" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-home"></i></div>
+            <div class="tim-icon">Duplicate Family Addresses</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_FamiliesWithDuplicateAddresses }}</span></div>
         </a>
         <a class="tim-block" href="/page/1805" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-circle"></i></div>
