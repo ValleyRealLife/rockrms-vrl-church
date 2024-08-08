@@ -1,0 +1,111 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1801, BlockId=5396 [Data Integrity Welcome Info] > HTML
+------------------------------------------------------------/
+
+//- What is the Guid of the CurrentPage?
+{% page where:'Id == {{ 'Global' | Page:'Id' }}' securityenabled:'false' %}
+    {% assign page_guid = page.Guid %}
+{% endpage %}
+
+//- Does CurrentPerson Follow this Page?
+{% following where:'EntityTypeId == 2 && EntityId == {{ 'Global' | Page:'Id' }} && PersonAliasId == "{{ CurrentPerson.PrimaryAlias.Id }}"' securityenabled:'false' count:'true' %}
+    {% assign var_CurrentPerson_isFollowing = count | AsBoolean %}
+{% endfollowing %}
+
+//- How many Persons are Following this Page?
+{% sql return:'rows' %}
+    SELECT [PersonAliasId] FROM [Following] WHERE [EntityTypeId] = 2 AND [EntityId] = {{ 'Global' | Page:'Id' }} ORDER BY [CreatedDateTime] ASC
+{% endsql %}
+{% assign var_rowsSize = rows | Size %}
+{% if var_rowsSize > 0 %}
+    {% assign var_PersonAliasId = rows | Select:'PersonAliasId' | Join:',' %}
+    {% assign var_Persons_Following = var_PersonAliasId | Split:',' %}
+{% else %}
+    {% assign var_Persons_Following = 0 %}
+{% endif %}
+
+<style>
+    .followicon[data-followed="true"] .fa-user {
+        color: #98BE4B;
+    }
+
+    .followicon[data-followed="false"] .fa-user {
+        color: #8E8E8E;
+    }
+
+    .timtest-container {
+        display: flex;
+    }
+
+    .timtest-left-column-box {
+        width: 70px;
+        height: 70px;
+        margin: 10px auto;
+    }
+
+    .timtest-right-column-box {
+        position:relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .timtest-avatar {
+        width: 10%;
+        height: 10%;
+    }
+</style>
+
+<div class="timtest-container">
+    <div class="timtest-left-column-box thumbsup-group">
+        {[ followicon2 entitytypeguid:'e104dcdf-247c-4ced-a119-8cc51632761f' entityguid:'{{ page_guid }}' purposekey:'CurrentlyHere' isfollowed:'{{ var_CurrentPerson_isFollowing }}' ]}
+            <div class="btn btn-lg btn-square btn-default" style="width: 100%; height: 100%;">
+                <i class="fa fa-lg fa-user followicon" style="width: 100%; height: 50%;"></i>
+            </div>
+        {[ endfollowicon2 ]}
+    </div>
+    <div class="timtest-right-column-box" style="margin-top:1em; margin-left:1em;">
+        {% assign var_CurrentlyHere = var_Persons_Following | Size %}
+        {% if var_CurrentlyHere == 1 %}
+        There is currently {{ var_CurrentlyHere }} person working here!
+        {% elseif var_CurrentlyHere > 1 %}
+        There are currently {{ var_CurrentlyHere }} people working here!
+        {% else %}
+        There is no one here!
+        {% endif %}
+        <div>
+        {% if var_CurrentlyHere > 0 %}
+        {% for var_P in var_Persons_Following %}
+            {% assign var_Person = var_P | PersonByAliasId %}
+            <img src="{{ var_Person.PhotoUrl }}" class="timtest-avatar avatar" alt="Photo of {{ var_Person.FullName }}">
+        {% endfor %}
+        {% endif %}
+        </div>
+    </div>
+</div>
+
+<br>
+
+{[ accordion firstopen:'False' ]}
+
+    [[ item title:'Data Integrity Goals' ]]
+        <ol>
+            <li>We have no Person records with the 'Pending' status</li><br>
+            <li>We have one Person record in Rock for one real-life Person</li><br>
+            <li>Every Phone Number is listed under only one Person</li><br>
+            <li>Every Email Address is listed under only one Person</li><br>
+            <li>Every Person record is correctly mapped under the corresponding Family record(s)</li><br>
+            <li>Every Family record has the correct Address(es) with no duplicate addresses</li><br>
+            <li>Person records that are marked as deceased should not have any Transactions or Scheduled Transactions</li><br>
+        </ol>
+    [[ enditem ]]
+
+{[ endaccordion ]}
+
+{[ accordion firstopen:'False' ]}
+
+    [[ item title:'Step-by-Step Guides' ]]
+        Thank you for helping!
+    [[ enditem ]]
+
+{[ endaccordion ]}
