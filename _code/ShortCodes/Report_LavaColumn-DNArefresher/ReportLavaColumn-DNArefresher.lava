@@ -1,0 +1,29 @@
+/------------------------------------------------------------
+    This Lava ShortCode is being used in:
+        ReportId 125
+------------------------------------------------------------/
+
+{% assign var_PersonId = person_id %}
+
+{% sql return:'step_DNA' %}
+    SELECT TOP 1
+        s.[CompletedDateTime]
+    FROM
+        [Step] s
+        LEFT JOIN [PersonAlias] pa ON pa.[Id] = s.[PersonAliasId]
+        LEFT JOIN [Person] p ON p.[Id] = pa.[PersonId]
+    WHERE
+        s.[StepTypeId] = 6
+        AND
+        s.[StepStatusId] = 3
+        AND
+        p.[Id] = {{ var_PersonId }}
+    ORDER BY
+        s.[CompletedDateTime] DESC
+{% endsql %}
+
+{% assign step_DNA_Size = step_DNA | Size %}
+
+{% if step_DNA_Size == 1 %}
+    {{ step_DNA[0].CompletedDateTime }}
+{% endif %}
