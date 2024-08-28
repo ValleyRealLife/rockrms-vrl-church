@@ -112,6 +112,10 @@
         {% assign count_FamiliesWithDuplicateAddresses = count %}
     {% endgroup %}
 
+    {% person dataview:'890' securityenabled:'false' count:'true' %}
+        {% assign count_PersonsWithProtectionProfile_Extreme = count %}
+    {% endperson %}
+
     <div class="tim-container">
         <a class="tim-block" href="/page/1803" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-user-clock"></i></div>
@@ -152,6 +156,19 @@
             <div class="tim-icon"><i class="fa fa-circle"></i></div>
             <div class="tim-icon">Deceased Persons with Scheduled Transactions</div>
             <div class="tim-count"><span class="badge badge-pill badge-info"></span></div>
+        </a>
+    </div>
+
+    <br><br>
+
+    <div class="tim-container">
+        <div class="alert alert-info" style="width: 100%;">
+            Tim created this Box in order to show some numbers that Tim wanted to keep an eye on, but not assign any actions to Volunteers (at least not yet!)
+        </div>
+        <a class="tim-block" href="/reporting/dataviews?DataViewId=890" style="color:#000000;">
+            <div class="tim-icon"><i class="fa fa-flushed"></i></div>
+            <div class="tim-icon">with 'Extreme' Prot Prof</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_PersonsWithProtectionProfile_Extreme }}</span></div>
         </a>
     </div>
 </body>
