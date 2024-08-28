@@ -88,7 +88,7 @@
 
 {[ accordion firstopen:'False' ]}
 
-    [[ item title:'Data Integrity Goals' ]]
+    [[ item title:'This is what we Want:' ]]
         <ol>
             <li>We have no Person records with the 'Pending' status</li><br>
             <li>We have one Person record in Rock for one real-life Person</li><br>
@@ -98,6 +98,30 @@
             <li>Every Family record has the correct Address(es) with no duplicate addresses</li><br>
             <li>Person records that are marked as deceased should not have any Transactions or Scheduled Transactions</li><br>
         </ol>
+    [[ enditem ]]
+
+{[ endaccordion ]}
+
+{[ accordion firstopen:'False' ]}
+
+    [[ item title:'This is what we Need:' ]]
+        <ol>
+            <li>We need 'Pending Persons' to be 0</li><br>
+            <li>We need 'Duplicate Finder' to be as low as possible</li><br>
+            <li>We need 'Duplicate Phone Numbers' to be 0</li><br>
+            <li>We need 'Duplicate Email Addresses' to be 0</li><br>
+            <li>We need 'Kids in their own Family' to be 0*</li><br>
+            <li>We need 'Duplicate Family Addresses' to be as low as possible**</li><br>
+            <li>We need 'Deceased Persons with Transactions' to be 0**</li><br>
+        </ol>
+        <hr>
+        <p>
+            *It's possible that a Kid belongs to two Families, where one Family is normal, and the second Family is erroneous/empty.
+        </p>
+        <hr>
+        <p>
+            **These ones are critical only during end-of-year when we send Contribution Statements (tax forms) via snail mail.
+        </p>
     [[ enditem ]]
 
 {[ endaccordion ]}
