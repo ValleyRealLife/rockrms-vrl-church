@@ -105,7 +105,11 @@
 {[ accordion firstopen:'False' ]}
 
     [[ item title:'Step-by-Step Guides' ]]
-        Thank you for helping!
+        <ol>
+            <li>
+                <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}recipes/read/how-to-clarify-before-merging-possible-duplicates/" target="_blank">How to Clarify Before Merging Possible Duplicates</a>
+            </li>
+        </ol>
     [[ enditem ]]
 
 {[ endaccordion ]}
