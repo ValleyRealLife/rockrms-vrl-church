@@ -25,6 +25,9 @@
     {% assign var_Persons_Following = 0 %}
 {% endif %}
 
+//- Who is the Rock Guy?
+{% assign globalvar_RockGuy = 'Global' | Attribute:'RockGuy', 'Object' %}
+
 <style>
     .followicon[data-followed="true"] .fa-user {
         color: #98BE4B;
@@ -137,3 +140,16 @@
     [[ enditem ]]
 
 {[ endaccordion ]}
+
+{% assign var_RockGuyId = globalvar_RockGuy.Id  %}
+{% if var_RockGuyId == CurrentPerson.Id %}
+    {[ accordion firstopen:'False' ]}
+        [[ item title:'Special Tools' ]]
+            <ol>
+                <li>
+                    <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}page/3507/" target="_blank">Tool for Auditing/Deleting Families</a>
+                </li>
+            </ol>
+        [[ enditem ]]
+    {[ endaccordion ]}
+{% endif %}
