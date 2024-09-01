@@ -68,10 +68,21 @@
     </style>
 </head>
 <body>
-    {% person where:'RecordTypeValueId == 1 && RecordStatusValueId == 5' securityenabled:'false' count:'true' %}
+    /-
+    IMPORTANT:
+    If you change any of the queries under this comment,
+    please ensure to update the 'Source' of the corresponding Metric.
+    (Each of the queries below will have a comment mentioning which MetricId it corresponds to)
+
+    If you add any new queries, please follow the same pattern.
+    -/
+
+    //- If you update this query, please update the 'Source' of MetricId:65
+    {% person dataview:'830' securityenabled:'false' count:'true' %}
         {% assign count_PendingPersons = count %}
     {% endperson %}
 
+    //- If you update this query, please update the 'Source' of MetricId:66
     {% sql return:'sql_DuplicatePersons' %}
     DECLARE @LowScore INT = 58
     DECLARE @HighScore INT = 80
@@ -96,25 +107,37 @@
     ;
     {% endsql %}
 
+    //- If you update this query, please update the 'Source' of MetricId:67
     {% person dataview:'43' securityenabled:'false' count:'true' %}
         {% assign count_DuplicatePhoneNumbers = count %}
     {% endperson %}
 
+    //- If you update this query, please update the 'Source' of MetricId:68
     {% person dataview:'44' securityenabled:'false' count:'true' %}
         {% assign count_DuplicateEmailAddresses = count %}
     {% endperson %}
 
+    //- This query is currently not being used
     {% person dataview:'858' securityenabled:'false' count:'true' %}
         {% assign count_KidsAloneFamily = count %}
     {% endperson %}
 
+    //- If you update this query, please update the 'Source' of MetricId:70
     {% group dataview:'867' securityenabled:'false' count:'true' %}
         {% assign count_FamiliesWithDuplicateAddresses = count %}
     {% endgroup %}
 
+    //- If you update this query, please update the 'Source' of MetricId:71
     {% person dataview:'890' securityenabled:'false' count:'true' %}
         {% assign count_PersonsWithProtectionProfile_Extreme = count %}
     {% endperson %}
+
+    /-
+    IMPORTANT:
+    If you change any of the queries above this comment,
+    read the note i wrote in the previous comment block
+    (the one that spans multiple lines, and says "IMPORTANT")
+    -/
 
     <div class="tim-container">
         <a class="tim-block" href="/page/1803" style="color: #000000;">
@@ -137,11 +160,13 @@
             <div class="tim-icon">Duplicate Email Addresses</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_DuplicateEmailAddresses }}</span></div>
         </a>
+        {% comment %}
         <a class="tim-block" href="/page/3130" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-child"></i></div>
             <div class="tim-icon">Kids in their own Family!?</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_KidsAloneFamily }}</span></div>
         </a>
+        {% endcomment %}
         <a class="tim-block" href="/page/3131" style="color: #000000;">
             <div class="tim-icon"><i class="fa fa-home"></i></div>
             <div class="tim-icon">Duplicate Family Addresses</div>
