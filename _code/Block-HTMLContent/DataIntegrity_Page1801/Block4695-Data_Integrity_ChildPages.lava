@@ -132,6 +132,11 @@
         {% assign count_PersonsWithProtectionProfile_Extreme = count %}
     {% endperson %}
 
+    //- If you update this query, please update the 'Source' of MetricId:72
+    {% userlogin dataview:'895' securityenabled:'false' count:'true' %}
+        {% assign count_UserLoginContainsTest = count %}
+    {% enduserlogin %}
+
     /-
     IMPORTANT:
     If you change any of the queries above this comment,
@@ -194,6 +199,11 @@
             <div class="tim-icon"><i class="fa fa-flushed"></i></div>
             <div class="tim-icon">with 'Extreme' Prot Prof</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_PersonsWithProtectionProfile_Extreme }}</span></div>
+        </a>
+        <a class="tim-block" href="/reporting/reports//156" style="color:#000000;">
+            <div class="tim-icon"><i class="fa fa-radiation-alt"></i></div>
+            <div class="tim-icon">UserLogin contains "Test"</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_UserLoginContainsTest }}</span></div>
         </a>
     </div>
 </body>
