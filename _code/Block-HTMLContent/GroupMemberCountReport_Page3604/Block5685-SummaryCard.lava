@@ -34,13 +34,13 @@
     {% assign targetMonthEndDate = targetMonthEndDate | DateAdd:1,'M' | DateAdd:-1,'d' | Date:'yyyy-MM-dd' %}
 
     {% sql return:'GroupCountMetric' %}
-    select top(1) mv.[YValue] as [Count]
-    from [MetricValue] mv
-        join [MetricValuePartition] mvp on mvp.[MetricValueId] = mv.[Id]
-        join [MetricPartition] mp on mp.[Id] = mvp.[MetricPartitionId] and mp.[EntityTypeId] = 16
-    where mv.[MetricId] = 74
-        and mvp.[EntityId] = {{ group.Id }}
-        and mv.[MetricValueDateTime] = '{{ targetMonthEndDate }}';
+    SELECT TOP(1) mv.[YValue] AS 'Count'
+    FROM [MetricValue] mv
+        JOIN [MetricValuePartition] mvp ON mvp.[MetricValueId] = mv.[Id]
+        JOIN [MetricPartition] mp ON mp.[Id] = mvp.[MetricPartitionId] AND mp.[EntityTypeId] = 16
+    WHERE mv.[MetricId] = 74
+        AND mvp.[EntityId] = {{ group.Id }}
+        AND mv.[MetricValueDateTime] = '{{ targetMonthEndDate }}';
     {% endsql %}
     {% assign groupMemberCount = GroupCountMetric | Select:'Count' | First %}
 

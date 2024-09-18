@@ -37,24 +37,25 @@
 
     {% if showExtraInfo %}
     -- Show extra info
-    SELECT gm.[Id],  -- DISTINCT to avoid duplication
-        CONCAT(p0.[NickName], ' ', p0.[LastName]) AS 'Person',
-        gtr.[Name] as [CurrentRole],
-        CASE
+    SELECT
+        gm.[Id]  -- DISTINCT to avoid duplication
+      , CONCAT(p0.[NickName], ' ', p0.[LastName]) AS 'Person'
+      , gtr.[Name] as [CurrentRole]
+      , CASE
             WHEN gm.[GroupMemberStatus] = 0 THEN 'Inactive'
             WHEN gm.[GroupMemberStatus] = 1 THEN 'Active'
             WHEN gm.[GroupMemberStatus] = 2 THEN 'Pending'
             ELSE 'Unknown'
-        END AS [CurrentStatus],
-        gm.[CreatedDateTime],
-        CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy',
-        gm.[ModifiedDateTime],
-        CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'ModifiedBy',
-        gm.[DateTimeAdded],
-        gm.[InactiveDateTime],
-        gm.[IsArchived],
-        gm.[ArchivedDateTime],
-        CONCAT(p3.[NickName], ' ', p3.[LastName]) AS 'ArchivedBy'
+        END AS 'CurrentStatus'
+      , gm.[CreatedDateTime]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , gm.[ModifiedDateTime]
+      , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'ModifiedBy'
+      , gm.[DateTimeAdded]
+      , gm.[InactiveDateTime]
+      , gm.[IsArchived]
+      , gm.[ArchivedDateTime]
+      , CONCAT(p3.[NickName], ' ', p3.[LastName]) AS 'ArchivedBy'
     FROM [GroupMemberHistorical] gmh
     LEFT JOIN [GroupMember] gm ON gm.[Id] = gmh.[GroupMemberId]
     LEFT JOIN [Person] p0 ON p0.[Id] = gm.[PersonId]
@@ -70,16 +71,17 @@
     LEFT JOIN [GroupTypeRole] gtr ON gtr.[Id] = gm.[GroupRoleId]
     {% else %}
     -- Show only Name, Role, and DateTimeAdded
-    SELECT gm.[Id],  -- DISTINCT to avoid duplication
-        CONCAT(p0.[NickName], ' ', p0.[LastName]) AS 'Person',
-        gtr.[Name] as [CurrentRole],
-        CASE
+    SELECT
+        gm.[Id] -- DISTINCT to avoid duplication
+      , CONCAT(p0.[NickName], ' ', p0.[LastName]) AS 'Person'
+      , gtr.[Name] AS 'CurrentRole'
+      , CASE
             WHEN gm.[GroupMemberStatus] = 0 THEN 'Inactive'
             WHEN gm.[GroupMemberStatus] = 1 THEN 'Active'
             WHEN gm.[GroupMemberStatus] = 2 THEN 'Pending'
             ELSE 'Unknown'
-        END AS [CurrentStatus],
-        gm.[DateTimeAdded]
+        END AS [CurrentStatus]
+      , gm.[DateTimeAdded]
     FROM [GroupMemberHistorical] gmh
     LEFT JOIN [GroupMember] gm ON gm.[Id] = gmh.[GroupMemberId]
     LEFT JOIN [Person] p0 ON p0.[Id] = gm.[PersonId]

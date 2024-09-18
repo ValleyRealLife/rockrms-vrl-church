@@ -40,19 +40,19 @@
     ),
     MetricValuesPerMonth AS (
         SELECT
-            ml.MonthEnd AS [Date],
-            mv.[YValue] AS MemberCount
-        FROM MonthList ml
-        LEFT JOIN [MetricValue] mv ON EOMONTH(mv.[MetricValueDateTime]) = ml.MonthEnd
+            ml.[MonthEnd] AS 'Date'
+          , mv.[YValue] AS 'MemberCount'
+        FROM [MonthList] ml
+        LEFT JOIN [MetricValue] mv ON EOMONTH(mv.[MetricValueDateTime]) = ml.[MonthEnd]
         JOIN [MetricValuePartition] mvp ON mvp.[MetricValueId] = mv.[Id]
         JOIN [MetricPartition] mp ON mp.[Id] = mvp.[MetricPartitionId]
         WHERE mv.[MetricId] = 74  -- Use the correct MetricId
         AND mvp.[EntityId] = {{ group.Id }}  -- Ensure we are matching the correct group
     )
     SELECT
-        [Date],
-        MemberCount
-    FROM MetricValuesPerMonth
+        [Date]
+      , [MemberCount]
+    FROM [MetricValuesPerMonth]
     ORDER BY [Date];
     {% endsql %}
 
