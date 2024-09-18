@@ -1,0 +1,107 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=3604, [Dynamic Data] > Query
+
+    This Lava is used to generate a query for a table of group members for a group at a specified month/year.
+
+    Path:
+    _code/Block-DynamicData/GroupMemberCountReport_Page3604/Block5683-GroupMemberTable.lava
+------------------------------------------------------------/
+
+{% if PageParameter.Group %}
+    {% group where:'Guid == "{{ PageParameter.Group }}"' securityenabled:'false' %}
+    {% endgroup %}
+
+    {% assign showExtraInfo = PageParameter.ShowExtraInfo | AsBoolean %}
+
+    {% assign nowDateTime = 'Now' | Date %}
+    {% assign currentMonth = nowDateTime | Date:'M' %}
+    {% assign currentYear = nowDateTime | Date:'yyyy' %}
+
+    {% if PageParameter.Month and PageParameter.Year %}
+        {% assign month = PageParameter.Month | AsInteger %}
+        {% assign year = PageParameter.Year | AsInteger %}
+        {% if year >= currentYear %}
+            {% assign year = currentYear %}
+            {% if month > currentMonth %}
+                {% assign month = currentMonth %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% assign month = currentMonth %}
+        {% assign year = currentYear %}
+    {% endif %}
+
+    {% capture targetMonthEndDate %}{{ year }}-{% if month < 10 %}0{% endif %}{{ month }}-01{% endcapture %}
+    {% assign targetMonthEndDate = targetMonthEndDate | DateAdd:1,'M' | DateAdd:-1,'d' | Date:'yyyy-MM-dd' %}
+
+    {% if showExtraInfo %}
+    -- Show extra info
+    SELECT
+        gm.[Id]  -- DISTINCT to avoid duplication
+      , CONCAT(p0.[NickName], ' ', p0.[LastName]) AS 'Person'
+      , gtr.[Name] as [CurrentRole]
+      , CASE
+            WHEN gm.[GroupMemberStatus] = 0 THEN 'Inactive'
+            WHEN gm.[GroupMemberStatus] = 1 THEN 'Active'
+            WHEN gm.[GroupMemberStatus] = 2 THEN 'Pending'
+            ELSE 'Unknown'
+        END AS 'CurrentStatus'
+      , gm.[CreatedDateTime]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , gm.[ModifiedDateTime]
+      , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'ModifiedBy'
+      , gm.[DateTimeAdded]
+      , gm.[InactiveDateTime]
+      , gm.[IsArchived]
+      , gm.[ArchivedDateTime]
+      , CONCAT(p3.[NickName], ' ', p3.[LastName]) AS 'ArchivedBy'
+    FROM [GroupMemberHistorical] gmh
+    LEFT JOIN [GroupMember] gm ON gm.[Id] = gmh.[GroupMemberId]
+    LEFT JOIN [Person] p0 ON p0.[Id] = gm.[PersonId]
+    LEFT JOIN [PersonAlias] pa1 ON pa1.[Id] = gm.[CreatedByPersonAliasId]
+        AND pa1.[PersonId] = pa1.[AliasPersonId]
+    LEFT JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+    LEFT JOIN [PersonAlias] pa2 ON pa2.[Id] = gm.[ModifiedByPersonAliasId]
+        AND pa2.[PersonId] = pa2.[AliasPersonId]
+    LEFT JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
+    LEFT JOIN [PersonAlias] pa3 ON pa3.[Id] = gm.[ArchivedByPersonAliasId]
+        AND pa3.[PersonId] = pa3.[AliasPersonId]
+    LEFT JOIN [Person] p3 ON p3.[Id] = pa3.[PersonId]
+    LEFT JOIN [GroupTypeRole] gtr ON gtr.[Id] = gm.[GroupRoleId]
+    {% else %}
+    -- Show only Name, Role, and DateTimeAdded
+    SELECT
+        gm.[Id] -- DISTINCT to avoid duplication
+      , CONCAT(p0.[NickName], ' ', p0.[LastName]) AS 'Person'
+      , gtr.[Name] AS 'CurrentRole'
+      , CASE
+            WHEN gm.[GroupMemberStatus] = 0 THEN 'Inactive'
+            WHEN gm.[GroupMemberStatus] = 1 THEN 'Active'
+            WHEN gm.[GroupMemberStatus] = 2 THEN 'Pending'
+            ELSE 'Unknown'
+        END AS [CurrentStatus]
+      , gm.[DateTimeAdded]
+    FROM [GroupMemberHistorical] gmh
+    LEFT JOIN [GroupMember] gm ON gm.[Id] = gmh.[GroupMemberId]
+    LEFT JOIN [Person] p0 ON p0.[Id] = gm.[PersonId]
+    LEFT JOIN [GroupTypeRole] gtr ON gtr.[Id] = gm.[GroupRoleId]
+    {% endif %}
+    WHERE gmh.[GroupId] = {{ group.Id }}
+        AND gmh.[EffectiveDateTime] <= '{{ targetMonthEndDate }}'  -- Member was active by the end of the month
+        AND (
+            gmh.[ArchivedDateTime] IS NULL  -- Ensure they are not archived
+            OR gmh.[ArchivedDateTime] > '{{ targetMonthEndDate }}'
+        )
+        AND (
+            gmh.[InactiveDateTime] IS NULL  -- Ensure they are not inactive
+            OR gmh.[InactiveDateTime] > '{{ targetMonthEndDate }}'
+        )
+        AND (
+            gmh.[ExpireDateTime] IS NULL  -- Ensure they are not expired
+            OR gmh.[ExpireDateTime] > '{{ targetMonthEndDate }}'
+        )
+    ORDER BY gmh.[Id];
+{% else %}
+    select 'Please input the required filters.' as [No Results];
+{% endif %}
