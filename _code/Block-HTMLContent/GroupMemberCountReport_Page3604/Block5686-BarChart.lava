@@ -1,0 +1,131 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=3604, [HTML Content] > Content
+
+    This Lava is used to display a bar chart of the member count history for a group.
+
+    Path:
+    _code/Block-HTMLContent/GroupMemberCountReport_Page3604/Block5686-BarChart.lava
+------------------------------------------------------------/
+
+{% if PageParameter.Group %}
+    {% group where:'Guid == "{{ PageParameter.Group }}"' securityenabled:'false' %}
+    {% endgroup %}
+
+    {% assign nowDateTime = 'Now' | Date %}
+    {% assign currentMonth = nowDateTime | Date:'M' %}
+    {% assign currentYear = nowDateTime | Date:'yyyy' %}
+
+    {% if PageParameter.Month and PageParameter.Year %}
+        {% assign month = PageParameter.Month | AsInteger %}
+        {% assign year = PageParameter.Year | AsInteger %}
+        {% if year >= currentYear %}
+            {% assign year = currentYear %}
+            {% if month > currentMonth %}
+                {% assign month = currentMonth %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% assign month = currentMonth %}
+        {% assign year = currentYear %}
+    {% endif %}
+
+    {% capture targetMonthEndDate %}{{ year }}-{% if month < 10 %}0{% endif %}{{ month }}-01{% endcapture %}
+    {% assign targetMonthEndDate = targetMonthEndDate | DateAdd:1,'M' | DateAdd:-1,'d' | Date:'yyyy-MM-dd' %}
+
+    {% sql return:'ChartData' %}
+    WITH MonthList AS (
+        SELECT EOMONTH(DATEADD(MONTH, -n, {% if PageParameter.Month and PageParameter.Year %}'{{ targetMonthEndDate }}'{% else %}GETDATE(){% endif %})) AS MonthEnd
+        FROM (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11)) AS x(n)
+    ),
+    MetricValuesPerMonth AS (
+        SELECT
+            ml.MonthEnd AS [Date],
+            mv.[YValue] AS MemberCount
+        FROM MonthList ml
+        LEFT JOIN [MetricValue] mv ON EOMONTH(mv.[MetricValueDateTime]) = ml.MonthEnd
+        JOIN [MetricValuePartition] mvp ON mvp.[MetricValueId] = mv.[Id]
+        JOIN [MetricPartition] mp ON mp.[Id] = mvp.[MetricPartitionId]
+        WHERE mv.[MetricId] = 74  -- Use the correct MetricId
+        AND mvp.[EntityId] = {{ group.Id }}  -- Ensure we are matching the correct group
+    )
+    SELECT
+        [Date],
+        MemberCount
+    FROM MetricValuesPerMonth
+    ORDER BY [Date];
+    {% endsql %}
+
+    {% if ChartData != empty %}
+        <div class="panel panel-block">
+            <div class="panel-heading">
+                <h1 class="panel-title">
+                    <i class="fa fa-people"></i>
+                    <span> Member Count History</span>
+                </h1>
+            </div>
+            <div class="panel-body">
+                <canvas id="groupCountChart" width="400" height="100"></canvas>
+            </div>
+        </div>
+
+        <script>
+            var ctx = document.getElementById('groupCountChart').getContext('2d');
+
+            var labels = [
+                {% for row in ChartData %}
+                    "{{ row.Date | Date:'MMMM yyyy' }}"{% if forloop.last == false %}, {% endif %}
+                {% endfor %}
+            ];
+
+            var data = [
+                {% for row in ChartData %}
+                    {{ row.MemberCount }}{% if forloop.last == false %}, {% endif %}
+                {% endfor %}
+            ];
+
+            var chartData = {
+                labels,
+                datasets: [{
+                    label: 'Active Members',
+                    data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    onClick: function(evt) {
+                        var activePoints = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                        if (activePoints.length > 0) {
+                            var index = activePoints[0].index;
+                            var label = labels[index];
+                            var selectedDate = new Date(label + ' 01');
+
+                            var month = selectedDate.getMonth() + 1; // JavaScript months are 0-based
+                            var year = selectedDate.getFullYear();
+
+                            // Update URL with Month and Year parameters
+                            var newUrl = new URL(window.location.href);
+                            newUrl.searchParams.set('Month', month);
+                            newUrl.searchParams.set('Year', year);
+
+                            window.location.href = newUrl.toString();
+                        }
+                    }
+                }
+            });
+        </script>
+    {% else %}
+        <p>No data available to display the chart.</p>
+    {% endif %}
+{% endif %}
