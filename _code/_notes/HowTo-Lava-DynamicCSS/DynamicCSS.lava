@@ -1,0 +1,13 @@
+{% assign var = CurrentPerson.PrimaryAlias.Id %}
+
+//- ExampleClass3 is the class that i will be "injecting" into the div later.
+<style>
+    .ExampleClass3 {
+        display: none;
+    }
+</style>
+
+//- This is the HTML element i want to hide
+<div class="ExampleClass1 ExampleClass2 {% unless var == 29657 %}ExampleClass3{% endunless %}">
+    <p>Lorem ipsum dolores sit amet.</p>
+</div>
