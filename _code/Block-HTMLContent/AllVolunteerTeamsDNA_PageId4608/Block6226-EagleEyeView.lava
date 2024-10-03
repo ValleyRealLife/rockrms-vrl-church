@@ -1,0 +1,653 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=4608, [All Volunteer Teams and DNA] > HTML
+
+    This Lava is used to display cards with progress percentages per Volunteer Group.
+    The Progress percentage shows how many people need to take the DNA or DNAR course.
+
+    Path:
+    _code/Block-HTMLContent/AllVolunteerTeamsDNA_PageId4608/Block6226-EagleEyeView.lava
+------------------------------------------------------------/
+<style>
+    @media screen and (min-width:930px) {
+        .tim-four-columns {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media screen and (min-width:1410px) {
+        .tim-four-columns {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media screen and (min-width:1700px) {
+
+        .tim-four-columns {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .tim-four-columns .tim-child {
+        margin-bottom: 2.5rem;
+    }
+
+    .tim-main-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .tim-container {
+        /* min-height: 100dvh; */
+        background-color: #f0f0f0;
+        padding: 20px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .tim-child {
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .tim-left-column {
+        grid-row: 1 / 4;
+    }
+
+    .tim-right-column-1 {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .tim-right-column-2 {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .tim-right-column-3 {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .kpi-card .kpi-stat {
+        margin-left: 1.5rem;
+    }
+</style>
+
+{[ panel title:'All Volunteer Teams' ]}
+<div class="tim-container tim-four-columns" style="height: auto; background: transparent;">
+    <div class="tim-child" style="background-color: #f2f2f2">
+        <h3>Weekend Service Teams</h3>
+        {% sql return:'WeekendService_VolunteerGroups' %}SELECT g.[Id], g.[Name] FROM [Group] g WHERE g.[Id] IN (29870, 76232, 32288, 29851, 57, 29868) AND g.[IsActive] = 1 AND g.[IsArchived] = 0 ORDER BY g.[Name] ASC;{% endsql %}
+        {% for g in WeekendService_VolunteerGroups %}
+            //- Find out how many Members in the Group, and how many of them need DNA vs how many of them are up-to-date
+            {% sql return:'output' %}
+                DECLARE @Now datetime = GETDATE()
+                ;
+                DECLARE @DNA1_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNA_DateTime] datetime
+                );
+                DECLARE @DNA2_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNAR_DateTime] datetime
+                );
+                INSERT INTO @DNA1_PersonAliasId
+                SELECT s.[PersonAliasId], s.[CompletedDateTime] FROM [Step] s WHERE s.[StepTypeId] = 5 AND s.[StepStatusId] = 3
+                ;
+                WITH LatestDNAR AS (
+                    SELECT s.[PersonAliasId], s.[CompletedDateTime], ROW_NUMBER() OVER (PARTITION BY s.[PersonAliasId] ORDER BY s.[CompletedDateTime] DESC) AS 'RowNum'
+                    FROM [Step] s
+                    WHERE s.[StepTypeId] = 6 AND s.[StepStatusId] = 3
+                )
+                INSERT INTO @DNA2_PersonAliasId
+                SELECT [PersonAliasId], [CompletedDateTime] FROM LatestDNAR WHERE RowNum = 1
+                ;
+                SELECT
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                GROUP BY
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END
+
+                UNION ALL
+                SELECT
+                    'Total' AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                ;
+            {% endsql %}
+            //- Convert SQL output to JSON in order to convert into LavaObject
+            {%- capture jsonString -%}
+            {
+                {%- for row in output -%}"{{ row.Status }}": {{ row.RowCount }}{%- unless forloop.last -%},{%- endunless %}{%- endfor -%}
+            }
+            {%- endcapture -%}
+            {% assign obj_GMandDNA = jsonString | FromJSON %}
+            {% assign int_GMandDNA_percentage = obj_GMandDNA.UpToDate | DividedBy:obj_GMandDNA.Total | Times:100 | Format:'#' %}
+            <a href="/page/1921?GroupId={{ g.Id }}" target="_blank" class="tim-child kpi kpi-card">
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                    <div class="kpi-content">{[ easypie value:'{{ int_GMandDNA_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GMandDNA_percentage }}%</span>{[ endeasypie ]}</div>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-label"><b>{{ g.Name }}</b></span>
+                    <br>
+                    <span class="kpi-value text-color">{{ obj_GMandDNA.NeedAction }}</span>
+                    <span class="kpi-label">Need to take DNA</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="tim-child" style="background-color: #f2f2f2">
+        <h3>Guest Experience Teams</h3>
+        {% sql return:'GuestExperience_VolunteerGroups' %}SELECT g.[Id], g.[Name] FROM [Group] g WHERE g.[ParentGroupId] = 58 AND g.[IsActive] = 1 AND g.[IsArchived] = 0 ORDER BY g.[Name] ASC;{% endsql %}
+        {% for g in GuestExperience_VolunteerGroups %}
+            //- Find out how many Members in the Group, and how many of them need DNA vs how many of them are up-to-date
+            {% sql return:'output' %}
+                DECLARE @Now datetime = GETDATE()
+                ;
+                DECLARE @DNA1_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNA_DateTime] datetime
+                );
+                DECLARE @DNA2_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNAR_DateTime] datetime
+                );
+                INSERT INTO @DNA1_PersonAliasId
+                SELECT s.[PersonAliasId], s.[CompletedDateTime] FROM [Step] s WHERE s.[StepTypeId] = 5 AND s.[StepStatusId] = 3
+                ;
+                WITH LatestDNAR AS (
+                    SELECT s.[PersonAliasId], s.[CompletedDateTime], ROW_NUMBER() OVER (PARTITION BY s.[PersonAliasId] ORDER BY s.[CompletedDateTime] DESC) AS 'RowNum'
+                    FROM [Step] s
+                    WHERE s.[StepTypeId] = 6 AND s.[StepStatusId] = 3
+                )
+                INSERT INTO @DNA2_PersonAliasId
+                SELECT [PersonAliasId], [CompletedDateTime] FROM LatestDNAR WHERE RowNum = 1
+                ;
+                SELECT
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                GROUP BY
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END
+
+                UNION ALL
+                SELECT
+                    'Total' AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                ;
+            {% endsql %}
+            //- Convert SQL output to JSON in order to convert into LavaObject
+            {%- capture jsonString -%}
+            {
+                {%- for row in output -%}"{{ row.Status }}": {{ row.RowCount }}{%- unless forloop.last -%},{%- endunless %}{%- endfor -%}
+            }
+            {%- endcapture -%}
+            {% assign obj_GMandDNA = jsonString | FromJSON %}
+            {% assign int_GMandDNA_percentage = obj_GMandDNA.UpToDate | DividedBy:obj_GMandDNA.Total | Times:100 | Format:'#' %}
+            <a href="/page/1921?GroupId={{ g.Id }}" target="_blank" class="tim-child kpi kpi-card">
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                    <div class="kpi-content">{[ easypie value:'{{ int_GMandDNA_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GMandDNA_percentage }}%</span>{[ endeasypie ]}</div>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-label"><b>{{ g.Name }}</b></span>
+                    <br>
+                    <span class="kpi-value text-color">{{ obj_GMandDNA.NeedAction }}</span>
+                    <span class="kpi-label">Need to take DNA</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="tim-child" style="background-color: #f2f2f2">
+        <h3>Groups Team</h3>
+        {% sql return:'GroupsTeam_VolunteerGroups' %}SELECT g.[Id], g.[Name] FROM [Group] g WHERE g.[ParentGroupId] = 111567 AND g.[IsActive] = 1 AND g.[IsArchived] = 0 ORDER BY g.[Name] ASC;{% endsql %}
+        {% for g in GroupsTeam_VolunteerGroups %}
+            //- Find out how many Members in the Group, and how many of them need DNA vs how many of them are up-to-date
+            {% sql return:'output' %}
+                DECLARE @Now datetime = GETDATE()
+                ;
+                DECLARE @DNA1_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNA_DateTime] datetime
+                );
+                DECLARE @DNA2_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNAR_DateTime] datetime
+                );
+                INSERT INTO @DNA1_PersonAliasId
+                SELECT s.[PersonAliasId], s.[CompletedDateTime] FROM [Step] s WHERE s.[StepTypeId] = 5 AND s.[StepStatusId] = 3
+                ;
+                WITH LatestDNAR AS (
+                    SELECT s.[PersonAliasId], s.[CompletedDateTime], ROW_NUMBER() OVER (PARTITION BY s.[PersonAliasId] ORDER BY s.[CompletedDateTime] DESC) AS 'RowNum'
+                    FROM [Step] s
+                    WHERE s.[StepTypeId] = 6 AND s.[StepStatusId] = 3
+                )
+                INSERT INTO @DNA2_PersonAliasId
+                SELECT [PersonAliasId], [CompletedDateTime] FROM LatestDNAR WHERE RowNum = 1
+                ;
+                SELECT
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                GROUP BY
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END
+
+                UNION ALL
+                SELECT
+                    'Total' AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                ;
+            {% endsql %}
+            //- Convert SQL output to JSON in order to convert into LavaObject
+            {%- capture jsonString -%}
+            {
+                {%- for row in output -%}"{{ row.Status }}": {{ row.RowCount }}{%- unless forloop.last -%},{%- endunless %}{%- endfor -%}
+            }
+            {%- endcapture -%}
+            {% assign obj_GMandDNA = jsonString | FromJSON %}
+            {% assign int_GMandDNA_percentage = obj_GMandDNA.UpToDate | DividedBy:obj_GMandDNA.Total | Times:100 | Format:'#' %}
+            <a href="/page/1921?GroupId={{ g.Id }}" target="_blank" class="tim-child kpi kpi-card">
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                    <div class="kpi-content">{[ easypie value:'{{ int_GMandDNA_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GMandDNA_percentage }}%</span>{[ endeasypie ]}</div>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-label"><b>{{ g.Name }}</b></span>
+                    <br>
+                    <span class="kpi-value text-color">{{ obj_GMandDNA.NeedAction }}</span>
+                    <span class="kpi-label">Need to take DNA</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="tim-child" style="background-color: #f2f2f2">
+        <h3>NextGen Kids Team</h3>
+        {% sql return:'NextGenTeam_Kids_VolunteerGroups' %}SELECT g.[Id], g.[Name] FROM [Group] g WHERE g.[ParentGroupId] = 88151 AND g.[IsActive] = 1 AND g.[IsArchived] = 0 ORDER BY g.[Name] ASC;{% endsql %}
+        {% for g in NextGenTeam_Kids_VolunteerGroups %}
+            //- Find out how many Members in the Group, and how many of them need DNA vs how many of them are up-to-date
+            {% sql return:'output' %}
+                DECLARE @Now datetime = GETDATE()
+                ;
+                DECLARE @DNA1_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNA_DateTime] datetime
+                );
+                DECLARE @DNA2_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNAR_DateTime] datetime
+                );
+                INSERT INTO @DNA1_PersonAliasId
+                SELECT s.[PersonAliasId], s.[CompletedDateTime] FROM [Step] s WHERE s.[StepTypeId] = 5 AND s.[StepStatusId] = 3
+                ;
+                WITH LatestDNAR AS (
+                    SELECT s.[PersonAliasId], s.[CompletedDateTime], ROW_NUMBER() OVER (PARTITION BY s.[PersonAliasId] ORDER BY s.[CompletedDateTime] DESC) AS 'RowNum'
+                    FROM [Step] s
+                    WHERE s.[StepTypeId] = 6 AND s.[StepStatusId] = 3
+                )
+                INSERT INTO @DNA2_PersonAliasId
+                SELECT [PersonAliasId], [CompletedDateTime] FROM LatestDNAR WHERE RowNum = 1
+                ;
+                SELECT
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                GROUP BY
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END
+
+                UNION ALL
+                SELECT
+                    'Total' AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                ;
+            {% endsql %}
+            //- Convert SQL output to JSON in order to convert into LavaObject
+            {%- capture jsonString -%}
+            {
+                {%- for row in output -%}"{{ row.Status }}": {{ row.RowCount }}{%- unless forloop.last -%},{%- endunless %}{%- endfor -%}
+            }
+            {%- endcapture -%}
+            {% assign obj_GMandDNA = jsonString | FromJSON %}
+            {% assign int_GMandDNA_percentage = obj_GMandDNA.UpToDate | DividedBy:obj_GMandDNA.Total | Times:100 | Format:'#' %}
+            <a href="/page/1921?GroupId={{ g.Id }}" target="_blank" class="tim-child kpi kpi-card">
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                    <div class="kpi-content">{[ easypie value:'{{ int_GMandDNA_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GMandDNA_percentage }}%</span>{[ endeasypie ]}</div>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-label"><b>{{ g.Name }}</b></span>
+                    <br>
+                    <span class="kpi-value text-color">{{ obj_GMandDNA.NeedAction }}</span>
+                    <span class="kpi-label">Need to take DNA</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="tim-child" style="background-color: #f2f2f2">
+        <h3>NextGen MS Team</h3>
+        {% sql return:'NextGenTeam_MS_VolunteerGroups' %}SELECT g.[Id], g.[Name] FROM [Group] g WHERE g.[ParentGroupId] = 29866 AND g.[IsActive] = 1 AND g.[IsArchived] = 0 ORDER BY g.[Name] ASC;{% endsql %}
+        {% for g in NextGenTeam_MS_VolunteerGroups %}
+            //- Find out how many Members in the Group, and how many of them need DNA vs how many of them are up-to-date
+            {% sql return:'output' %}
+                DECLARE @Now datetime = GETDATE()
+                ;
+                DECLARE @DNA1_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNA_DateTime] datetime
+                );
+                DECLARE @DNA2_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNAR_DateTime] datetime
+                );
+                INSERT INTO @DNA1_PersonAliasId
+                SELECT s.[PersonAliasId], s.[CompletedDateTime] FROM [Step] s WHERE s.[StepTypeId] = 5 AND s.[StepStatusId] = 3
+                ;
+                WITH LatestDNAR AS (
+                    SELECT s.[PersonAliasId], s.[CompletedDateTime], ROW_NUMBER() OVER (PARTITION BY s.[PersonAliasId] ORDER BY s.[CompletedDateTime] DESC) AS 'RowNum'
+                    FROM [Step] s
+                    WHERE s.[StepTypeId] = 6 AND s.[StepStatusId] = 3
+                )
+                INSERT INTO @DNA2_PersonAliasId
+                SELECT [PersonAliasId], [CompletedDateTime] FROM LatestDNAR WHERE RowNum = 1
+                ;
+                SELECT
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                GROUP BY
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END
+
+                UNION ALL
+                SELECT
+                    'Total' AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                ;
+            {% endsql %}
+            //- Convert SQL output to JSON in order to convert into LavaObject
+            {%- capture jsonString -%}
+            {
+                {%- for row in output -%}"{{ row.Status }}": {{ row.RowCount }}{%- unless forloop.last -%},{%- endunless %}{%- endfor -%}
+            }
+            {%- endcapture -%}
+            {% assign obj_GMandDNA = jsonString | FromJSON %}
+            {% assign int_GMandDNA_percentage = obj_GMandDNA.UpToDate | DividedBy:obj_GMandDNA.Total | Times:100 | Format:'#' %}
+            <a href="/page/1921?GroupId={{ g.Id }}" target="_blank" class="tim-child kpi kpi-card">
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                    <div class="kpi-content">{[ easypie value:'{{ int_GMandDNA_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GMandDNA_percentage }}%</span>{[ endeasypie ]}</div>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-label"><b>{{ g.Name }}</b></span>
+                    <br>
+                    <span class="kpi-value text-color">{{ obj_GMandDNA.NeedAction }}</span>
+                    <span class="kpi-label">Need to take DNA</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="tim-child" style="background-color: #f2f2f2">
+        <h3>NextGen HS Team</h3>
+        {% sql return:'NextGenTeam_HS_VolunteerGroups' %}SELECT g.[Id], g.[Name] FROM [Group] g WHERE g.[ParentGroupId] = 29867 AND g.[IsActive] = 1 AND g.[IsArchived] = 0 ORDER BY g.[Name] ASC;{% endsql %}
+        {% for g in NextGenTeam_HS_VolunteerGroups %}
+            //- Find out how many Members in the Group, and how many of them need DNA vs how many of them are up-to-date
+            {% sql return:'output' %}
+                DECLARE @Now datetime = GETDATE()
+                ;
+                DECLARE @DNA1_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNA_DateTime] datetime
+                );
+                DECLARE @DNA2_PersonAliasId TABLE(
+                    [PersonAliasId] int NOT NULL
+                  , [DNAR_DateTime] datetime
+                );
+                INSERT INTO @DNA1_PersonAliasId
+                SELECT s.[PersonAliasId], s.[CompletedDateTime] FROM [Step] s WHERE s.[StepTypeId] = 5 AND s.[StepStatusId] = 3
+                ;
+                WITH LatestDNAR AS (
+                    SELECT s.[PersonAliasId], s.[CompletedDateTime], ROW_NUMBER() OVER (PARTITION BY s.[PersonAliasId] ORDER BY s.[CompletedDateTime] DESC) AS 'RowNum'
+                    FROM [Step] s
+                    WHERE s.[StepTypeId] = 6 AND s.[StepStatusId] = 3
+                )
+                INSERT INTO @DNA2_PersonAliasId
+                SELECT [PersonAliasId], [CompletedDateTime] FROM LatestDNAR WHERE RowNum = 1
+                ;
+                SELECT
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                GROUP BY
+                    CASE
+                        WHEN dna2.[DNAR_DateTime] IS NOT NULL AND dna2.[DNAR_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        WHEN dna2.[DNAR_DateTime] IS NULL AND dna1.[DNA_DateTime] IS NOT NULL AND dna1.[DNA_DateTime] >= DATEADD(YEAR, -1, @Now)
+                            THEN 'UpToDate'
+                        ELSE 'NeedAction'
+                    END
+
+                UNION ALL
+                SELECT
+                    'Total' AS 'Status'
+                  , COUNT(*) AS 'RowCount'
+                FROM
+                    [GroupMember] gm
+                    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = gm.[PersonId] AND pa.[AliasPersonId] = pa.[PersonId]
+                    LEFT JOIN @DNA1_PersonAliasId dna1 ON dna1.[PersonAliasId] = pa.[Id]
+                    LEFT JOIN @DNA2_PersonAliasId dna2 ON dna2.[PersonAliasId] = pa.[Id]
+                WHERE
+                    gm.[GroupId] = {{ g.Id }}
+                    AND
+                    gm.[GroupMemberStatus] = 1
+                    AND
+                    gm.[IsArchived] = 0
+                ;
+            {% endsql %}
+            //- Convert SQL output to JSON in order to convert into LavaObject
+            {%- capture jsonString -%}
+            {
+                {%- for row in output -%}"{{ row.Status }}": {{ row.RowCount }}{%- unless forloop.last -%},{%- endunless %}{%- endfor -%}
+            }
+            {%- endcapture -%}
+            {% assign obj_GMandDNA = jsonString | FromJSON %}
+            {% assign int_GMandDNA_percentage = obj_GMandDNA.UpToDate | DividedBy:obj_GMandDNA.Total | Times:100 | Format:'#' %}
+            <a href="/page/1921?GroupId={{ g.Id }}" target="_blank" class="tim-child kpi kpi-card">
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                    <div class="kpi-content">{[ easypie value:'{{ int_GMandDNA_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GMandDNA_percentage }}%</span>{[ endeasypie ]}</div>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-label"><b>{{ g.Name }}</b></span>
+                    <br>
+                    <span class="kpi-value text-color">{{ obj_GMandDNA.NeedAction }}</span>
+                    <span class="kpi-label">Need to take DNA</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{[ endpanel ]}
