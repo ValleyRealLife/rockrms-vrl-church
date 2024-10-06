@@ -1,0 +1,320 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=4609, [HTML Content] > HTML
+    
+    This Lava is used to display cards with progress percentages per Life Group and their defined success metrics.
+    This Lava requires the 'RockEntity' and the 'Sql' Lava commands enabled.
+    
+    Path:
+    _code/Block-HTMLContent/Dashboards_PageId4609/BlockId6229-SuccessKPI.lava
+------------------------------------------------------------/
+
+<style>
+    .tim-EasyPieContainer{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+    }
+    
+    .tim-EasyPieCard {
+        min-width: 15em;
+        max-width: 15em;
+        width: 100%;
+        flex: 1 1 15em;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+</style>
+
+{% assign var_filter = 'Global' | PageParameter:'FilterType' | AsString | SanitizeSql %}
+{% assign pastorGuid = 'Global' | PageParameter:'LGPastor' | SanitizeSql %}
+{% assign coachGuid = 'Global' | PageParameter:'LGCoach' | SanitizeSql %}
+
+//- Logic for whether to show the HTML at all
+{% if var_filter != null and var_filter != empty and pastorGuid != null and pastorGuid != empty %}
+    {% assign var_Logic = 1 | AsBoolean %}
+{% elseif var_filter != null and var_filter != empty and coachGuid != null and coachGuid != empty %}
+    {% assign var_Logic = 1 | AsBoolean %}
+{% else %}
+    {% assign var_Logic = 0 | AsBoolean %}
+{% endif %}
+
+//- Everything inside this IF statement only happens if var_Logic is true
+{% if var_Logic != null and var_Logic == true %}
+    
+    //- Get total number of queried groups
+    {% if var_filter == 1 %}
+        {% group where:'Pastor == "{{ pastorGuid }}"' securityenabled:'false' count:'true' %}
+            {% assign int_QueriedGroups = count %}
+        {% endgroup %}
+    {% elseif var_filter == 2 %}
+        {% group where:'Coach == "{{ coachGuid }}"' securityenabled:'false' count:'true' %}
+            {% assign int_QueriedGroups = count %}
+        {% endgroup %}
+    {% endif %}
+    
+    //- Get how many groups have Next Step
+    //- If you ever make a change to this SQL query, it's likely you'll need to make the same change to BlockId:5792
+    {% sql return:'CountGroupsWithNextStep' %}
+        DECLARE @MostRecentCoachCheckinForm TABLE (
+            [Id] INT
+          , [Title] NVARCHAR(255)
+          , [GroupId] INT
+          , [FormSubmissionDateTime] DATETIME
+        );
+        
+        INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+        SELECT
+            cci.[Id]
+          , cci.[Title]
+          , cci_GroupId.[Value] AS 'GroupId'
+          , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+        FROM
+            [ContentChannelItem] cci
+            LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+        WHERE
+            cci.[ContentChannelId] = 351
+            AND cci.[StartDateTime] = (
+                SELECT MAX(inner_cci.[StartDateTime])
+                FROM [ContentChannelItem] inner_cci
+                    LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+                WHERE
+                    inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+                    AND inner_cci.[ContentChannelId] = 351
+        );
+        
+        SELECT
+            COUNT(*) AS 'GroupsWithNextStep'
+        FROM
+            [Group] g
+            LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
+            LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
+            LEFT JOIN [AttributeValue] AS av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975 --Coach
+            LEFT JOIN [AttributeValue] AS av_GroupNextStep ON av_GroupNextStep.[EntityId] = CoachCheckinForm.[Id] AND av_GroupNextStep.[AttributeId] = 16521 --Form_NextStepForGroupMembers
+        WHERE
+            g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+            AND
+            av_GroupNextStep.[Value] IS NOT NULL
+            {% if var_filter == 1 %}
+            AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
+            {% elseif var_filter == 2 %}
+            AND TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier) = '{{ coachGuid }}'
+            {% endif %}
+        ;
+    {% endsql %}
+    {% assign int_GroupsWithNextStep = CountGroupsWithNextStep[0].GroupsWithNextStep %}
+    
+    //- Get how many groups are serving together
+    //- If you ever make a change to this SQL query, it's likely you'll need to make the same change to BlockId:5792
+    {% sql return:'CountGroupsServingTogether' %}
+        DECLARE @MostRecentCoachCheckinForm TABLE (
+            [Id] INT
+          , [Title] NVARCHAR(255)
+          , [GroupId] INT
+          , [FormSubmissionDateTime] DATETIME
+        );
+        
+        INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+        SELECT
+            cci.[Id]
+          , cci.[Title]
+          , cci_GroupId.[Value] AS 'GroupId'
+          , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+        FROM
+            [ContentChannelItem] cci
+            LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+        WHERE
+            cci.[ContentChannelId] = 351
+            AND cci.[StartDateTime] = (
+                SELECT MAX(inner_cci.[StartDateTime])
+                FROM [ContentChannelItem] inner_cci
+                    LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+                WHERE
+                    inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+                    AND inner_cci.[ContentChannelId] = 351
+        );
+        
+        SELECT
+            COUNT(*) AS 'GroupServingTogether'
+        FROM
+            [Group] g
+            LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
+            LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
+            LEFT JOIN [AttributeValue] AS av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975 --Coach
+            LEFT JOIN [AttributeValue] AS av_GroupServingTogether ON av_GroupServingTogether.[EntityId] = CoachCheckinForm.[Id] AND av_GroupServingTogether.[AttributeId] = 16516 --Form_DateLastServedTogether
+        WHERE
+            g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+            AND
+            av_GroupServingTogether.[Value] IS NOT NULL
+            {% if var_filter == 1 %}
+            AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
+            {% elseif var_filter == 2 %}
+            AND TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier) = '{{ coachGuid }}'
+            {% endif %}
+        ;
+    {% endsql %}
+    {% assign int_GroupsServingTogether = CountGroupsServingTogether[0].GroupServingTogether %}
+    
+    //- Get how many groups have a NextLeader ientified
+    //- If you ever make a change to this SQL query, it's likely you'll need to make the same change to BlockId:5792
+    {% sql return:'CountGroupNextLeaderIdentified' %}
+        DECLARE @MostRecentCoachCheckinForm TABLE (
+            [Id] INT
+          , [Title] NVARCHAR(255)
+          , [GroupId] INT
+          , [FormSubmissionDateTime] DATETIME
+        );
+        
+        INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+        SELECT
+            cci.[Id]
+          , cci.[Title]
+          , cci_GroupId.[Value] AS 'GroupId'
+          , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+        FROM
+            [ContentChannelItem] cci
+            LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+        WHERE
+            cci.[ContentChannelId] = 351
+            AND cci.[StartDateTime] = (
+                SELECT MAX(inner_cci.[StartDateTime])
+                FROM [ContentChannelItem] inner_cci
+                    LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+                WHERE
+                    inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+                    AND inner_cci.[ContentChannelId] = 351
+        );
+        
+        SELECT
+            COUNT(*) AS 'GroupNextLeaderIdentified'
+        FROM
+            [Group] g
+            LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
+            LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
+            LEFT JOIN [AttributeValue] AS av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975 --Coach
+            LEFT JOIN [AttributeValue] AS av_GroupNextLeaderIdentified ON av_GroupNextLeaderIdentified.[EntityId] = CoachCheckinForm.[Id] AND av_GroupNextLeaderIdentified.[AttributeId] = 16515 --Form_NextLeader
+        WHERE
+            g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+            AND
+            av_GroupNextLeaderIdentified.[Value] IS NOT NULL
+            {% if var_filter == 1 %}
+            AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
+            {% elseif var_filter == 2 %}
+            AND TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier) = '{{ coachGuid }}'
+            {% endif %}
+        ;
+    {% endsql %}
+    {% assign int_GroupNextLeaderIdentified = CountGroupNextLeaderIdentified[0].GroupNextLeaderIdentified %}
+    
+    //- Get how many groups are accurate
+    //- If you ever make a change to this SQL query, it's likely you'll need to make the same change to BlockId:5792
+    {% sql return:'CountGroupIsAccurate' %}
+        DECLARE @MostRecentCoachCheckinForm TABLE (
+            [Id] INT
+          , [Title] NVARCHAR(255)
+          , [GroupId] INT
+          , [FormSubmissionDateTime] DATETIME
+        );
+        
+        INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+        SELECT
+            cci.[Id]
+          , cci.[Title]
+          , cci_GroupId.[Value] AS 'GroupId'
+          , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+        FROM
+            [ContentChannelItem] cci
+            LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+        WHERE
+            cci.[ContentChannelId] = 351
+            AND cci.[StartDateTime] = (
+                SELECT MAX(inner_cci.[StartDateTime])
+                FROM [ContentChannelItem] inner_cci
+                    LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+                WHERE
+                    inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+                    AND inner_cci.[ContentChannelId] = 351
+        );
+        
+        SELECT
+            COUNT(*) AS 'GroupIsAccurate'
+        FROM
+            [Group] g
+            LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
+            LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
+            LEFT JOIN [AttributeValue] AS av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975 --Coach
+            LEFT JOIN [AttributeValue] AS av_IsDescriptionUpToDate ON av_IsDescriptionUpToDate.[EntityId] = CoachCheckinForm.[Id] AND av_IsDescriptionUpToDate.[AttributeId] = 16518 --Form_IsDescriptionUpToDate
+            LEFT JOIN [AttributeValue] AS av_IsRosterUpToDate ON av_IsRosterUpToDate.[EntityId] = CoachCheckinForm.[Id] AND av_IsRosterUpToDate.[AttributeId] = 16519 --Form_IsRosterUpToDate
+            LEFT JOIN [AttributeValue] AS av_IsAttendanceCompleted ON av_IsAttendanceCompleted.[EntityId] = CoachCheckinForm.[Id] AND av_IsAttendanceCompleted.[AttributeId] = 16520 --Form_IsAttendanceCompleted
+        WHERE
+            g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+            AND
+            av_IsDescriptionUpToDate.[Value] = 1 AND av_IsRosterUpToDate.[Value] = 1 AND av_IsAttendanceCompleted.[Value] = 1
+            {% if var_filter == 1 %}
+            AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
+            {% elseif var_filter == 2 %}
+            AND TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier) = '{{ coachGuid }}'
+            {% endif %}
+        ;
+    {% endsql %}
+    {% assign int_GroupIsAccurate = CountGroupIsAccurate[0].GroupIsAccurate %}
+    
+    //- This is the panel where I display all the information that has been queried
+    {[ panel title:'Success Metrics' icon:'fa fa-grin-stars' ]}
+    <div class="tim-EasyPieContainer">
+        //-This Div is the card with 'Individual Next Steps'
+        <div class="tim-EasyPieCard kpi kpi-card">
+            {% assign int_GroupsWithNextStep_percentage = int_GroupsWithNextStep | DividedBy:int_QueriedGroups | Format:'p0' %}
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ int_GroupsWithNextStep_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GroupsWithNextStep_percentage }}</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ int_GroupsWithNextStep }}</span>
+                <span class="kpi-label">Individual Next Steps</span>
+            </div>
+        </div>
+        //-This Div is the card with 'Serving Together'
+        <div class="tim-EasyPieCard kpi kpi-card">
+            {% assign int_GroupsServingTogether_percentage = int_GroupsServingTogether | DividedBy:int_QueriedGroups | Format:'p0' %}
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ int_GroupsServingTogether_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GroupsServingTogether_percentage }}</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ int_GroupsServingTogether }}</span>
+                <span class="kpi-label">Serving Together</span>
+            </div>
+        </div>
+        //-This Div is the card with 'Next Leader Identified'
+        <div class="tim-EasyPieCard kpi kpi-card">
+            {% assign int_GroupNextLeaderIdentified_percentage = int_GroupNextLeaderIdentified | DividedBy:int_QueriedGroups | Format:'p0' %}
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ int_GroupNextLeaderIdentified_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GroupNextLeaderIdentified_percentage }}</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ int_GroupNextLeaderIdentified }}</span>
+                <span class="kpi-label">Next Leader Identified</span>
+            </div>
+        </div>
+        //-This Div is the card with 'Group Accuracy'
+        <div class="tim-EasyPieCard kpi kpi-card">
+            {% assign int_GroupIsAccurate_percentage = int_GroupIsAccurate | DividedBy:int_QueriedGroups | Format:'p0' %}
+            <div class="kpi-icon">
+                <img class="svg-placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+                <div class="kpi-content">{[ easypie value:'{{ int_GroupIsAccurate_percentage }}' chartwidth:'150' scalelinelength:'4' primarycolor:'#98BE4B' ]}<span style="font-size:1em;">{{ int_GroupIsAccurate_percentage }}</span>{[ endeasypie ]}</div>
+            </div>
+            <div class="kpi-stat">
+                <span class="kpi-value text-color">{{ int_GroupIsAccurate }}</span>
+                <span class="kpi-label">Group Accuracy</span>
+            </div>
+        </div>
+    </div>
+    {[ endpanel ]}
+{% else %}
+    <div class="alert alert-warning">Please select some filter criteria</div>
+{% endif %}
