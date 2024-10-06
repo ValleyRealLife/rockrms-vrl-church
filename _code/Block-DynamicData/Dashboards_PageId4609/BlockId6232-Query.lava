@@ -1,0 +1,126 @@
+/****************************************************************************************
+    This Lava/SQL is found in
+    PageId=4609, [HTML Content] > HTML
+    
+    This Lava/SQL is used in the Dynamic Data block
+    
+    Path:
+    _code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava
+****************************************************************************************/
+
+{% assign var_filter = 'Global' | PageParameter:'FilterType' | AsString | SanitizeSql %}
+{% assign pastorGuid = 'Global' | PageParameter:'LGPastor' | SanitizeSql %}
+{% assign coachGuid = 'Global' | PageParameter:'LGCoach' | SanitizeSql %}
+
+{% if var_filter != null and var_filter != empty and pastorGuid != null and pastorGuid != empty %}
+    {% assign var_Logic = 1 | AsBoolean %}
+{% elseif var_filter != null and var_filter != empty and coachGuid != null and coachGuid != empty %}
+    {% assign var_Logic = 1 | AsBoolean %}
+{% else %}
+    {% assign var_Logic = 0 | AsBoolean %}
+{% endif %}
+
+{% if var_Logic != null and var_Logic == true %}
+DECLARE @MostRecentCoachCheckinForm TABLE (
+    [Id] INT
+  , [Title] NVARCHAR(255)
+  , [GroupId] INT
+  , [FormSubmissionDateTime] DATETIME
+);
+
+DECLARE @MostRecentGroupMembersPerGroup TABLE (
+    [GroupMemberId] INT
+  , [GroupId] INT
+  , [PersonId] INT
+  , [DateTimeAdded] DATETIME
+);
+
+INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+SELECT
+    cci.[Id]
+  , cci.[Title]
+  , cci_GroupId.[Value] AS 'GroupId'
+  , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+FROM
+    [ContentChannelItem] cci
+    LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+WHERE
+    cci.[ContentChannelId] = 351
+    AND cci.[StartDateTime] = (
+        SELECT MAX(inner_cci.[StartDateTime])
+        FROM [ContentChannelItem] inner_cci
+            LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+        WHERE
+            inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+            AND inner_cci.[ContentChannelId] = 351
+);
+
+WITH MostRecentGMs AS(
+    SELECT
+        gm.[Id] AS 'GroupMemberId'
+      , gm.[GroupId]
+      , gm.[PersonId]
+      , gm.[DateTimeAdded]
+      , ROW_NUMBER() OVER (PARTITION BY gm.[GroupId] ORDER BY gm.[DateTimeAdded] DESC) AS 'RowNum'
+    FROM
+       [GroupMember] gm
+       LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+    WHERE
+        gm.[GroupTypeId] IN (25, 45, 46, 59)
+        AND
+        g.[IsActive] = 1 AND g.[IsArchived] = 0
+)
+INSERT INTO @MostRecentGroupMembersPerGroup ([GroupMemberId], [GroupId], [PersonId], [DateTimeAdded])
+SELECT
+    [GroupMemberId]
+  , [GroupId]
+  , [PersonId]
+  , [DateTimeAdded]
+FROM
+    MostRecentGMs
+WHERE
+    [RowNum] = 1
+;
+
+SELECT
+    g.[Name] AS 'Life Group Name'
+  , c.[Name] AS 'Campus'
+  , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'Pastor'
+  , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'Coach'
+  , CoachCheckinForm.[FormSubmissionDateTime] AS 'Most Recent Checkin Form'
+  , av_GroupDescriptionUTD.[PersistedTextValue] AS 'Description Up To Date'
+  , av_GroupRosterUTD.[PersistedTextValue] AS 'Roster Up To Date'
+  , av_GroupAttendanceUTD.[PersistedTextValue] AS 'Attendance Up To Date'
+  , CASE
+        WHEN av_GroupNextStep.[Value] IS NULL THEN ''
+        ELSE 'Yes'
+    END AS 'Next Step'
+  , av_GroupNextLeader.[PersistedTextValue] AS 'Next Leaders'
+  , av_GroupLastServedDate.[PersistedTextValue] AS 'Last Served Date'
+  , TRY_CAST(MostRecentGM.[DateTimeAdded] AS DATE) AS 'Last New Person'
+FROM
+    [Group] g
+    LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
+    LEFT JOIN @MostRecentGroupMembersPerGroup MostRecentGM ON MostRecentGM.[GroupId] = g.[Id]
+    LEFT JOIN [Campus] c ON c.[Id] = g.[CampusId]
+    LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
+    LEFT JOIN [AttributeValue] AS av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975 --Coach
+    LEFT JOIN [AttributeValue] AS av_GroupDescriptionUTD ON av_GroupDescriptionUTD.[EntityId] = CoachCheckinForm.[Id] AND av_GroupDescriptionUTD.[AttributeId] = 16518 --Form_IsDescriptionUpToDate
+    LEFT JOIN [AttributeValue] AS av_GroupRosterUTD ON av_GroupRosterUTD.[EntityId] = CoachCheckinForm.[Id] AND av_GroupRosterUTD.[AttributeId] = 16519 --Form_IsRosterUpToDate
+    LEFT JOIN [AttributeValue] AS av_GroupAttendanceUTD ON av_GroupAttendanceUTD.[EntityId] = CoachCheckinForm.[Id] AND av_GroupAttendanceUTD.[AttributeId] = 16520 --Form_IsAttendanceCompleted
+    LEFT JOIN [AttributeValue] AS av_GroupNextStep ON av_GroupNextStep.[EntityId] = CoachCheckinForm.[Id] AND av_GroupNextStep.[AttributeId] = 16521 --Form_NextStepForGroupMembers
+    LEFT JOIN [AttributeValue] AS av_GroupNextLeader ON av_GroupNextLeader.[EntityId] = CoachCheckinForm.[Id] AND av_GroupNextLeader.[AttributeId] = 16515 --Form_NextLeader
+    LEFT JOIN [AttributeValue] AS av_GroupLastServedDate ON av_GroupLastServedDate.[EntityId] = CoachCheckinForm.[Id] AND av_GroupLastServedDate.[AttributeId] = 16516 --Form_DateLastServedTogether
+    LEFT JOIN [PersonAlias] pa1 ON pa1.[Guid] = TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier)
+    LEFT JOIN [PersonAlias] pa2 ON pa2.[Guid] = TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier)
+    LEFT JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+    LEFT JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
+WHERE
+    g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+    {% if var_filter == '1' %}
+    AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
+    {% elseif var_filter == '2' %}
+    AND TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier) = '{{ coachGuid }}'
+    {% endif %}
+;
+{% endif %}
