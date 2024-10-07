@@ -1,0 +1,174 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1128, [Coaching Group Detail] > HTML
+    
+    This Lava is used to mimic the Group Detail Lava Block type.
+    This Lava requires the 'RockEntity' and the 'Sql' Lava commands enabled.
+    
+    Path:
+    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6223-CoachingGroupDetail.lava
+------------------------------------------------------------/
+
+{% assign var_gray = '#616A71' %}
+{% assign var_CoachingGroupId = PageParameter.CoachingGroupId %}
+
+{% if var_CoachingGroupId != null and var_CoachingGroupId != empty %}
+    //- The Group we are displaying on this page
+    {% group where:'Id == {{ var_CoachingGroupId }}' securityenabled:'false' %}
+        {% assign var_CoachingGroup_Name = group.Name %}
+        {% assign var_CoachingGroup_Pastor = group | Attribute:'Pastor', 'Object' %}
+    {% endgroup %}
+    
+    //- This is how we change the Title of this page
+    {% capture txt_PageTitle %} Group Toolbox | {{ var_CoachingGroup_Name }}{% endcapture %}
+    {{ txt_PageTitle | SetPageTitle }}
+    
+    //- Of the group, who are labeled as 'Leader' or 'Co-Leader'?
+    {% sql return:'array_CoachingGroup_Leaders' %}
+        SELECT [PersonId] FROM [GroupMember] WHERE [GroupId] = {{ var_CoachingGroupId }} AND [GroupMemberStatus] <> 0 AND [IsArchived] = 0 AND [GroupRoleId] IN (24, 59) ORDER BY [CreatedDateTime] ASC;
+    {% endsql %}
+    {% assign count_CoachingGroup_Leaders = array_CoachingGroup_Leaders | Size %}
+    
+    //- Of the group, who are labeled as 'NextLeader'?
+    {% groupmember where:'GroupId == {{ var_CoachingGroupId }} && GroupMemberStatus != 0 && GroupRoleId == 173' securityenabled:'false' iterator:'array_CoachingGroup_NextLeaders' %}
+        {% assign count_CoachingGroup_NextLeaders = array_CoachingGroup_NextLeaders | Size %}
+    {% endgroupmember %}
+    
+    //- Of the group, who are labeled as 'Member' or 'Host'?
+    {% sql return:'array_CoachingGroup_Members' %}
+        SELECT [PersonId] FROM [GroupMember] WHERE [GroupId] = {{ var_CoachingGroupId }} AND [GroupMemberStatus] <> 0 AND [IsArchived] = 0 AND [GroupRoleId] IN (23, 58) ORDER BY [CreatedDateTime] DESC;
+    {% endsql %}
+    {% assign count_CoachingGroup_Members = array_CoachingGroup_Members | Size %}
+    
+    //- The ContentChannelItems where the AttributeValue of 'GroupId' matches the GroupId of this Group
+    {% sql return:'array_FormSubmissions' %}
+        SELECT TOP 5 cci.[Id] FROM [ContentChannelItem] cci LEFT JOIN [AttributeValue] av ON av.[EntityId] = cci.[Id] AND av.[AttributeId] = 16514 WHERE cci.[ContentChannelId] = 351 AND av.[Value] = {{ var_CoachingGroupId }} ORDER BY cci.[CreatedDateTime] DESC;
+    {% endsql %}
+    
+    <style>
+        @media screen and (max-width: 646px) {
+            .coachinggroup-details {
+                display: block;
+            }
+        }
+        
+        @media screen and (min-width: 647px) {
+            .coachinggroup-details {
+                display: block;
+            }
+        }
+        
+        .coachinggroup-details {
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            border-color: #0E2C54;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .tim-twocolumn-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto;
+        }
+        
+        .tim-left-column {
+            grid-row: 1 / 4;
+            padding: 10px;
+        }
+        
+        .tim-right-column {
+            grid-column: 2;
+            grid-row: 1 / 4;
+            padding: 10px;
+        }
+    </style>
+    
+    <div id="CoachingGroup-Info">
+        <div class="coachinggroup-details">
+            <p><h3>Group Details</h3></p><hr>
+            <div class="tim-twocolumn-layout">
+                <div class="tim-left-column">
+                    <b>Last Contact Date:</b><br>
+                    {% assign var_MostRecentFormSubmissionId = array_FormSubmissions[0].Id %}
+                    {% contentchannelitem where:'Id == {{ var_MostRecentFormSubmissionId }}' securityenabled:'false' iterator:'cci_MostRecent' %}
+                    {% endcontentchannelitem %}
+                    {{ cci_MostRecent[0].StartDateTime | HumanizeDateTime | Capitalize }}
+                    <br>
+                    <br>
+                    <b>Assigned Pastor:</b><br>
+                    {% if var_CoachingGroup_Pastor != null and var_CoachingGroup_Pastor != empty %}{{ var_CoachingGroup_Pastor.NickName }} {{ var_CoachingGroup_Pastor.LastName }}{% else %}(n/a){% endif %}<br>
+                    <br>
+                    <b>{{ 'Leader' |  PluralizeForQuantity:count_CoachingGroup_Leaders }}:</b><br>
+                    {% if count_CoachingGroup_Leaders == 0 %}
+                    <p>(n/a)</p>
+                    {% elseif count_CoachingGroup_Leaders == 1 %}
+                        {% assign person_Leader = array_CoachingGroup_Leaders[0].PersonId | PersonById %}
+                        <p>{{ person_Leader.NickName }} {{ person_Leader.LastName }}</p>
+                    {% else %}
+                    <ol>
+                    {% for var_Leader in array_CoachingGroup_Leaders %}
+                        {% assign person_Leader = var_Leader.PersonId | PersonById %}
+                        <li>{{ person_Leader.NickName }} {{ person_Leader.LastName }}</li>
+                    {% endfor %}
+                    </ol>
+                    {% endif %}
+                    <b>Next {{ 'Leader' |  PluralizeForQuantity:count_CoachingGroup_NextLeaders }}:</b><br>
+                    {% if count_CoachingGroup_NextLeaders == 0 %}
+                    <p>(n/a)</p>
+                    {% elseif count_CoachingGroup_NextLeaders == 1 %}
+                    <ul>
+                        {% assign person_NextLeader = array_CoachingGroup_NextLeaders[0].PersonId | PersonById %}
+                        <li>{{ person_NextLeader.NickName }} {{ person_NextLeader.LastName }}</li>
+                    </ul>
+                    {% else %}
+                    <ol>
+                    {% for var_NextLeader in array_CoachingGroup_NextLeaders %}
+                        {% assign person_NextLeader = var_NextLeader.PersonId | PersonById %}
+                        <li>{{ person_NextLeader.NickName }} {{ person_NextLeader.LastName }}</li>
+                    {% endfor %}
+                    </ol>
+                    {% endif %}
+                </div>
+                <div class="tim-right-column">
+                    <b>{{ 'Member' |  PluralizeForQuantity:count_CoachingGroup_Members }}:</b><br>
+                    {% if count_CoachingGroup_Members == 0 %}
+                    <p>(n/a)</p>
+                    {% elseif count_CoachingGroup_Members == 1 %}
+                    <ul>
+                        {% assign person_Member = array_CoachingGroup_Members[0].PersonId | PersonById %}
+                        <li>{{ person_Member.NickName }} {{ person_Member.LastName }}</li>
+                    </ul>
+                    {% else %}
+                    <ol>
+                    {% for var_Member in array_CoachingGroup_Members %}
+                        {% assign person_Member = var_Member.PersonId | PersonById %}
+                        <li>{{ person_Member.NickName }} {{ person_Member.LastName }}</li>
+                    {% endfor %}
+                    </ol>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <p class="text-center">
+            <a class="btn btn-primary btn-lg" href="/page/4606?GroupId={{ var_CoachingGroupId }}">Coach Check-in Form</a>
+        </p>
+    </div>
+    <div id="CoachingGroup-FormSubmissions">
+        <div class="coachinggroup-details">
+            <p><h3>Past Form Submissions</h3></p><hr>
+            <div>
+                <ul>
+                {% for form in array_FormSubmissions %}
+                    {% contentchannelitem where:'Id == {{ form.Id }}' securityenabled:'false' iterator:'cci_ListItem' %}
+                    {% endcontentchannelitem %}
+                    <li><a href="/page/4607?FormId={{ cci_ListItem[0].Id }}">{{ var_CoachingGroup_Name }}, Coaching Form #{{ cci_ListItem[0].Id }}</a> ({{ cci_ListItem[0].StartDateTime | Date:'M/d/yyyy' }})</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endif %}

@@ -1,0 +1,160 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=4607, [Coaching Form, Past Submission] > Lava Template
+    
+    This Lava is used to mimic the Group Detail Lava Block type.
+    This Lava requires the 'RockEntity' Lava command enabled.
+    
+    Path:
+    _code/Block-ContentChannelItemView/CoachingGroups_PageId4607/BlockId6225-CoachingFormPastSubmission.lava
+------------------------------------------------------------/
+
+<style>
+    .tim-old-question {
+        
+    }
+    .tim-old-textbox {
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 33.75em;
+        height: 15.5em;
+        padding: 1em;
+        overflow: auto;
+    }
+    .tim-small-textbox {
+        width: 8em;
+        height: 1.5em;
+        padding: 0em 0.5em 0em 0.5em;
+    }
+</style>
+
+{% assign var_CoachingGroupId = Item | Attribute:'GroupId' %}
+{% assign url_GoBack = '/page/1128?CoachingGroupId=' | Append:var_CoachingGroupId %}
+
+<a href="{{ url_GoBack }}" class="btn btn-default">Go Back</a>
+
+<h1>Coaching Form #{{ Item.Id }}</h1>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Form Submitted By</label>
+            <div class="control-wrapper tim-control-wrapper">
+                {% assign obj_PersonSubmitter = Item.CreatedByPersonAliasId | PersonByAliasId %}
+                {{ obj_PersonSubmitter.NickName }} {{ obj_PersonSubmitter.LastName }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Check-in Date</label>
+            <div class="control-wrapper tim-control-wrapper">
+                {{ Item.StartDateTime | Date:'M/d/yyyy' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Next Leader(s)</label>
+            <div class="control-wrapper tim-control-wrapper">
+                {{ Item | Attribute:'Form_NextLeader' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">When did they last serve together?</label>
+            <div class="control-wrapper tim-control-wrapper">
+                {{ Item | Attribute:'Form_DateLastServedTogether' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Notes about when they last served together</label>
+            <div class="control-wrapper tim-control-wrapper tim-old-textbox">
+                {{ Item | Attribute:'Form_LastServedTogether' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Is the description of this Group up-to-date?</label>
+            <div class="control-wrapper tim-control-wrapper tim-small-textbox">
+                {{ Item | Attribute:'Form_IsDescriptionUpToDate' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Is the roster of this Group up-to-date?</label>
+            <div class="control-wrapper tim-control-wrapper tim-small-textbox">
+                {{ Item | Attribute:'Form_IsRosterUpToDate' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Is this Group completing their Attendance entries?</label>
+            <div class="control-wrapper tim-control-wrapper tim-small-textbox">
+                {{ Item | Attribute:'Form_IsAttendanceCompleted' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Any next steps for any of the members in this Life Group?</label>
+            <div class="control-wrapper tim-control-wrapper tim-old-textbox">
+                {{ Item | Attribute:'Form_NextStepForGroupMembers' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 tim-left-column">
+        <div class="form-group rock-text-box" style="margin-top: 12px;">
+            <label class="control-label tim-old-question">Other notes, if any</label>
+            <div class="control-wrapper tim-control-wrapper tim-old-textbox">
+                {{ Item | Attribute:'Form_GeneralNotes' }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+
+<a href="{{ url_GoBack }}" class="btn btn-default">Go Back</a>

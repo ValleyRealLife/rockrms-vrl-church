@@ -1,0 +1,44 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=1128, [List of Coaching Groups] > HTML
+    
+    This Lava is used to mimic the Group List Personalized Lava Block type. However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
+    This Lava requires the 'Sql' Lava commands enabled.
+    
+    Path:
+    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+------------------------------------------------------------/
+
+{% if CurrentPerson.Id != empty %}
+    {% sql return:'var_CoachingGroups' %}
+    SELECT
+        g.[Id]
+      , g.[Name]
+    FROM
+        [AttributeValue] attval
+        LEFT JOIN [Group] g ON g.[Id] = attval.[EntityId]
+    WHERE
+        attval.[AttributeId] = 8975 --This is the 'Coach' Attribute, defined at the GroupType-level
+        AND
+        attval.[ValueAsPersonId] = {{ CurrentPerson.Id }}
+        AND
+        g.[IsActive] = 1
+    {% endsql %}
+{% endif %}
+
+{% assign count_CoachingGroups = var_CoachingGroups | Size %}
+
+{% if count_CoachingGroups > 0 %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Groups I'm Coaching
+    </div>
+    <ul class="list-group list-group-panel">
+        {% for CoachingGroup in var_CoachingGroups %}
+        <li class="list-group-item">
+            <a href="?CoachingGroupId={{ CoachingGroup.Id }}" class="js-group-item">{{ CoachingGroup.Name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
