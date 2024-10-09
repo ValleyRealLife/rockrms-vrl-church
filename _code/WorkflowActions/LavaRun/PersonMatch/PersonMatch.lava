@@ -7,6 +7,7 @@
     WorkflowTypeId=210, [Backend - Find Person 2] > Try to retrieve (PersonAlias_GUID)
     WorkflowTypeId=222, [Backend - (Person_Submitter) not logged in] > Try to retrieve (PersonAlias_GUID)
     WorkflowTypeId=239, [Backend - Person not logged in] > Try to retrieve (PersonAlias_GUID)
+    WorkflowTypeId=288, [Backend - Person not logged in ] > Try to retrieve (PersonAlias_GUID)
 ----------------------------------------------------------------------------------------------------/
 
 //- Define some Variables
