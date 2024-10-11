@@ -243,7 +243,7 @@
 
 //- This is the panel that uses the 'EasyPie' ShortCode together with some HTML in order to show Cards that display percentages
 //- If you make any changes to the Lava below, it's likely you'll need to make the same changes to BlockId:6229
-{[ panel title:'Success Metrics' icon:'fa fa-grin-stars' footer:'<a href="/page/4609" class="btn btn-default" >Drill-down</a>' ]}
+{[ panel title:'Success Metrics' icon:'fa fa-grin-stars' footer:'<a href="/page/4609" class="btn btn-default" >Drill-down</a>&nbsp;<a href="/page/4798" class="btn btn-default" >Admin View</a>' ]}
 <div class="tim-EasyPieContainer">
     //-This Div is the card with 'Individual Next Steps'
     <div class="tim-EasyPieCard kpi kpi-card">
