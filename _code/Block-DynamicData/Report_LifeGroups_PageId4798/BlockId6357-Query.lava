@@ -1,9 +1,11 @@
 /****************************************************************************************
     This Lava/SQL is found in
     PageId=4798, [Dynamic Data] > Query
-    
+
+    This Lava/SQL is used in the Dynamic Data block
+
     Path:
-    _code/Block-DynamicData/Report_LifeGroups_PageId4798/BlockId6357-Query.lava
+    _code/Block-DynamicData/Dashboard_PageId4609/BlockId6232-Query.lava
 ****************************************************************************************/
 
 DECLARE @MostRecentCoachCheckinForm TABLE (
@@ -68,16 +70,31 @@ WHERE
 ;
 
 SELECT
-    g.[Id] AS 'GroupId'
-  , g.[Name] AS 'GroupName'
+    g.[Name] AS 'GroupName'
   , CoachCheckinForm.[Id] AS 'FormId'
   , MostRecentGM.[GroupMemberId] AS 'MostRecentGroupMemberId'
+  , av_GroupPastor.[ValueAsPersonId] AS 'GroupPastorPersonId'
+  , p_GroupPastor.[NickName] AS 'GroupPastor'
+  , av_GroupCoach.[ValueAsPersonId] AS 'GroupCoachPersonId'
+  , p_GroupCoach.[NickName] AS 'GroupCoach'
+  , av_NextCheckIn.[Value] AS 'NextCheckInDue'
+  , av_GroupComp.[Value] AS 'GroupComp'
+  , av_DescUpToDate.[PersistedTextValue] AS 'IsDescUpToDate'
+  , c.[Name] AS 'Campus'
 FROM
     [Group] g
     LEFT JOIN [AttributeValue] attval_GroupComp ON attval_GroupComp.[EntityId] = g.[Id] AND attval_GroupComp.[AttributeId] = 13254
     LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
     LEFT JOIN @MostRecentGroupMembersPerGroup MostRecentGM ON MostRecentGM.[GroupId] = g.[Id]
     LEFT JOIN [TaggedItem] tag ON tag.[EntityGuid] = g.[Guid] AND tag.[TagId] = 20
+    LEFT JOIN [Campus] c ON c.[Id] = g.[CampusId]
+    LEFT JOIN [AttributeValue] av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974
+    LEFT JOIN [AttributeValue] av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975
+    LEFT JOIN [AttributeValue] av_NextCheckIn ON av_NextCheckIn.[EntityId] = g.[Id] AND av_NextCheckIn.[AttributeId] = 16621
+    LEFT JOIN [AttributeValue] av_GroupComp ON av_GroupComp.[EntityId] = g.[Id] AND av_GroupComp.[AttributeId] = 13254
+    LEFT JOIN [AttributeValue] av_DescUpToDate ON av_DescUpToDate.[EntityId] = CoachCheckinForm.[Id] AND av_DescUpToDate.[AttributeId] = 16518
+    LEFT JOIN [Person] p_GroupPastor ON p_GroupPastor.[Id] = av_GroupPastor.[ValueAsPersonId]
+    LEFT JOIN [Person] p_GroupCoach ON p_GroupCoach.[Id] = av_GroupCoach.[ValueAsPersonId]
 WHERE
     tag.[TagId] = 20 AND g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
 ORDER BY

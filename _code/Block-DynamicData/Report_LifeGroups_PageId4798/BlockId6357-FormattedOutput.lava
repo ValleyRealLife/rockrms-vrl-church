@@ -86,7 +86,6 @@
                                 </thead>
                                 <tbody>
                                     {% for row in rows %}
-                                    {% group where:'Id == {{ row.GroupId }}' securityenabled:'false' %}{% endgroup %}
                                     <tr align="left" data-row-index="0" data-original-title="" title="">
                                         <td class="grid-select-field" align="center" data-priority="1">
                                             <div class="checkbox">
@@ -94,21 +93,21 @@
                                             </div>
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {{ group.Name }}
+                                            {{ row.GroupName }}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {% assign obj_Pastor = group | Attribute:'Pastor', 'Object' %}
-                                            {% if obj_Pastor != null and obj_Pastor != empty and obj_Pastor != blank %}<img src="{{ obj_Pastor.PhotoUrl }}" class="timtest-avatar avatar" alt="Photo of {{ obj_Pastor.FullName }}"> {{ obj_Pastor.NickName }}{% endif %}
+                                            {% assign int_PastorPersonId = row.GroupPastorPersonId %}
+                                            {% if int_PastorPersonId != null and int_PastorPersonId != empty and int_PastorPersonId != blank %}<img src="/GetAvatar.ashx?PersonId={{ int_PastorPersonId }}" class="timtest-avatar avatar" alt="Photo of {{ row.GroupPastor }}"> {{ row.GroupPastor }}{% endif %}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {% assign obj_Coach = group | Attribute:'Coach', 'Object' %}
-                                            {% if obj_Coach != null and obj_Coach != empty and obj_Coach != blank %}<img src="{{ obj_Coach.PhotoUrl }}" class="timtest-avatar avatar" alt="Photo of {{ obj_Coach.FullName }}"> {{ obj_Coach.NickName }}{% endif %}
+                                            {% assign int_CoachPersonId = row.GroupCoachPersonId %}
+                                            {% if int_CoachPersonId != null and int_CoachPersonId != empty and int_CoachPersonId != blank %}<img src="/GetAvatar.ashx?PersonId={{ int_CoachPersonId }}" class="timtest-avatar avatar" alt="Photo of {{ row.GroupCoach }}"> {{ row.GroupCoach }}{% endif %}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {{ group | Attribute:'date_LGCheckin_2' }}
+                                            {{ row.NextCheckInDue }}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {% assign var_GC = group | Attribute:'GroupComp', 'RawValue' %}
+                                            {% assign var_GC = row.GroupComp %}
                                             {% case var_GC %}
                                                 {% when '1' %}
                                                     <div style="background-color: #677683; color: #fff; max-width: 10em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Mixed</div>
@@ -121,19 +120,16 @@
                                             {% endcase %}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {% if row.FormId != null and row.FormId != empty and row.FormId != blank %}
-                                                {% contentchannelitem where:'Id == {{ row.FormId }}' securityenabled:'false' %}{% endcontentchannelitem %}
-                                                {% assign var_IDUTD = contentchannelitem | Attribute:'Form_IsDescriptionUpToDate' %}
-                                                {% case var_IDUTD %}
-                                                    {% when 'Yes' %}
-                                                        <div style="background-color: #2ecd6f; color: #fff; max-width: 5em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Yes</div>
-                                                    {% when 'No' %}
-                                                        <div style="background-color: #E21815; color: #fff; max-width: 5em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">No</div>
-                                                {% endcase %}
-                                            {% endif %}
+                                            {% assign var_IDUTD = row.IsDescUpToDate %}
+                                            {% case var_IDUTD %}
+                                                {% when 'Yes' %}
+                                                    <div style="background-color: #2ecd6f; color: #fff; max-width: 5em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Yes</div>
+                                                {% when 'No' %}
+                                                    <div style="background-color: #E21815; color: #fff; max-width: 5em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">No</div>
+                                            {% endcase %}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {{ group.Campus.Name }}
+                                            {{ row.Campus }}
                                         </td>
                                     </tr>
                                     {% endfor %}
