@@ -1,0 +1,156 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=4798, [Dynamic Data] > Formatted Output
+    
+    This Lava requires the 'Rock Entity' command enabled.
+    
+    Path:
+    _code/Block-DynamicData/Report_LifeGroups_PageId4798/BlockId6357-FormattedOutput.lava
+------------------------------------------------------------/
+
+<style>
+    table {
+        background-color: #fff;
+        display: table;
+        width: 100%;
+        max-width: 100%;
+        unicode-bidi: isolate;
+    }
+    
+    thead {
+        display: table-header-group;
+        vertical-align: middle;
+        unicode-bidi: isolate;
+        border-color: inherit;
+    }
+    
+    tbody {
+        display: table-row-group;
+        vertical-align: middle;
+        unicode-bidi: isolate;
+        border-color: inherit;
+    }
+    
+    th, td {
+        padding: 10px;
+        max-height: 2em;
+        vertical-align: baseline;
+    }
+    
+    tboy tr:nth-child(even) {
+        background-color: #f0f0f0;
+    }
+    
+    tr {
+        display: table-row;
+        max-height: 2em;
+        vertical-align: inherit;
+        unicode-bidi: isolate;
+        border-color: inherit;
+    }
+    
+    td {
+        max-height: 2em;
+        vertical-align: baseline;
+    }
+    
+    .timtest-avatar {
+        margin-right: 0.5em;
+    }
+</style>
+
+<div class="block-content">
+    <div class="panel panel-block">
+        <div class="panel-heading">
+            <h1 class="panel-title pull-left">
+                Groups
+            </h1>
+        </div>
+        <div class="panel-body">
+            <div class="grid grid-panel">
+                <div class="tab-content">
+                    <div class="tab-pane active">
+                        <div class="table-responsive">
+                            <table class="grid-table table js-sticky-headers sticky-headers table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr align="left" data-original-title="" title="">
+                                        <th class="grid-select-field" align="center" data-priority="1" scope="col"><div class="checkbox"><label title=""><input type="checkbox" class="select-all"><span class="label-text">&nbsp;</span></label></div></th>
+                                        <th data-priority="1" scope="col">Group Name</th>
+                                        <th data-priority="1" scope="col">Group Pastor</th>
+                                        <th data-priority="1" scope="col">Group Coach</th>
+                                        <th data-priority="1" scope="col">Next Check-in Due</th>
+                                        <th data-priority="1" scope="col">Group Type</th>
+                                        <th data-priority="1" scope="col">Description Up To Date</th>
+                                        <th data-priority="1" scope="col">Campus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in rows %}
+                                    {% group where:'Id == {{ row.GroupId }}' securityenabled:'false' %}{% endgroup %}
+                                    <tr align="left" data-row-index="0" data-original-title="" title="">
+                                        <td class="grid-select-field" align="center" data-priority="1">
+                                            <div class="checkbox">
+                                                <label title=""><input type="checkbox"><span class="label-text">&nbsp;</span></label>
+                                            </div>
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {{ group.Name }}
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {% assign obj_Pastor = group | Attribute:'Pastor', 'Object' %}
+                                            {% if obj_Pastor != null and obj_Pastor != empty and obj_Pastor != blank %}<img src="{{ obj_Pastor.PhotoUrl }}" class="timtest-avatar avatar" alt="Photo of {{ obj_Pastor.FullName }}"> {{ obj_Pastor.NickName }}{% endif %}
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {% assign obj_Coach = group | Attribute:'Coach', 'Object' %}
+                                            {% if obj_Coach != null and obj_Coach != empty and obj_Coach != blank %}<img src="{{ obj_Coach.PhotoUrl }}" class="timtest-avatar avatar" alt="Photo of {{ obj_Coach.FullName }}"> {{ obj_Coach.NickName }}{% endif %}
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {{ group | Attribute:'date_LGCheckin_2' }}
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {% assign var_GC = group | Attribute:'GroupComp', 'RawValue' %}
+                                            {% case var_GC %}
+                                                {% when '1' %}
+                                                    <div style="background-color: #677683; color: #fff; max-width: 10em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Mixed</div>
+                                                {% when '2' %}
+                                                    <div style="background-color: #6B9BD1; max-width: 10em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Men's</div>
+                                                {% when '3' %}
+                                                    <div style="background-color: #FFC0CB; max-width: 10em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Women's</div>
+                                                {% when '4' %}
+                                                    <div style="background-color: #BEBA5B; max-width: 10em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Young Adult</div>
+                                            {% endcase %}
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {% if row.FormId != null and row.FormId != empty and row.FormId != blank %}
+                                                {% contentchannelitem where:'Id == {{ row.FormId }}' securityenabled:'false' %}{% endcontentchannelitem %}
+                                                {% assign var_IDUTD = contentchannelitem | Attribute:'Form_IsDescriptionUpToDate' %}
+                                                {% case var_IDUTD %}
+                                                    {% when 'Yes' %}
+                                                        <div style="background-color: #2ecd6f; color: #fff; max-width: 5em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">Yes</div>
+                                                    {% when 'No' %}
+                                                        <div style="background-color: #E21815; color: #fff; max-width: 5em; border-radius: 4px; display: flex; justify-content: center; align-items: center; padding: 2px;">No</div>
+                                                {% endcase %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="grid-select-cell" data-priority="1">
+                                            {{ group.Campus.Name }}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr data-original-title="" title="">
+                                        <td class="grid-paging" colspan="10">
+                                            {% assign int_CountRows = rows | Size %}
+                                            <div class="grid-itemcount">{{ int_CountRows }} {{ 'Group' | PluralizeForQuantity:int_CountRows }}</div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

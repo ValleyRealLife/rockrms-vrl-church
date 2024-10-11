@@ -1,0 +1,86 @@
+/****************************************************************************************
+    This Lava/SQL is found in
+    PageId=4798, [Dynamic Data] > Query
+    
+    Path:
+    _code/Block-DynamicData/Report_LifeGroups_PageId4798/BlockId6357-Query.lava
+****************************************************************************************/
+
+DECLARE @MostRecentCoachCheckinForm TABLE (
+    [Id] INT
+  , [Title] NVARCHAR(255)
+  , [GroupId] INT
+  , [FormSubmissionDateTime] DATETIME
+);
+
+DECLARE @MostRecentGroupMembersPerGroup TABLE (
+    [GroupMemberId] INT
+  , [GroupId] INT
+  , [PersonId] INT
+  , [DateTimeAdded] DATETIME
+);
+
+INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+SELECT
+    cci.[Id]
+  , cci.[Title]
+  , cci_GroupId.[Value] AS 'GroupId'
+  , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+FROM
+    [ContentChannelItem] cci
+    LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+WHERE
+    cci.[ContentChannelId] = 351
+    AND cci.[StartDateTime] = (
+        SELECT MAX(inner_cci.[StartDateTime])
+        FROM [ContentChannelItem] inner_cci
+            LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+        WHERE
+            inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+            AND inner_cci.[ContentChannelId] = 351
+);
+
+WITH MostRecentGMs AS(
+    SELECT
+        gm.[Id] AS 'GroupMemberId'
+      , gm.[GroupId]
+      , gm.[PersonId]
+      , gm.[DateTimeAdded]
+      , ROW_NUMBER() OVER (PARTITION BY gm.[GroupId] ORDER BY gm.[DateTimeAdded] DESC) AS 'RowNum'
+    FROM
+       [GroupMember] gm
+       LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+    WHERE
+        gm.[GroupTypeId] IN (25, 45, 46, 59)
+        AND
+        g.[IsActive] = 1 AND g.[IsArchived] = 0
+)
+INSERT INTO @MostRecentGroupMembersPerGroup ([GroupMemberId], [GroupId], [PersonId], [DateTimeAdded])
+SELECT
+    [GroupMemberId]
+  , [GroupId]
+  , [PersonId]
+  , [DateTimeAdded]
+FROM
+    MostRecentGMs
+WHERE
+    [RowNum] = 1
+;
+
+SELECT
+    g.[Id] AS 'GroupId'
+  , g.[Name] AS 'GroupName'
+  , CoachCheckinForm.[Id] AS 'FormId'
+  , MostRecentGM.[GroupMemberId] AS 'MostRecentGroupMemberId'
+FROM
+    [Group] g
+    LEFT JOIN [AttributeValue] attval_GroupComp ON attval_GroupComp.[EntityId] = g.[Id] AND attval_GroupComp.[AttributeId] = 13254
+    LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
+    LEFT JOIN @MostRecentGroupMembersPerGroup MostRecentGM ON MostRecentGM.[GroupId] = g.[Id]
+    LEFT JOIN [TaggedItem] tag ON tag.[EntityGuid] = g.[Guid] AND tag.[TagId] = 20
+WHERE
+    tag.[TagId] = 20 AND g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+ORDER BY
+    attval_GroupComp.[Value] ASC
+  , g.[Name] ASC
+;
