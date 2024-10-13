@@ -32,27 +32,27 @@
     .followicon[data-followed="true"] .fa-user {
         color: #98BE4B;
     }
-
+    
     .followicon[data-followed="false"] .fa-user {
         color: #8E8E8E;
     }
-
+    
     .timtest-container {
         display: flex;
     }
-
+    
     .timtest-left-column-box {
         width: 70px;
         height: 70px;
         margin: 10px auto;
     }
-
+    
     .timtest-right-column-box {
         position:relative;
         width: 100%;
         height: 100%;
     }
-
+    
     .timtest-avatar {
         width: 10%;
         height: 10%;
@@ -90,7 +90,7 @@
 <br>
 
 {[ accordion firstopen:'False' ]}
-
+    
     [[ item title:'This is what we Want:' ]]
         <ol>
             <li>We have no Person records with the 'Pending' status</li><br>
@@ -102,11 +102,11 @@
             <li>Person records that are marked as deceased should not have any Transactions or Scheduled Transactions</li><br>
         </ol>
     [[ enditem ]]
-
+    
 {[ endaccordion ]}
 
 {[ accordion firstopen:'False' ]}
-
+    
     [[ item title:'This is what we Need:' ]]
         <ol>
             <li>We need 'Pending Persons' to be 0</li><br>
@@ -126,11 +126,11 @@
             **These ones are critical only during end-of-year when we send Contribution Statements (tax forms) via snail mail.
         </p>
     [[ enditem ]]
-
+    
 {[ endaccordion ]}
 
 {[ accordion firstopen:'False' ]}
-
+    
     [[ item title:'Step-by-Step Guides' ]]
         <ol>
             <li>
@@ -138,7 +138,7 @@
             </li>
         </ol>
     [[ enditem ]]
-
+    
 {[ endaccordion ]}
 
 {% assign var_RockGuyId = globalvar_RockGuy.Id  %}
@@ -148,6 +148,7 @@
             <ol>
                 <li>
                     <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}page/3507/" target="_blank">Tool for Auditing/Deleting Families</a>
+                    <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}admin/communications/nameless-people" target="_blank">Nameless Person Records</a>
                 </li>
             </ol>
         [[ enditem ]]
