@@ -68,7 +68,8 @@ WHERE
 ;
 
 SELECT
-    g.[Name] AS 'GroupName'
+    g.[Id] AS 'GroupId'
+  , g.[Name] AS 'GroupName'
   , CoachCheckinForm.[Id] AS 'FormId'
   , MostRecentGM.[GroupMemberId] AS 'MostRecentGroupMemberId'
   , av_GroupPastor.[ValueAsPersonId] AS 'GroupPastorPersonId'
