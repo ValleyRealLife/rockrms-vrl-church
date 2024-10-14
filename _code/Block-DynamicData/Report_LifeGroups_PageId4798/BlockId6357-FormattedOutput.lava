@@ -113,7 +113,7 @@
                                         <th data-priority="1" scope="col">Group Pastor</th>
                                         <th data-priority="1" scope="col">Group Coach</th>
                                         <th data-priority="1" scope="col">Next Check-in Due</th>
-                                        <th data-priority="1" scope="col">Group Type</th>
+                                        <th data-priority="1" scope="col">Group Composition</th>
                                         <th data-priority="1" scope="col">Description Up To Date</th>
                                         <th data-priority="1" scope="col">Campus</th>
                                     </tr>
