@@ -63,7 +63,7 @@
 <div class="row">
     <div class="col-md-6">
         <div class="form-group rock-text-box" style="margin-top: 12px;">
-            <label class="control-label tim-old-question">Next Leader(s)</label>
+            <label class="control-label tim-old-question">Potential Next Leader(s)</label>
             <div class="control-wrapper tim-control-wrapper">
                 {{ Item | Attribute:'Form_NextLeader' }}
             </div>
@@ -87,7 +87,7 @@
 <div class="row">
     <div class="col-md-6">
         <div class="form-group rock-text-box" style="margin-top: 12px;">
-            <label class="control-label tim-old-question">Notes about when they last served together</label>
+            <label class="control-label tim-old-question">Notes about serving together</label>
             <div class="control-wrapper tim-control-wrapper tim-old-textbox">
                 {{ Item | Attribute:'Form_LastServedTogether' }}
             </div>
@@ -147,7 +147,7 @@
 <div class="row">
     <div class="col-md-6 tim-left-column">
         <div class="form-group rock-text-box" style="margin-top: 12px;">
-            <label class="control-label tim-old-question">Other notes, if any</label>
+            <label class="control-label tim-old-question">Any other general notes about this Group?</label>
             <div class="control-wrapper tim-control-wrapper tim-old-textbox">
                 {{ Item | Attribute:'Form_GeneralNotes' }}
             </div>
