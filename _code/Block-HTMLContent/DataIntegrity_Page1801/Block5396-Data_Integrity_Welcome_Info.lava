@@ -146,10 +146,8 @@
     {[ accordion firstopen:'False' ]}
         [[ item title:'Special Tools' ]]
             <ol>
-                <li>
-                    <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}page/3507/" target="_blank">Tool for Auditing/Deleting Families</a>
-                    <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}admin/communications/nameless-people" target="_blank">Nameless Person Records</a>
-                </li>
+                <li><a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}page/3507/" target="_blank">Tool for Auditing/Deleting Families</a></li>
+                <li><a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}admin/communications/nameless-people" target="_blank">Nameless Person Records</a></li>
             </ol>
         [[ enditem ]]
     {[ endaccordion ]}
