@@ -17,6 +17,7 @@
     {% group where:'Id == {{ var_CoachingGroupId }}' securityenabled:'false' %}
         {% assign var_CoachingGroup_Name = group.Name %}
         {% assign var_CoachingGroup_Pastor = group | Attribute:'Pastor', 'Object' %}
+        {% assign var_CoachingGroup_Description = group.Description %}
     {% endgroup %}
     
     //- This is how we change the Title of this page
@@ -88,7 +89,9 @@
     
     <div id="CoachingGroup-Info">
         <div class="coachinggroup-details">
-            <p><h3>Group Details</h3></p><hr>
+            <p><h3>{{ var_CoachingGroup_Name }}</h3></p>
+            <b>Description:</b><br>
+            <p>{{ var_CoachingGroup_Description }}</p><hr>
             <div class="tim-twocolumn-layout">
                 <div class="tim-left-column">
                     <b>Last Contact Date:</b><br>
