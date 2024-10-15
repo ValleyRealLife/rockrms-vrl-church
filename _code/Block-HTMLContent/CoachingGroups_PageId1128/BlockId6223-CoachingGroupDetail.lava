@@ -115,7 +115,11 @@
                     <p>(n/a)</p>
                     {% elseif count_CoachingGroup_Leaders == 1 %}
                         {% assign person_Leader = array_CoachingGroup_Leaders[0].PersonId | PersonById %}
-                        <p>{{ person_Leader.NickName }} {{ person_Leader.LastName }}</p>
+                        <p>
+                            {{ person_Leader.NickName }} {{ person_Leader.LastName }}<br>
+                            <i class="fa fa-mobile-alt"></i>  {{ person_Leader | PhoneNumber:'Mobile' }}<br>
+                            <i class="fa fa-at"></i> {{ person_Leader.Email }}
+                        </p>
                     {% else %}
                     <ol>
                     {% for var_Leader in array_CoachingGroup_Leaders %}
