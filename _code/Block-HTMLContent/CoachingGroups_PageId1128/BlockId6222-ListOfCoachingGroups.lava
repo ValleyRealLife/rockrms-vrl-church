@@ -17,12 +17,15 @@
     FROM
         [AttributeValue] attval
         LEFT JOIN [Group] g ON g.[Id] = attval.[EntityId]
+        LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[TagId] = 20 AND ti.[EntityTypeId] = 16
     WHERE
         attval.[AttributeId] = 8975 --This is the 'Coach' Attribute, defined at the GroupType-level
         AND
         attval.[ValueAsPersonId] = {{ CurrentPerson.Id }}
         AND
-        g.[IsActive] = 1
+        ti.[TagId] = 20
+        AND
+        g.[IsActive] = 1 AND g.[IsArchived] = 0
     {% endsql %}
 {% endif %}
 
