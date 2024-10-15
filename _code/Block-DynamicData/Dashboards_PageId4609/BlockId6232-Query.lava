@@ -5,22 +5,13 @@
     This Lava/SQL is used in the Dynamic Data block
     
     Path:
-    _code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava
+    _code/Block-DynamicData/Dashboard_PageId4609/BlockId6232-Query.lava
 ****************************************************************************************/
 
 {% assign var_filter = 'Global' | PageParameter:'FilterType' | AsString | SanitizeSql %}
 {% assign pastorGuid = 'Global' | PageParameter:'LGPastor' | SanitizeSql %}
 {% assign coachGuid = 'Global' | PageParameter:'LGCoach' | SanitizeSql %}
 
-{% if var_filter != null and var_filter != empty and pastorGuid != null and pastorGuid != empty %}
-    {% assign var_Logic = 1 | AsBoolean %}
-{% elseif var_filter != null and var_filter != empty and coachGuid != null and coachGuid != empty %}
-    {% assign var_Logic = 1 | AsBoolean %}
-{% else %}
-    {% assign var_Logic = 0 | AsBoolean %}
-{% endif %}
-
-{% if var_Logic != null and var_Logic == true %}
 DECLARE @MostRecentCoachCheckinForm TABLE (
     [Id] INT
   , [Title] NVARCHAR(255)
@@ -83,7 +74,8 @@ WHERE
 ;
 
 SELECT
-    g.[Name] AS 'Life Group Name'
+    CoachCheckinForm.[Id] AS 'FormId'
+  , g.[Name] AS 'Life Group Name'
   , c.[Name] AS 'Campus'
   , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'Pastor'
   , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'Coach'
@@ -102,6 +94,7 @@ FROM
     [Group] g
     LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
     LEFT JOIN @MostRecentGroupMembersPerGroup MostRecentGM ON MostRecentGM.[GroupId] = g.[Id]
+    LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
     LEFT JOIN [Campus] c ON c.[Id] = g.[CampusId]
     LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
     LEFT JOIN [AttributeValue] AS av_GroupCoach ON av_GroupCoach.[EntityId] = g.[Id] AND av_GroupCoach.[AttributeId] = 8975 --Coach
@@ -117,10 +110,10 @@ FROM
     LEFT JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
 WHERE
     g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+    AND ti.[TagId] = 20
     {% if var_filter == '1' %}
     AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
     {% elseif var_filter == '2' %}
     AND TRY_CAST(av_GroupCoach.[Value] AS uniqueidentifier) = '{{ coachGuid }}'
     {% endif %}
 ;
-{% endif %}
