@@ -16,8 +16,9 @@
     //- The Group we are displaying on this page
     {% group where:'Id == {{ var_CoachingGroupId }}' securityenabled:'false' %}
         {% assign var_CoachingGroup_Name = group.Name %}
-        {% assign var_CoachingGroup_Pastor = group | Attribute:'Pastor', 'Object' %}
+        {% assign var_CoachingGroupIsPublic = group.IsPublic %}
         {% assign var_CoachingGroup_Description = group.Description %}
+        {% assign var_CoachingGroup_Pastor = group | Attribute:'Pastor', 'Object' %}
     {% endgroup %}
     
     //- This is how we change the Title of this page
@@ -89,6 +90,7 @@
     
     <div id="CoachingGroup-Info">
         <div class="coachinggroup-details">
+            {% if var_CoachingGroupIsPublic == false %}<span class="label label-default js-privategroup-label">Private</span><br>{% endif %}
             <p><h3>{{ var_CoachingGroup_Name }}</h3></p>
             <b>Description:</b><br>
             <p>{{ var_CoachingGroup_Description }}</p><hr>
