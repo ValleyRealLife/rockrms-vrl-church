@@ -16,6 +16,8 @@
     //- The Group we are displaying on this page
     {% group where:'Id == {{ var_CoachingGroupId }}' securityenabled:'false' %}
         {% assign var_CoachingGroup_Name = group.Name %}
+        {% assign var_CoachingGroupIsPublic = group.IsPublic %}
+        {% assign var_CoachingGroup_Description = group.Description %}
         {% assign var_CoachingGroup_Pastor = group | Attribute:'Pastor', 'Object' %}
     {% endgroup %}
     
@@ -88,7 +90,10 @@
     
     <div id="CoachingGroup-Info">
         <div class="coachinggroup-details">
-            <p><h3>Group Details</h3></p><hr>
+            {% if var_CoachingGroupIsPublic == false %}<span class="label label-default js-privategroup-label">Private</span><br>{% endif %}
+            <p><h3>{{ var_CoachingGroup_Name }}</h3></p>
+            <b>Description:</b><br>
+            <p>{{ var_CoachingGroup_Description }}</p><hr>
             <div class="tim-twocolumn-layout">
                 <div class="tim-left-column">
                     <b>Last Contact Date:</b><br>
@@ -110,12 +115,20 @@
                     <p>(n/a)</p>
                     {% elseif count_CoachingGroup_Leaders == 1 %}
                         {% assign person_Leader = array_CoachingGroup_Leaders[0].PersonId | PersonById %}
-                        <p>{{ person_Leader.NickName }} {{ person_Leader.LastName }}</p>
+                        <p>
+                            {{ person_Leader.NickName }} {{ person_Leader.LastName }}<br>
+                            <i class="fa fa-mobile-alt"></i>  {{ person_Leader | PhoneNumber:'Mobile' }}<br>
+                            <i class="fa fa-at"></i> {{ person_Leader.Email }}
+                        </p>
                     {% else %}
                     <ol>
                     {% for var_Leader in array_CoachingGroup_Leaders %}
                         {% assign person_Leader = var_Leader.PersonId | PersonById %}
-                        <li>{{ person_Leader.NickName }} {{ person_Leader.LastName }}</li>
+                        <li>
+                            {{ person_Leader.NickName }} {{ person_Leader.LastName }}<br>
+                            <i class="fa fa-mobile-alt"></i>  {{ person_Leader | PhoneNumber:'Mobile' }}<br>
+                            <i class="fa fa-at"></i> {{ person_Leader.Email }}
+                        </li>
                     {% endfor %}
                     </ol>
                     {% endif %}
