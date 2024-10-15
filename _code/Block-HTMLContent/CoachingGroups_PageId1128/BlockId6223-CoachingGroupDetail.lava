@@ -124,7 +124,11 @@
                     <ol>
                     {% for var_Leader in array_CoachingGroup_Leaders %}
                         {% assign person_Leader = var_Leader.PersonId | PersonById %}
-                        <li>{{ person_Leader.NickName }} {{ person_Leader.LastName }}</li>
+                        <li>
+                            {{ person_Leader.NickName }} {{ person_Leader.LastName }}<br>
+                            <i class="fa fa-mobile-alt"></i>  {{ person_Leader | PhoneNumber:'Mobile' }}<br>
+                            <i class="fa fa-at"></i> {{ person_Leader.Email }}
+                        </li>
                     {% endfor %}
                     </ol>
                     {% endif %}
