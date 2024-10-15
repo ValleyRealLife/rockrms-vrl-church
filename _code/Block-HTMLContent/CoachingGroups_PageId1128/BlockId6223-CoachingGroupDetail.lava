@@ -44,6 +44,7 @@
     {% sql return:'array_FormSubmissions' %}
         SELECT TOP 5 cci.[Id] FROM [ContentChannelItem] cci LEFT JOIN [AttributeValue] av ON av.[EntityId] = cci.[Id] AND av.[AttributeId] = 16514 WHERE cci.[ContentChannelId] = 351 AND av.[Value] = {{ var_CoachingGroupId }} ORDER BY cci.[CreatedDateTime] DESC;
     {% endsql %}
+    {% assign count_FormSubmissions = array_FormSubmissions | Size %}
     
     <style>
         @media screen and (max-width: 646px) {
@@ -91,10 +92,14 @@
             <div class="tim-twocolumn-layout">
                 <div class="tim-left-column">
                     <b>Last Contact Date:</b><br>
-                    {% assign var_MostRecentFormSubmissionId = array_FormSubmissions[0].Id %}
-                    {% contentchannelitem where:'Id == {{ var_MostRecentFormSubmissionId }}' securityenabled:'false' iterator:'cci_MostRecent' %}
-                    {% endcontentchannelitem %}
-                    {{ cci_MostRecent[0].StartDateTime | HumanizeDateTime | Capitalize }}
+                    {% if count_FormSubmissions > 0 %}
+                        {% assign var_MostRecentFormSubmissionId = array_FormSubmissions[0].Id %}
+                        {% contentchannelitem where:'Id == {{ var_MostRecentFormSubmissionId }}' securityenabled:'false' iterator:'cci_MostRecent' %}
+                        {% endcontentchannelitem %}
+                        {{ cci_MostRecent[0].StartDateTime | HumanizeDateTime | Capitalize }}
+                    {% else %}
+                        <p>(n/a)</p>
+                    {% endif %}
                     <br>
                     <br>
                     <b>Assigned Pastor:</b><br>
