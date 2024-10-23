@@ -1,6 +1,6 @@
 /****************************************************************************************
     This Lava/SQL is found in
-    PageId=4609, [HTML Content] > HTML
+    PageId:4609, BlockId:6232, [LG by Pastor/Coach] > Query
     
     This Lava/SQL is used in the Dynamic Data block
     
@@ -11,6 +11,14 @@
 {% assign var_filter = 'Global' | PageParameter:'FilterType' | AsString | SanitizeSql %}
 {% assign pastorGuid = 'Global' | PageParameter:'LGPastor' | SanitizeSql %}
 {% assign coachGuid = 'Global' | PageParameter:'LGCoach' | SanitizeSql %}
+
+DECLARE @FilteredGroupIds TABLE(
+    [Id] int NOT NULL
+);
+
+DECLARE @Excluded_PersonIds TABLE(
+    [Id] int NOT NULL
+);
 
 DECLARE @MostRecentCoachCheckinForm TABLE (
     [Id] INT
@@ -26,6 +34,32 @@ DECLARE @MostRecentGroupMembersPerGroup TABLE (
   , [DateTimeAdded] DATETIME
 );
 
+DECLARE @MostRecentAttendances TABLE (
+    [GroupId] INT
+  , [AttendanceEntered] BIT
+  , [RowNum] INT
+);
+
+DECLARE @AttendanceSummary TABLE (
+    [GroupId] INT
+  , [RecentAttendanceEntered] INT
+);
+
+INSERT INTO @FilteredGroupIds ([Id])
+SELECT
+    g.[Id]
+FROM
+    [Group] g
+    INNER JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[TagId] = 20
+;
+
+INSERT INTO @Excluded_PersonIds ([Id])
+SELECT p.[Id] FROM [TaggedItem] ti LEFT JOIN [Person] p ON p.[Guid] = ti.[EntityGuid] WHERE ti.[EntityTypeId] = 15 AND ti.[TagId] IN (14, 17)
+--The EntityTypeId:15 is the [Person] Entity
+--The TagId:14 is 'REST Key' Person
+--The TagId:17 is 'Test' Person
+;
+
 INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
 SELECT
     cci.[Id]
@@ -37,14 +71,51 @@ FROM
     LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
 WHERE
     cci.[ContentChannelId] = 351
-    AND cci.[StartDateTime] = (
+    AND
+    cci.[StartDateTime] = (
         SELECT MAX(inner_cci.[StartDateTime])
         FROM [ContentChannelItem] inner_cci
             LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
         WHERE
             inner_cci_GroupId.[Value] = cci_GroupId.[Value]
-            AND inner_cci.[ContentChannelId] = 351
-);
+            AND
+            inner_cci.[ContentChannelId] = 351
+    )
+;
+
+INSERT INTO @MostRecentAttendances ([GroupId], [AttendanceEntered], [RowNum])
+SELECT
+    attocc.[GroupId]
+  , CASE
+        WHEN attocc.[DidNotOccur] IS NULL AND SUM(CASE WHEN att.[DidAttend] = 1 THEN 1 ELSE 0 END) = 0
+        THEN 0
+        ELSE 1
+    END AS 'AttendanceEntered'
+  , ROW_NUMBER() OVER (PARTITION BY attocc.[GroupId] ORDER BY attocc.[OccurrenceDate] DESC) AS 'RowNum'
+FROM
+    [AttendanceOccurrence] attocc
+    LEFT JOIN [Attendance] att ON att.[OccurrenceId] = attocc.[Id]
+WHERE
+    attocc.[GroupId] IN (SELECT [Id] FROM @FilteredGroupIds)
+GROUP BY
+    attocc.[Id]
+  , attocc.[GroupId]
+  , attocc.[ScheduleId]
+  , attocc.[OccurrenceDate]
+  , attocc.[DidNotOccur]
+;
+
+INSERT INTO @AttendanceSummary ([GroupId], [RecentAttendanceEntered])
+SELECT
+    [GroupId]
+  , SUM(CASE WHEN [RowNum] <= 4 AND [AttendanceEntered] = 1 THEN 1 ELSE 0 END) AS 'RecentAttendanceEntered'
+FROM
+    @MostRecentAttendances
+WHERE
+    [RowNum] <= 4
+GROUP BY
+    [GroupId]
+;
 
 WITH MostRecentGMs AS(
     SELECT
@@ -57,7 +128,7 @@ WITH MostRecentGMs AS(
        [GroupMember] gm
        LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
     WHERE
-        gm.[GroupTypeId] IN (25, 45, 46, 59)
+        gm.[GroupId] IN (SELECT [Id] FROM @FilteredGroupIds)
         AND
         g.[IsActive] = 1 AND g.[IsArchived] = 0
 )
@@ -82,7 +153,10 @@ SELECT
   , CoachCheckinForm.[FormSubmissionDateTime] AS 'Most Recent Checkin Form'
   , av_GroupDescriptionUTD.[PersistedTextValue] AS 'Description Up To Date'
   , av_GroupRosterUTD.[PersistedTextValue] AS 'Roster Up To Date'
-  , av_GroupAttendanceUTD.[PersistedTextValue] AS 'Attendance Up To Date'
+  , CASE
+        WHEN AttSumm.[RecentAttendanceEntered] >= 3 THEN 'Yes'
+        ELSE 'No'
+    END AS 'Attendance Up To Date'
   , CASE
         WHEN av_GroupNextStep.[Value] IS NULL THEN ''
         ELSE 'Yes'
@@ -94,6 +168,7 @@ FROM
     [Group] g
     LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = g.[Id]
     LEFT JOIN @MostRecentGroupMembersPerGroup MostRecentGM ON MostRecentGM.[GroupId] = g.[Id]
+    LEFT JOIN @AttendanceSummary AttSumm ON AttSumm.[GroupId] = g.[Id]
     LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
     LEFT JOIN [Campus] c ON c.[Id] = g.[CampusId]
     LEFT JOIN [AttributeValue] AS av_GroupPastor ON av_GroupPastor.[EntityId] = g.[Id] AND av_GroupPastor.[AttributeId] = 8974 --Pastor
@@ -109,7 +184,7 @@ FROM
     LEFT JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
     LEFT JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
 WHERE
-    g.[GroupTypeId] IN (25, 45, 46, 59) AND g.[IsActive] = 1 AND g.[IsArchived] = 0
+    g.[IsActive] = 1 AND g.[IsArchived] = 0
     AND ti.[TagId] = 20
     {% if var_filter == '1' %}
     AND TRY_CAST(av_GroupPastor.[Value] AS uniqueidentifier) = '{{ pastorGuid }}'
