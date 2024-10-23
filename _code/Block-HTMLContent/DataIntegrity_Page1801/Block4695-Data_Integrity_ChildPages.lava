@@ -68,14 +68,14 @@
     </style>
 </head>
 <body>
-    /-
+    /---------------------------------------------------------------------------------------------
     IMPORTANT:
     If you change any of the queries under this comment,
     please ensure to update the 'Source' of the corresponding Metric.
     (Each of the queries below will have a comment mentioning which MetricId it corresponds to)
-
+    
     If you add any new queries, please follow the same pattern.
-    -/
+    ---------------------------------------------------------------------------------------------/
 
     //- If you update this query, please update the 'Source' of MetricId:65
     {% person dataview:'830' securityenabled:'false' count:'true' %}
@@ -105,6 +105,24 @@
         AND
         p.[RecordTypeValueId] <> 2 -- Business
     ;
+    {% endsql %}
+
+    //- This one is not associated to a Metric yet
+    {% sql return:'sql_DataViewsThatUseSql' %}
+    DECLARE @SqlFilterEntityTypeId INT = (
+        SELECT TOP 1 [Id]
+        FROM [EntityType]
+        WHERE [Name] = 'com.blueboxmoon.DataToolkit.DataFilter.SqlFilter'
+    )
+    
+    SELECT DISTINCT
+        dv.[ID]
+      , dv.[Name]
+    FROM
+        [DataView] dv
+        INNER JOIN [DataViewFilter] dvf ON dvf.[DataViewId] = dv.[Id]
+    WHERE
+        dvf.[EntityTypeId] = @SqlFilterEntityTypeId 
     {% endsql %}
 
     //- If you update this query, please update the 'Source' of MetricId:67
@@ -137,12 +155,12 @@
         {% assign count_UserLoginContainsTest = count %}
     {% enduserlogin %}
 
-    /-
+    /---------------------------------------------------------------------------------------------
     IMPORTANT:
     If you change any of the queries above this comment,
     read the note i wrote in the previous comment block
     (the one that spans multiple lines, and says "IMPORTANT")
-    -/
+    ---------------------------------------------------------------------------------------------/
 
     <div class="tim-container">
         <a class="tim-block" href="/page/1803" style="color: #000000;">
@@ -188,9 +206,9 @@
             <div class="tim-count"><span class="badge badge-pill badge-info"></span></div>
         </a>
     </div>
-
+    
     <br><br>
-
+    
     <div class="tim-container">
         <div class="alert alert-info" style="width: 100%;">
             Tim created this Box in order to show some numbers that Tim wanted to keep an eye on, but not assign any actions to Volunteers (at least not yet!)
@@ -204,6 +222,11 @@
             <div class="tim-icon"><i class="fa fa-radiation-alt"></i></div>
             <div class="tim-icon">UserLogin contains "Test"</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_UserLoginContainsTest }}</span></div>
+        </a>
+        <a class="tim-block" href="#" style="color:#000000;">
+            <div class="tim-icon"><i class="fa fa-database"></i></div>
+            <div class="tim-icon">DataViews that are using Sql</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ sql_DataViewsThatUseSql | Size }}</span></div>
         </a>
     </div>
 </body>
