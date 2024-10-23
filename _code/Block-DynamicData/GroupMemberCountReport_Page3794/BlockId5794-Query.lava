@@ -1,0 +1,109 @@
+/****************************************************************************************
+    This Lava/SQL is found in
+    PageId:3794, BlockId:5794, [Dynamic Data] > Query
+    
+    This Lava/SQL is used in the Dynamic Data block.
+    This Lava/SQL is essentially the same as DataViewId:907, but with the ability to filter by DateRange
+    
+    Path:
+    _code/Block-DynamicData/GroupMemberCountReport_Page3794/BlockId5794-Query.lava
+****************************************************************************************/
+
+{% assign var_DateRange = 'Global' | PageParameter:'DateRange' | DateRangeFromSlidingFormat %}
+{% assign var_DateRange_Start = var_DateRange.StartDate %}
+{% assign var_DateRange_End = var_DateRange.EndDate %}
+
+DECLARE @date_querystart date = '{{ var_DateRange_Start }}';
+DECLARE @date_queryend date = '{{ var_DateRange_End }}';
+
+DECLARE @FilteredGroupIds TABLE(
+    [Id] int NOT NULL
+);
+
+DECLARE @Excluded_PersonIds TABLE(
+    [Id] int NOT NULL
+);
+
+DECLARE @FilteredGroupMembers TABLE(
+    [GroupMemberId] int NOT NULL
+  , [PersonId] int NOT NULL
+  , [GroupId] int NOT NULL
+  , [GroupTypeId] int NOT NULL
+  , [GroupRoleId] int NOT NULL
+  , [DateTimeAdded] date NOT NULL
+  , [AddedBy] int NOT NULL
+);
+
+INSERT INTO @Excluded_PersonIds ([Id])
+SELECT p.[Id] FROM [TaggedItem] ti LEFT JOIN [Person] p ON p.[Guid] = ti.[EntityGuid] WHERE ti.[EntityTypeId] = 15 AND ti.[TagId] IN (14, 17)
+--The EntityTypeId:15 is the [Person] Entity
+--The TagId:14 is 'REST Key' Person
+--The TagId:17 is 'Test' Person
+;
+
+INSERT INTO @FilteredGroupIds ([Id])
+SELECT
+    g.[Id]
+FROM
+    [Group] g
+    INNER JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[TagId] = 20
+;
+
+INSERT INTO @FilteredGroupMembers ([GroupMemberId], [PersonId], [GroupId], [GroupTypeId], [GroupRoleId], [DateTimeAdded], [AddedBy])
+SELECT
+    gm.[Id]
+  , gm.[PersonId]
+  , gm.[GroupId]
+  , gm.[GroupTypeId]
+  , gm.[GroupRoleId]
+  , gm.[DateTimeAdded]
+  , CASE WHEN gm.[CreatedByPersonAliasId] IS NULL THEN '1' ELSE '2' END AS 'AddedBy'
+FROM
+    [GroupMember] gm
+WHERE
+    gm.[GroupTypeId] = 25
+    AND gm.[IsArchived] = 0
+    AND gm.[GroupRoleId] IN (23, 58)
+    AND gm.[DateTimeAdded] >= @date_querystart
+    AND gm.[DateTimeAdded] <= @date_queryend
+    AND gm.[GroupId] IN (SELECT [Id] FROM @FilteredGroupIds)
+;
+
+INSERT INTO @FilteredGroupMembers ([GroupMemberId], [PersonId], [GroupId], [GroupTypeId], [GroupRoleId], [DateTimeAdded], [AddedBy])
+SELECT
+    gm.[Id]
+  , gm.[PersonId]
+  , gm.[GroupId]
+  , gm.[GroupTypeId]
+  , gm.[GroupRoleId]
+  , gm.[DateTimeAdded]
+  , CASE WHEN gm.[CreatedByPersonAliasId] IS NULL THEN '1' ELSE '2' END AS 'AddedBy'
+FROM
+    [GroupMember] gm
+WHERE
+    gm.[GroupTypeId] = 25
+    AND gm.[IsArchived] = 1
+    AND gm.[GroupRoleId] IN (23, 58)
+    AND gm.[ArchivedDateTime] > @date_queryend
+    AND gm.[DateTimeAdded] >= @date_querystart
+    AND gm.[DateTimeAdded] <= @date_queryend
+    AND gm.[GroupId] IN (SELECT [Id] FROM @FilteredGroupIds)
+;
+
+SELECT
+    CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person'
+  , g.[Name] AS 'Group'
+  , gtr.[Name] AS 'Role'
+  , fgm.[DateTimeAdded] AS 'Date Added'
+  , CASE
+        WHEN fgm.[AddedBy] = 1 THEN 'Self-Added'
+        ELSE 'Added Manually'
+    END AS 'How was Added?'
+FROM
+    @FilteredGroupMembers fgm
+    LEFT JOIN [Person] p ON p.[Id] = fgm.[PersonId]
+    LEFT JOIN [Group] g ON g.[Id] = fgm.[GroupId]
+    LEFT JOIN [GroupTypeRole] gtr ON gtr.[Id] = fgm.[GroupRoleId] AND gtr.[GroupTypeId] = fgm.[GroupTypeId]
+WHERE
+    fgm.[PersonId] NOT IN (SELECT [Id] FROM @Excluded_PersonIds)
+;
