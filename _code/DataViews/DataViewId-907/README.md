@@ -1,0 +1,4 @@
+# LG Members (joined in last seven days)
+This is a DataView that shows the Person records associated to GroupMembers that have been added to LifeGroups in the past 7 days.
+
+This might change in the future, but right now i'm only using this DataView in order to use an [entity command](https://community.rockrms.com/lava/commands/entity-commands) and limit the results with the [dataview](https://community.rockrms.com/lava/commands/entity-commands#dataview) parameter. This is helpful for me to efficiently retrieve an integer that I can use as an input to the `{[ kpi ]}` shortcode or the `{[ easypie ]}` shortcode.

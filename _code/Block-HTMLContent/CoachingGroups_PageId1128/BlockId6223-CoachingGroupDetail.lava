@@ -32,7 +32,7 @@
     {% assign count_CoachingGroup_Leaders = array_CoachingGroup_Leaders | Size %}
     
     //- Of the group, who are labeled as 'NextLeader'?
-    {% groupmember where:'GroupId == {{ var_CoachingGroupId }} && GroupMemberStatus != 0 && GroupRoleId == 173' securityenabled:'false' iterator:'array_CoachingGroup_NextLeaders' %}
+    {% groupmember where:'GroupId == {{ var_CoachingGroupId }} && GroupMemberStatus != 0 && GroupRoleId == 175' securityenabled:'false' iterator:'array_CoachingGroup_NextLeaders' %}
         {% assign count_CoachingGroup_NextLeaders = array_CoachingGroup_NextLeaders | Size %}
     {% endgroupmember %}
     
