@@ -1,6 +1,6 @@
 /------------------------------------------------------------
     This Lava is found in
-    PageId=4607, [Coaching Form, Past Submission] > Lava Template
+    PageId:4607, BlockId:6225, [Coaching Form, Past Submission] > Lava Template
     
     This Lava is used to mimic the Group Detail Lava Block type.
     This Lava requires the 'RockEntity' Lava command enabled.
@@ -114,18 +114,6 @@
             <label class="control-label tim-old-question">Is the roster of this Group up-to-date?</label>
             <div class="control-wrapper tim-control-wrapper tim-small-textbox">
                 {{ Item | Attribute:'Form_IsRosterUpToDate' }}
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <div class="form-group rock-text-box" style="margin-top: 12px;">
-            <label class="control-label tim-old-question">Is this Group completing their Attendance entries?</label>
-            <div class="control-wrapper tim-control-wrapper tim-small-textbox">
-                {{ Item | Attribute:'Form_IsAttendanceCompleted' }}
             </div>
         </div>
     </div>
