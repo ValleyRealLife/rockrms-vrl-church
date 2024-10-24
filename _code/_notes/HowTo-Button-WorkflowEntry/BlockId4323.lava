@@ -1,0 +1,12 @@
+/-----------------------------------------------------------------------------------------------------------------------------
+    This Lava+HTML is found in
+    PageId:1804, BlockId:4323 [Person Duplicate Detail] > [Custom Grid Options] > [Costum Columns] > [Tim's Custom Button(s)]
+    
+    Path:
+    _code/_notes/HowTo-Button-WorkflowEntry/BlockId4323.lava
+-----------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var = Row.PersonId | PersonById %}
+{% assign var_PersonAliasGuid = var.PrimaryAlias.Guid %}
+
+<a class="btn btn-square btn-default js-view-person" onclick="javascript: window.open('/WorkflowEntry/233?var_Person={{ var_PersonAliasGuid }}', '_blank', 'scrollbars=1,resizable=1,toolbar=1'); return false;" data-toggle="tooltip" title="" data-original-title="Change from 'Pending' to 'Active'"><i class="fa fa-user-check fa-fw"></i></a>
