@@ -1,3 +1,15 @@
+**Table of Contents**
+- [rock-vrl-church](#rock-vrl-church)
+- [How to Use this Repository](#how-to-use-this-repository)
+- [Lava Header Examples](#lava-header-examples)
+  - [Examples](#examples)
+- [Some Formatting Standards](#some-formatting-standards)
+  - [1. SQL](#1-sql)
+  - [2. Lava](#2-lava)
+    - [Lava Tags and Commands:](#lava-tags-and-commands)
+    - [HTML with Lava FOR loops](#html-with-lava-for-loops)
+  - [3. Workflow Types](#3-workflow-types)
+
 # rock-vrl-church
 This repository was created in order to contain all the things about VRL's Rock implementation that could be shared externally and collaborated on.
 
