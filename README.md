@@ -13,33 +13,38 @@ I like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/code
       - Each Lava file should start with a comment block that denotes where this snippet is being used. See 'Lava Header Examples' below.
 
 # Lava Header Examples
-## Header for files in this GitHub Repo
-The Lava file in this GitHub repo should begin with a comment block like this:
+It used to be that I would have an example boilerplate for the files in this GitHub repo, and a separate example boilerplate for files you'd find in Rock.
+
+Now, it's the same boilerplate regardless of whether it's a file here in this GitHub repo or in Rock.
+
+The only discretion necessary is whether you'd use the multi-line [Lava comment syntax](https://community.rockrms.com/lava/tags/comment-tags), or whether you'd use the multi-line commment syntax of some other language. I say default to using the Lava comment syntax, but if you're in a context where it's safer to use the comment syntax of another language, simply use the syntax of the language that won't cause trouble.
+
+## Examples
 ```
-/------------------------------------------------------------
+/---------------------------------------------------------------------------------------------------------
     This Lava is found in
-    RegistrationTemplateId=93, [Terms/Text] > Registration Confirmation Text
-------------------------------------------------------------/
+    PageId=1128, BLockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
+    
+    This Lava is used to mimic the Group List Personalized Lava Block type. However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
+    This Lava requires the 'Sql' Lava commands enabled.
+    
+    Path:
+    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+---------------------------------------------------------------------------------------------------------/
 ```
 
 If the Lava file was created by copy+pasting an existing Lava Template (maybe it was written by SparkDev or Triumph in core Rock), then please make note of it like this:
 ```
-/------------------------------------------------------------
+/---------------------------------------------------------------------------------------------------------
     This Lava is found in
-    RegistrationTemplateId=93, [Terms/Text] > Registration Confirmation Text
-
+    PageId=1128, BLockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
+    
     I am copy+pasting this here from the VRL Rock Site.
     I copy+pasted this on 09-APR-2024
-------------------------------------------------------------/
-```
-
-## Header for Lava in our Rock instance
-Similarly, the corresponding location in Rock should have its Lava Template begin with a comment block like this:
-```
-/------------------------------------------------------------
-    GitHub
-    rockrms-vrl-church/_code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/RegistrationConfirmationText.lava
-------------------------------------------------------------/
+    
+    Path:
+    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+---------------------------------------------------------------------------------------------------------/
 ```
 
 <hr>
