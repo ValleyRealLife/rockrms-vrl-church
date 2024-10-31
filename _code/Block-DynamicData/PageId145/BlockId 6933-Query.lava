@@ -1,0 +1,32 @@
+/****************************************************************************************
+    This Lava/SQL is found in
+    PageId:145, BlockId:6933, [Dataview List Dynamic Data] > Query
+    
+    Path:
+    _code/Block-DynamicData/PageId145/BlockId6933-Query.lava
+****************************************************************************************/
+
+{% assign var_FolderId = PageParameter.CategoryId | AsInteger %}
+
+{% if var_FolderId != null and var_FolderId != empty %}
+SELECT
+    dv.[Id]
+  , dv.[Name] AS 'DataViewName'
+  , FORMAT(dv.[CreatedDateTime],'M/d/yyyy') AS 'Created'
+  , FORMAT(dv.[ModifiedDateTime],'M/d/yyyy') AS 'Modified'
+  , FORMAT(dv.[LastRunDateTime],'M/d/yyyy') AS 'LastRun'
+  , dv.[RunCount]
+  , FORMAT(dv.[RunCountLastRefreshDateTime],'M/d/yyyy') AS 'RunCountRefreshed'
+  , CAST(CASE WHEN dv.[PersistedScheduleIntervalMinutes] IS NOT NULL THEN 1 
+        WHEN dv.[PersistedScheduleId] IS NOT NULL THEN 1
+        ELSE 0
+    END AS BIT) AS 'Persisted'
+  , (SELECT STRING_AGG(CONCAT('<a href="/reporting/reports?ReportId=', rep.[Id], '" target="_blank">', rep.[Name],'</a>'),'<br/>') FROM [Report] rep WHERE rep.[DataviewId] = dv.[Id]) AS 'LinkedReports'
+FROM
+    [DataView] dv
+WHERE
+    dv.[CategoryId] = {{ var_FolderId }}
+ORDER BY
+    dv.[ModifiedDateTime] DESC
+  , dv.[CreatedDateTime] DESC
+{% endif %}
