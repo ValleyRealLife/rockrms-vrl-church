@@ -3,6 +3,8 @@ This repository was created in order to contain all the things about VRL's Rock 
 
 i like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/codetour), this is a VSC Extension that will allow the code author to give you a "tour" of their code. Essentially, it's like adding comments to your code, but differently. i will try to get in the habit of creating CodeTours for codes that could be confusing without context/explanation. ([VSC Marketplace: CodeTour Extension](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour))
 
+<br>
+
 # How to Use this Repository
 1. The [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme) is recommended.
 2. The [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) Extension is recommended.
@@ -11,6 +13,8 @@ i like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/code
    2. the other Folders try to denote an Entity or Context where the code snippet is used.
       - For the sake of making it easier to navigate in GitHub, each Folder should have its own README.
       - Each Lava file should start with a comment block that denotes where this snippet is being used. See 'Lava Header Examples' below.
+
+<br>
 
 # Lava Header Examples
 It used to be that i would have an example boilerplate for the files in this GitHub repo, and a separate example boilerplate for files you'd find in Rock.
@@ -46,6 +50,8 @@ If the Lava file was created by copy+pasting an existing Lava Template (maybe it
     _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
 ---------------------------------------------------------------------------------------------------------/
 ```
+
+<br>
 
 # Some Formatting Standards
 VRL doesn't have a strong "formatting guideline" yet, but i'm trying to standardize some things as i go.
@@ -85,7 +91,7 @@ WHERE
 ```
 </details>
 
-<details><summary>When concatenating, use `CONCAT()`, please do not use the `+` operator</summary>
+<details><summary>When concatenating, use <code>CONCAT()</code>, please do not use the <code>+</code> operator</summary>
 
 ✅ Yes:
 ```sql
@@ -142,7 +148,7 @@ WHERE
 ```
 </details>
 
-<details><summary>When joining Tables, keep the `JOIN` and `ON` keywords in the same line</summary>
+<details><summary>When joining Tables, keep the <code>JOIN</code> and <code>ON</code> keywords in the same line</summary>
 
 ✅ Yes:
 ```sql
@@ -188,7 +194,7 @@ WHERE
 ```
 </details>
 
-<details><summary>On that same note, if the `JOIN` `ON` needs an `AND`, also keep that in the same line</summary>
+<details><summary>On that same note, if the <code>JOIN</code> <code>ON</code> needs an <code>AND</code>, also keep that in the same line</summary>
 
 ✅ Yes:
 ```sql
@@ -218,10 +224,13 @@ WHERE
 ```
 </details>
 
+<br>
+
 ## 2. Lava
 Mostly following [Rock Community's Lava Style Guide](https://community.rockrms.com/lava/style), except for a few changes and/or considerations:
 <details open><summary>Prepend your Lava variables with a three-character abbreviation of its expected data type</summary>
-i want to teach my volunteers that "variables defined by Tim" will be prepended (e.g. `var_` or `int_` or `txt_` or `obj_`), whereas "variables defined by Spark" will not.
+i want to teach my volunteers that "variables defined by Tim" will be prepended, whereas "variables defined by Spark" will not.
+
 Example:
 ```
     {% assign var_PersonId = CurrentPerson.Id %}
@@ -253,7 +262,7 @@ capture this string right here
 </details>
 
 ### HTML with Lava FOR loops
-<details open><summary>When using `{% for %}` to create `<li>`, follow this indentation pattern:</summary>
+<details open><summary>When using <code>{% for %}</code> to create list items, follow this indentation pattern:</summary>
 
 Notice there is no indentation between `{% for %}` and `<li>` because that would essentially be two indentations between `<ul>` and `<li>`
 ```html
@@ -267,28 +276,31 @@ Notice there is no indentation between `{% for %}` and `<li>` because that would
 ```
 </details>
 
+<br>
+
 ## 3. Workflow Types
 When configuring WorkflowTypes, i have some conventions i'd like to follow:
 1. As a rule of thumb, most WorkflowTypes should have at least two Activities: one named "START" and one named "FINISH"
-   a. "START" is the Activity that sets any Attributes that are needed for the execution of this WorkflowType,
-   b. "FINISH" is the Activity that contains the 'Complete Workflow' Action.
-   c. Every other Activity can be named with normal capitalization, no need for all-caps.
-2. Every Action should be named with a verb at the beginning. Example:
-   a. Activate Activity
-   b. Set Person Attributes
-   c. Complete Workflow
-   d. etc
-3. When the name of an Action contains the name of an Activity, use square-brackets. Example:
-   a. Activate [FINISH]
-   b. Activate [Loop]
-   c. etc
-4. When the name of an Action contains the Key (not Name) of a Workflow Attribute or Activity Attribute, use parentheses. Example:
-   a. Set (var_Person) from CurrentPerson
-   b. Send SMS to (var_Person) with (memo_Message)
-   c. Add Note to (obj_Person_Submitter)
-   d. etc
-5. When naming a WorkflowType, it's (v1.0)
-   a. Modifying the WorkflowType doesn't necessarily increment the version label if it's a small change.
-   b. If it's a big change, it increments the version dot (from v1.0 to v1.1) and add a Note to the ChangeLog.
-   c. If it's a change so big that it cannot be done by modifying the WorkflowType, and rather we must create a new WorkflowType that replaces this one, then the new WorkflowType gets a new version number (v2.0) and the previous WorkflowType gets archived.
+   - "START" is the Activity that sets any Attributes that are needed for the execution of this WorkflowType,
+   - "FINISH" is the Activity that contains the 'Complete Workflow' Action.
+   - Every other Activity can be named with normal capitalization, no need for all-caps.
+1. Every Action should be named with a verb at the beginning. Example:
+   - Activate Activity
+   - Set Person Attributes
+   - Complete Workflow
+   - etc
+1. When the name of an Action contains the name of an Activity, use square-brackets. Example:
+   - Activate [FINISH]
+   - Activate [Loop]
+   - etc
+1. When the name of an Action contains the Key (not Name) of a Workflow Attribute or Activity Attribute, use parentheses. Example:
+   - Set (var_Person) from CurrentPerson
+   - Send SMS to (var_Person) with (memo_Message)
+   - Add Note to (obj_Person_Submitter)
+   - etc
+1. When naming a WorkflowType, it's (v1.0)
+   - Modifying the WorkflowType doesn't necessarily increment the version label if it's a small change.
+   - If it's a big change, it increments the version dot (from v1.0 to v1.1) and add a Note to the ChangeLog.
+   - If it's a change so big that it cannot be done by modifying the WorkflowType, and rather we must create a new WorkflowType that replaces this one, then the new WorkflowType gets a new version number (v2.0) and the previous WorkflowType gets archived.
+<br>
 <hr>
