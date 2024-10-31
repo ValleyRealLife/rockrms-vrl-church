@@ -1,5 +1,5 @@
 **Table of Contents**
-- [rock-vrl-church](#rock-vrl-church)
+- [Hello World 👋](#hello-world-)
 - [How to Use this Repository](#how-to-use-this-repository)
 - [Lava Header Examples](#lava-header-examples)
   - [Examples](#examples)
@@ -10,7 +10,7 @@
     - [HTML with Lava FOR loops](#html-with-lava-for-loops)
   - [3. Workflow Types](#3-workflow-types)
 
-# rock-vrl-church
+# Hello World 👋
 This repository was created in order to contain all the things about VRL's Rock implementation that could be shared externally and collaborated on.
 
 i like the idea of [CodeTour](https://code.visualstudio.com/learn/educators/codetour), this is a VSC Extension that will allow the code author to give you a "tour" of their code. Essentially, it's like adding comments to your code, but differently. i will try to get in the habit of creating CodeTours for codes that could be confusing without context/explanation. ([VSC Marketplace: CodeTour Extension](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour))
