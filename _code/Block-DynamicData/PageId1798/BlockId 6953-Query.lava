@@ -2,11 +2,17 @@
     This Lava/SQL is found in
     PageId:1798, BlockId:6953, [Dynamic Data] > Query
     
+    Please Note:
+    The `AgeRange` PageParameter is an IntegerRange-type attribute.
+    Currently, i don't know how to make it so that it'll work with 1 or both values, therefore, both values are necessary.
+    
     Path:
     _code/Block-DynamicData/PageId1798/BlockId6953-Query.lava
 ****************************************************************************************/
 
-{% assign filter_ZipCode = 'Global' | PageParameter:'ZipCode' %}
+{% assign str_ZipCode = 'Global' | PageParameter:'ZipCode' | SanitizeSql %}
+{% assign str_AgeRange = 'Global' | PageParameter:'AgeRange' | SanitizeSql %}
+{% if str_AgeRange != null and str_AgeRange != blank %}{% assign array_AgeRange = str_AgeRange | Split:',' %}{% endif %}
 
 DECLARE @ExcludedPersonIds TABLE(
     [Id] int NOT NULL
@@ -81,12 +87,14 @@ GROUP BY
 INSERT INTO @LifeGroupMemberIds ([PersonId], [LifeGroupString])
 SELECT
     gm.[PersonId]
-  , STRING_AGG(g.[Id], ', ')
+  , STRING_AGG(g.[Name], ', ')
 FROM
     [GroupMember] gm
     LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
 WHERE
     gm.[GroupId] IN (SELECT [Id] FROM @LifeGroupIds)
+    AND
+    gm.[GroupMemberStatus] IN (1, 2) --GroupMemberStatus:0 is 'Inactive', 1 is 'Active', 2 is 'Pending'
 GROUP BY
     gm.[PersonId]
 ;
@@ -104,10 +112,10 @@ SELECT
     END AS 'RecordStatus'
   , p.[BirthDate] AS 'Birthdate'
   , p.[Age] AS 'Age'
-  , loc.[Street1] AS 'Street1'
-  , loc.[Street2] AS 'Street2'
-  , loc.[City] AS 'City'
-  , loc.[County] AS 'County'
+--  , loc.[Street1] AS 'Street1'
+--  , loc.[Street2] AS 'Street2'
+--  , loc.[City] AS 'City'
+--  , loc.[County] AS 'County'
   , loc.[PostalCode] AS 'ZipCode'
   , CASE
         WHEN tlgm.[CountOfLifeGroups] > 0 THEN 'Yes'
@@ -127,6 +135,7 @@ WHERE
     AND loc.[IsActive] = 1
     AND loc.[Street1] NOT LIKE 'PO%'
     {% if filter_ZipCode != null and filter_ZipCode != blank %}AND LEFT(loc.[PostalCode], 5) IN ({{ filter_ZipCode }}){% endif %}
+    {% if str_AgeRange != null and str_AgeRange != blank %}AND (p.[Age] IS NULL OR (p.[Age] >= {{ array_AgeRange[0] }} AND p.[Age] <= {{ array_AgeRange[1] }})){% endif %}
 ORDER BY
     p.[PrimaryFamilyId] ASC
   , p.[NickName] ASC
