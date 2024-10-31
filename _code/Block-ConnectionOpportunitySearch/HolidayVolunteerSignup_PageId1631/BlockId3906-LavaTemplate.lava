@@ -1,0 +1,52 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    This LavaTemplate includes `HolidayOpportunitySearch.lava`, which expects a PageParameter with key:'Campus' that contains the name of a campus.
+    (E.g. `?Campus=Barker`)
+    
+    Path:
+    _code/Block-ConnectionOpportunitySearch/HolidayVolunteerSignup_PageId1631/BlockId3906-LavaTemplate.lava
+    _code/LavaFiles/HolidayOpportunitySearch/README.md
+    _code/LavaFiles/HolidayOpportunitySearch/HolidayOpportunitySearch.lava
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+<style>
+    .opportunities {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .opportunities .dropdown-outer-container {
+        flex-grow:1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .opportunities .dropdown-menu {
+        will-change: transform;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: unset!important;
+        top: 0 !important;
+        bottom: 0 !important;
+        height: 100vh !important;
+        padding:50px;
+    }
+    .opportunities .open>.dropdown-menu,
+    .opportunities .dropdown-menu.show{
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+    }
+    .opportunities .dropdown-container {
+        background: white;
+        padding: 30px;
+        position: relative;
+        max-width: 800px;
+        -webkit-box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%);
+        box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%);
+    }
+</style>
+
+{% include '~~/Assets/Lava/HolidayOpportunitySearch.lava' %}
