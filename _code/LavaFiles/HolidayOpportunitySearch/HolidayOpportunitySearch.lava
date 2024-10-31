@@ -1,0 +1,51 @@
+/-------------------------------------------------------------------------------
+    There is a README in the GitHub repo
+    
+    Please note:
+    This Lava relies on a PageParameter with key:'Campus' that contains the name of a campus.
+    (E.g. `?Campus=Barker`)
+    
+    Path:
+    _code/LavaFiles/HolidayOpportunitySearch/README.md
+    _code/LavaFiles/HolidayOpportunitySearch/HolidayOpportunitySearch.lava
+-------------------------------------------------------------------------------/
+
+{% assign opportunityCount = Opportunities | Size %}
+
+{% if opportunityCount == 0 %}
+<div class="panel panel-default margin-t-md">
+	<div class="margin-all-md"> There are no opportunities that match the criteria</div>
+</div>
+{% endif %}
+
+<div class="row text-center d-flex flex-wrap justify-content-center">
+	{% assign pageparam_CampusName  = 'Global' | PageParameter:'Campus' | SanitizeSql %}
+	{% for opportunity in Opportunities %}
+		{% assign var_CampusName = opportunity.ConnectionOpportunityCampuses[0].Campus.Name %}
+		{% if var_CampusName == pageparam_CampusName  %}
+			<div class="col-md-3 mt-4 mb-5 opportunities">
+				<span class="fa-stack fa-3x">
+					<i class="fa fa-circle fa-stack-2x text-primary"></i>
+					<i class="{{ opportunity.IconCssClass }} fa-stack-1x fa-inverse"></i>
+				</span>
+				<h4 class="service-heading">{{ opportunity.PublicName }}</h4>
+				<p class=" ">{{ opportunity.Summary }}</p>
+				<div class="dropdown-outer-container">
+					<div class="dropdown">
+						{% if DetailPage contains "?" %}
+						<a class="btn btn-primary" href="{{ DetailPage }}&OpportunityId={{ opportunity.Id }}" role="button">Sign Up!</a>
+						{% else %}
+						<a class="btn btn-primary" href="{{ DetailPage }}?OpportunityId={{ opportunity.Id }}" role="button">Sign Up!</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+        {% endif %}
+	{% endfor %}
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('.js-group-item').tooltip();
+	});
+</script>
