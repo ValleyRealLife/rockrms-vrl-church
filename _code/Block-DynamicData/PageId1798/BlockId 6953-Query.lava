@@ -1,0 +1,134 @@
+/****************************************************************************************
+    This Lava/SQL is found in
+    PageId:1798, BlockId:6953, [Dynamic Data] > Query
+    
+    Path:
+    _code/Block-DynamicData/PageId1798/BlockId6953-Query.lava
+****************************************************************************************/
+
+{% assign filter_ZipCode = 'Global' | PageParameter:'ZipCode' %}
+
+DECLARE @ExcludedPersonIds TABLE(
+    [Id] int NOT NULL
+);
+
+DECLARE @FamilyIds TABLE(
+    [Id] int NOT NULL
+  , [LocationId] int
+);
+
+DECLARE @LifeGroupIds TABLE(
+    [Id] int NOT NULL
+);
+
+DECLARE @TotalLifeGroupMemberships TABLE(
+    [PersonId] int NOT NULL
+  , [CountOfLifeGroups] int
+);
+
+DECLARE @LifeGroupMemberIds TABLE(
+    [PersonId] int NOT NULL
+  , [LifeGroupString] nvarchar(1000)
+);
+
+INSERT INTO @ExcludedPersonIds ([Id])
+SELECT
+    p.[Id]
+FROM
+    [TaggedItem] ti
+    INNER JOIN [Person] p ON p.[Guid] = ti.[EntityGuid]
+WHERE
+    ti.[TagId] IN (14, 16, 17)
+    --TagId:14 is 'REST Key'
+    --TagId:16 is 'Rock Partner'
+    --TagId:17 is 'Test'
+;
+
+INSERT INTO @FamilyIds ([Id])
+SELECT
+    DISTINCT(p.[PrimaryFamilyId])
+FROM
+    [Person] p
+WHERE
+    p.[Id] NOT IN (SELECT [Id] FROM @ExcludedPersonIds)
+    AND
+    p.[RecordTypeValueId] = 1
+;
+
+INSERT INTO @LifeGroupIds ([Id])
+SELECT
+    g.[Id]
+FROM
+    [Group] g
+    INNER JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[TagId] = 20
+WHERE
+    g.[GroupTypeId] = 25
+;
+
+INSERT INTO @TotalLifeGroupMemberships ([PersonId], [CountOfLifeGroups])
+SELECT
+    gm.[PersonId]
+  , COUNT([GroupId])
+FROM
+    [GroupMember] gm
+    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+WHERE
+    g.[Id] IN (SELECT [Id] FROM @LifeGroupIds)
+GROUP BY
+    gm.[PersonId]
+;
+
+INSERT INTO @LifeGroupMemberIds ([PersonId], [LifeGroupString])
+SELECT
+    gm.[PersonId]
+  , STRING_AGG(g.[Id], ', ')
+FROM
+    [GroupMember] gm
+    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
+WHERE
+    gm.[GroupId] IN (SELECT [Id] FROM @LifeGroupIds)
+GROUP BY
+    gm.[PersonId]
+;
+
+SELECT
+    p.[Id] AS 'PersonId'
+  , p.[PrimaryFamilyId] AS 'FamilyId'
+  , fam.[Name] AS 'FamilyName'
+  , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'PersonName'
+  , CASE 
+        WHEN p.[RecordStatusValueId] = 3 THEN 'Active'
+        WHEN p.[RecordStatusValueId] = 4 THEN 'Inactive'
+        WHEN p.[RecordStatusValueId] = 5 THEN 'Pending'
+        ELSE 'null'
+    END AS 'RecordStatus'
+  , p.[BirthDate] AS 'Birthdate'
+  , p.[Age] AS 'Age'
+  , loc.[Street1] AS 'Street1'
+  , loc.[Street2] AS 'Street2'
+  , loc.[City] AS 'City'
+  , loc.[County] AS 'County'
+  , loc.[PostalCode] AS 'ZipCode'
+  , CASE
+        WHEN tlgm.[CountOfLifeGroups] > 0 THEN 'Yes'
+        ELSE 'No'
+    END AS 'Is In Life Group?'
+  , lgm.[LifeGroupString] AS 'Which Life Groups?'
+FROM
+    [Person] p
+    LEFT JOIN [Group] fam ON fam.[Id] = p.[PrimaryFamilyId]
+    LEFT JOIN [GroupLocation] groloc ON groloc.[GroupId] = p.[PrimaryFamilyId] AND groloc.[GroupLocationTypeValueId] = 19 --GroupLocationTypeId:19 is 'Home'
+    LEFT JOIN [Location] loc ON loc.[Id] = groloc.[LocationId]
+    LEFT JOIN @TotalLifeGroupMemberships tlgm ON tlgm.[PersonId] = p.[Id]
+    LEFT JOIN @LifeGroupMemberIds lgm ON lgm.[PersonId] = p.[Id]
+WHERE
+    p.[PrimaryFamilyId] IN (SELECT [Id] FROM @FamilyIds)
+    AND groloc.[GroupLocationTypeValueId] = 19 --GroupLocationTypeId:19 is 'Home'
+    AND loc.[IsActive] = 1
+    AND loc.[Street1] NOT LIKE 'PO%'
+    {% if filter_ZipCode != null and filter_ZipCode != blank %}AND LEFT(loc.[PostalCode], 5) IN ({{ filter_ZipCode }}){% endif %}
+ORDER BY
+    p.[PrimaryFamilyId] ASC
+  , p.[NickName] ASC
+  , p.[Age] ASC
+;
