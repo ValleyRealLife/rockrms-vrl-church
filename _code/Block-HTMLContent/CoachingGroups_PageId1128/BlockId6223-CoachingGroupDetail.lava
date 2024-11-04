@@ -1,4 +1,4 @@
-/------------------------------------------------------------
+/--------------------------------------------------------------------------------------------
     This Lava is found in
     PageId=1128, [Coaching Group Detail] > HTML
     
@@ -7,7 +7,7 @@
     
     Path:
     _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6223-CoachingGroupDetail.lava
-------------------------------------------------------------/
+--------------------------------------------------------------------------------------------/
 
 {% assign var_gray = '#616A71' %}
 {% assign var_CoachingGroupId = PageParameter.CoachingGroupId %}
@@ -172,7 +172,7 @@
     </div>
     <div>
         <p class="text-center">
-            <a class="btn btn-primary btn-lg" href="/page/4606?GroupId={{ var_CoachingGroupId }}">Coach Check-in Form</a>
+            <a class="btn btn-primary btn-lg" href="/page/4606?GroupId={{ var_CoachingGroupId }}" target="_blank">Coach Check-in Form</a>
         </p>
     </div>
     <div id="CoachingGroup-FormSubmissions">
