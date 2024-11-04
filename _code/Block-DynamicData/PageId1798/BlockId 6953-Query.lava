@@ -2,10 +2,6 @@
     This Lava/SQL is found in
     PageId:1798, BlockId:6953, [Dynamic Data] > Query
     
-    Please Note:
-    The `AgeRange` PageParameter is an IntegerRange-type attribute.
-    Currently, i don't know how to make it so that it'll work with 1 or both values, therefore, both values are necessary.
-    
     Path:
     _code/Block-DynamicData/PageId1798/BlockId6953-Query.lava
 ****************************************************************************************/
@@ -86,6 +82,7 @@ WHERE
     loc.[Street1] NOT LIKE 'PO%'
     {% if str_ZipCode != null and  str_ZipCode != blank %}
     AND
+    (
         {% if str_ZipCode contains ',' %}
             {% assign array_ZipCodes = str_ZipCode | Split:',' %}
             {% for zc in array_ZipCodes %}
@@ -94,6 +91,7 @@ WHERE
         {% else %}
             loc.[PostalCode] LIKE '{{ str_ZipCode }}%'
         {% endif %}
+    )
     {% endif %}
 ;
 
