@@ -10,30 +10,46 @@
     _code/Block-DynamicData/PageId1798/BlockId6953-Query.lava
 ****************************************************************************************/
 
-{% assign str_ZipCode = 'Global' | PageParameter:'ZipCode' | SanitizeSql %}
-{% assign str_AgeRange = 'Global' | PageParameter:'AgeRange' | SanitizeSql %}
-{% if str_AgeRange != null and str_AgeRange != blank %}{% assign array_AgeRange = str_AgeRange | Split:',' %}{% endif %}
+{% assign str_PersonRecordStatus = 'Global' | PageParameter:'PersonRecordStatus' %}
+{% assign str_ZipCode = 'Global' | PageParameter:'ZipCode' | AsString | SanitizeSql %}
+{% assign str_AgeRange = 'Global' | PageParameter:'AgeRange' | AsString | SanitizeSql %}
 
+-- QueryGroup1
+-- Excluding these Persons
 DECLARE @ExcludedPersonIds TABLE(
     [Id] int NOT NULL
 );
 
+-- QueryGroup1
+-- Find all families
 DECLARE @FamilyIds TABLE(
     [Id] int NOT NULL
-  , [LocationId] int
 );
 
+-- QueryGroup2
+-- And of these locations
+DECLARE @LocationIds TABLE(
+    [Id] int NOT NULL
+);
+
+-- QueryGroup2
+-- Return families living in these locations
+DECLARE @FilteredFamilyLocationIds TABLE(
+    [FamilyId] int NOT NULL
+  , [LocationId] int NOT NULL
+);
+
+-- QueryGroup3
+-- This is the definition of "LifeGroup"
 DECLARE @LifeGroupIds TABLE(
     [Id] int NOT NULL
 );
 
+-- QueryGroup3
+-- For each Person, find how many LifeGroups they are a part of
 DECLARE @TotalLifeGroupMemberships TABLE(
     [PersonId] int NOT NULL
   , [CountOfLifeGroups] int
-);
-
-DECLARE @LifeGroupMemberIds TABLE(
-    [PersonId] int NOT NULL
   , [LifeGroupString] nvarchar(1000)
 );
 
@@ -58,7 +74,41 @@ FROM
 WHERE
     p.[Id] NOT IN (SELECT [Id] FROM @ExcludedPersonIds)
     AND
-    p.[RecordTypeValueId] = 1
+    p.[RecordTypeValueId] = 1 --RecordTypeValueId: 1 is 'Person', 2 is 'Business', 241 is 'RestUser', 845 is 'NamelessPerson', 1556 is 'Anonymous Visitor'
+;
+
+INSERT INTO @LocationIds ([Id])
+SELECT 
+    loc.[Id]
+FROM
+    [Location] loc
+WHERE
+    loc.[Street1] NOT LIKE 'PO%'
+    {% if str_ZipCode != null and  str_ZipCode != blank %}
+    AND
+        {% if str_ZipCode contains ',' %}
+            {% assign array_ZipCodes = str_ZipCode | Split:',' %}
+            {% for zc in array_ZipCodes %}
+            loc.[PostalCode] LIKE '{{ zc }}%' {% unless forloop.last %}OR{% endunless %}
+            {% endfor %}
+        {% else %}
+            loc.[PostalCode] LIKE '{{ str_ZipCode }}%'
+        {% endif %}
+    {% endif %}
+;
+
+INSERT INTO @FilteredFamilyLocationIds ([FamilyId], [LocationId])
+SELECT
+    groloc.[GroupId]
+  , groloc.[LocationId]
+FROM
+    [GroupLocation] groloc
+WHERE
+    groloc.[GroupId] IN (SELECT [Id] FROM @FamilyIds)
+    AND
+    groloc.[LocationId] IN (SELECT [Id] FROM @LocationIds)
+    AND
+    groloc.[GroupLocationTypeValueId] = 19 --GroupLocationTypeValueId: 19 is 'Home', 20 is 'Work', 137 is 'Previous', 209 is 'Meeting Location', 572 is 'Geographic Area'
 ;
 
 INSERT INTO @LifeGroupIds ([Id])
@@ -69,75 +119,62 @@ FROM
     INNER JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[TagId] = 20
 WHERE
     g.[GroupTypeId] = 25
+    AND
+    g.[IsActive] = 1 AND g.[IsArchived] = 0
 ;
 
-INSERT INTO @TotalLifeGroupMemberships ([PersonId], [CountOfLifeGroups])
+INSERT INTO @TotalLifeGroupMemberships ([PersonId], [CountOfLifeGroups], [LifeGroupString])
 SELECT
     gm.[PersonId]
-  , COUNT([GroupId])
-FROM
-    [GroupMember] gm
-    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
-WHERE
-    g.[Id] IN (SELECT [Id] FROM @LifeGroupIds)
-GROUP BY
-    gm.[PersonId]
-;
-
-INSERT INTO @LifeGroupMemberIds ([PersonId], [LifeGroupString])
-SELECT
-    gm.[PersonId]
+  , COUNT(gm.[GroupId])
   , STRING_AGG(g.[Name], ', ')
 FROM
     [GroupMember] gm
     LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
 WHERE
-    gm.[GroupId] IN (SELECT [Id] FROM @LifeGroupIds)
+    g.[Id] IN (SELECT [Id] FROM @LifeGroupIds)
     AND
     gm.[GroupMemberStatus] IN (1, 2) --GroupMemberStatus:0 is 'Inactive', 1 is 'Active', 2 is 'Pending'
+    AND
+    gm.[IsArchived] = 0
 GROUP BY
     gm.[PersonId]
 ;
 
 SELECT
     p.[Id] AS 'PersonId'
-  , p.[PrimaryFamilyId] AS 'FamilyId'
---  , fam.[Name] AS 'FamilyName'
---  , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'PersonName'
+  , p.[PrimaryFamilyId] AS 'PrimaryFamilyId'
   , p.[NickName] AS 'Nickname'
   , p.[LastName] AS 'LastName'
-  , CASE 
+  , CASE
         WHEN p.[RecordStatusValueId] = 3 THEN 'Active'
         WHEN p.[RecordStatusValueId] = 4 THEN 'Inactive'
         WHEN p.[RecordStatusValueId] = 5 THEN 'Pending'
-        ELSE 'null'
     END AS 'RecordStatus'
---  , p.[BirthDate] AS 'Birthdate'
   , p.[Age] AS 'Age'
---  , loc.[Street1] AS 'Street1'
---  , loc.[Street2] AS 'Street2'
---  , loc.[City] AS 'City'
---  , loc.[County] AS 'County'
   , loc.[PostalCode] AS 'ZipCode'
-  , CASE
-        WHEN tlgm.[CountOfLifeGroups] > 0 THEN 'Yes'
-        ELSE 'No'
-    END AS 'Is In Life Group?'
-  , lgm.[LifeGroupString] AS 'Which Life Groups?'
+  , tlgm.[CountOfLifeGroups] AS 'HowManyLifeGroups'
+  , tlgm.[LifeGroupString] AS 'WhichLifeGroups'
 FROM
     [Person] p
-    LEFT JOIN [Group] fam ON fam.[Id] = p.[PrimaryFamilyId]
-    LEFT JOIN [GroupLocation] groloc ON groloc.[GroupId] = p.[PrimaryFamilyId] AND groloc.[GroupLocationTypeValueId] = 19 --GroupLocationTypeId:19 is 'Home'
-    LEFT JOIN [Location] loc ON loc.[Id] = groloc.[LocationId]
+    LEFT JOIN @FilteredFamilyLocationIds filfam ON filfam.[FamilyId] = p.[PrimaryFamilyId]
+    LEFT JOIN [Location] loc ON loc.[Id] = filfam.[LocationId]
     LEFT JOIN @TotalLifeGroupMemberships tlgm ON tlgm.[PersonId] = p.[Id]
-    LEFT JOIN @LifeGroupMemberIds lgm ON lgm.[PersonId] = p.[Id]
 WHERE
-    p.[PrimaryFamilyId] IN (SELECT [Id] FROM @FamilyIds)
-    AND groloc.[GroupLocationTypeValueId] = 19 --GroupLocationTypeId:19 is 'Home'
-    AND loc.[IsActive] = 1
-    AND loc.[Street1] NOT LIKE 'PO%'
-    {% if filter_ZipCode != null and filter_ZipCode != blank %}AND LEFT(loc.[PostalCode], 5) IN ({{ filter_ZipCode }}){% endif %}
-    {% if str_AgeRange != null and str_AgeRange != blank %}AND (p.[Age] IS NULL OR (p.[Age] >= {{ array_AgeRange[0] }} AND p.[Age] <= {{ array_AgeRange[1] }})){% endif %}
+    p.[PrimaryFamilyId] IN (SELECT [FamilyId] FROM @FilteredFamilyLocationIds)
+    {% if str_PersonRecordStatus != null and str_PersonRecordStatus != blank %}AND p.[RecordStatusValueId] IN ({{ str_PersonRecordStatus }}){% endif %}
+    {% if str_AgeRange != null and str_AgeRange != blank %}
+        AND (p.[Age] IS NULL OR (
+        {% assign array_AgeRange = str_AgeRange | Split:',', false %}
+        {% if array_AgeRange[0] != '' and array_AgeRange[1] != '' %}
+            p.[Age] >= {{ array_AgeRange[0] }} AND p.[Age] <= {{ array_AgeRange [1] }}
+        {% elseif array_AgeRange[0] != '' %}
+            p.[Age] >= {{ array_AgeRange[0] }}
+        {% elseif array_AgeRange[1] != '' %}
+            p.[Age] <= {{ array_AgeRange[1] }}
+        {% endif %}
+        ))
+    {% endif %}
 ORDER BY
     p.[PrimaryFamilyId] ASC
   , p.[NickName] ASC
