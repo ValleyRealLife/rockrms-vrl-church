@@ -1,72 +1,47 @@
-/------------------------------------------------------------
+/---------------------------------------------------------------------------------------------
     This Lava is found in
-    WorkflowTypeId=173, [Send Email] > Compose Email
+    Communications > System Communications > "[VRL] Christmas Volunteer Signup"
+    This is [SystemCommunication] sc WHERE sc.[Id] = 73
+    
+    This SystemCommunication is sent via WorkflowTypeId:303
+    WorkflowTypeId:303 is triggered when a ConnectionRequest is created under ConnTypeId:1
+    
+    Path:
+    _code/SystemCommunications/SystemCommunicationId-73/SystemCommunicationId73-EmailBody.lava
+---------------------------------------------------------------------------------------------/
 
-    I am copy+pasting this here from the VRL Rock Site.
-    I copy+pasted this on 6-Mar-2024
-------------------------------------------------------------/
+{% assign obj_Recipient = Workflow | Attribute:'obj_Requester', 'Object' %}
+{% assign obj_Staff = Workflow | Attribute:'obj_Connector', 'Object' %}
+{% assign obj_ConnectionRequest = Workflow | Attribute:'obj_ConnReq', 'Object' %}
+{% assign txt_ServiceTimes = obj_ConnectionRequest | Attribute:'service', 'RawValue' %}
+{% assign array_ServiceTimes = txt_ServiceTimes | Split:',', false %}
+{% assign txt_ServiceRoles = obj_ConnectionRequest | Attribute:'AreasToServe', 'RawValue' %}
+{% assign array_ServiceRoles = txt_ServiceRoles | Split:',', false %}
 
-{% assign var_Person = Workflow | Attribute:'var_Person' | PersonByAliasGuid %}
-{% assign var_ConnectionRequest = Workflow | Attribute:'var_ConnReq', 'RawValue' %}
-{% assign var_ConnectionRequest_Id = '' %}
-{% assign var_ConnectionOpportunityId = '' %}
-{% assign var_Attribute_1 = '' %}
-{% assign var_AttributeValue_1 = '' %}
-{% assign var_AttributeValue_1_plurality = '' %}
-{% assign var_Attribute_2 = '' %}
-{% assign var_AttributeValue_2 = '' %}
-{% assign var_AttributeValue_2_plurality = '' %}
+{{ 'Global' | Attribute:'EmailHeader' }}
 
-{% connectionrequest where:'Guid == "{{ var_ConnectionRequest }}"' securityenabled:'false' %}
-    {% assign var_ConnectionRequest_Id = connectionrequest.Id %}
-    {% assign var_ConnectionOpportunityId = connectionrequest.ConnectionOpportunityId %}
-{% endconnectionrequest %}
+<h3 class="separator">Christmas Volunteer Signup</h3>
 
-{% attribute where:'Key == "service" && EntityTypeQualifierColumn == "ConnectionOpportunityId" && EntityTypeQualifierValue == {{ var_ConnectionOpportunityId }}' securityenabled:'false' %}
-    {% assign var_Attribute_1 = attribute.Id %}
-{% endattribute %}
+<p>
+    Hello {{ obj_Recipient.NickName }}!
+    <br><br>
+    Thank you for signing up to volunteer at Valley Real Life for Christmas this year. We are excited to celebrate Jesus with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service times:
+    <ul>
+    {% for st in array_ServiceTimes %}
+        <li>{% schedule where:'Id == {{ st }}' securityenabled:'false' %}{{ schedule.Name }}{% endschedule %}</li>
+    {% endfor %}
+    </ul>
+    
+    In these serving areas:
+    <ul>
+    {% for sr in array_ServiceRoles %}
+        <li>{% definedvalue where:'Guid == "{{ sr }}"' securityenabled:'false' %}{{ definedvalue.Value }}{% enddefinedvalue %}</li>
+    {% endfor %}
+    </ul>
+    
+    Over the next week, you will be receiving additional information including directions and confirmation of your service time and your service assignment. If you have any questions in the meantime, please contact {{ obj_Staff.NickName }} {{ obj_Staff.LastName }} at {{ obj_Staff.Email }}.
+    <br><br><br>
+    Thank you for joining our Christmas Serve teams and we look forward to seeing you!
+</p>
 
-{% attribute where:'Key == "AreasToServe" && EntityTypeQualifierColumn == "ConnectionOpportunityId" && EntityTypeQualifierValue == {{ var_ConnectionOpportunityId }}' securityenabled:'false' %}
-    {% assign var_Attribute_2 = attribute.Id %}
-{% endattribute %}
-
-{% attributevalue where:'EntityId == "{{ var_ConnectionRequest_Id }}" && AttributeId == {{ var_Attribute_1 }}' securityenabled:'false' %}
-    {% assign var_AttributeValue_1 = attributevalue.PersistedTextValue %}
-    {% assign temp_var_1 = attributevalue.Value | AsString  %}
-    {% if temp_var_1 contains ',' %}
-        {% assign var_AttributeValue_1_plurality = 2 %}
-    {% else %}
-        {% assign var_AttributeValue_1_plurality = 1 %}
-    {% endif %}
-{% endattributevalue %}
-
-{% attributevalue where:'EntityId == "{{ var_ConnectionRequest_Id }}" && AttributeId == {{ var_Attribute_2 }}' securityenabled:'false' %}
-    {% assign var_AttributeValue_2 = attributevalue.PersistedTextValue %}
-    {% assign temp_var_2 = attributevalue.Value | AsString  %}
-    {% if temp_var_2 contains ',' %}
-        {% assign var_AttributeValue_2_plurality = 2 %}
-    {% else %}
-        {% assign var_AttributeValue_2_plurality = 1 %}
-    {% endif %}
-{% endattributevalue %}
-
-Hello {{ var_Person.NickName }}!
-<br><br>
-Thank you for signing up to volunteer at Valley Real Life for Easter this year. We are excited to celebrate the resurrection with you and all those that attend our services this year! You have indicated that you would be able to serve during the following service {% if var_AttributeValue_1_plurality > 1 %}times{% else %}time{% endif %}:
-{% assign AttributeValue_1_Parts = var_AttributeValue_1 | Split:'m, ' %}
-<ul>
-{% for item in AttributeValue_1_Parts %}
-    <li>{{ item }}{% if forloop.last != true %}m{% endif %}</li>
-{% endfor %}
-</ul>
-In {% if var_AttributeValue_2_plurality > 1 %}these{% else %}this{% endif %} serving {% if var_AttributeValue_1_plurality > 1 %}areas{% else %}area{% endif %}:
-{% assign AttributeValue_2_Parts = var_AttributeValue_2 | Split:', ' %}
-<ul>
-{% for item in AttributeValue_2_Parts %}
-    <li>{{ item }}</li>
-{% endfor %}
-</ul>
-Over the next week you will be receiving additional information including directions and a confirmation of your service time and service assignment.  If you have any questions in the meantime, please contact {{ Activity | Attribute:'text_ConnectorFullName' }} at <a href="mailto:{{ Activity | Attribute:'text_ConnectorEmailAddress' }}">{{ Activity | Attribute:'text_ConnectorEmailAddress' }}</a>.
-<br><br>
-Thank you for joining our Easter Serve teams and we look forward to seeing you!
-<br><br>
+{{ 'Global' | Attribute:'EmailFooter' }}
