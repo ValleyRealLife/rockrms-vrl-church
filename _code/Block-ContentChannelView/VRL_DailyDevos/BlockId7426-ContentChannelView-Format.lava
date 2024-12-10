@@ -182,8 +182,10 @@
                 </div>
                 <h4>Thought:</h4>
                 <p>{{ todaysDevo | Attribute:'memo_Thought' | NewlineToBr }}</p>
+                <br>
                 <h4>Question:</h4>
                 <p>{{ todaysDevo | Attribute:'memo_Question' | NewlineToBr }}</p>
+                <br>
                 <h4>Prayer:</h4>
                 <p>{{ todaysDevo | Attribute:'memo_Prayer' | NewlineToBr }}</p>
             </div>
@@ -209,8 +211,10 @@
                 </div>
                 <h4>Thought:</h4>
                 <p>{{ ContentChannelItem | Attribute:'memo_Thought' | NewlineToBr }}</p>
+                <br>
                 <h4>Question:</h4>
                 <p>{{ ContentChannelItem | Attribute:'memo_Question' | NewlineToBr }}</p>
+                <br>
                 <h4>Prayer:</h4>
                 <p>{{ ContentChannelItem | Attribute:'memo_Prayer' | NewlineToBr }}</p>
             </div>
