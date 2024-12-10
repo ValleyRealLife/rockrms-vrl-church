@@ -12,12 +12,12 @@
     <div class="sms">
         <header>
             <span class="left">Messages</span>
-            <h2>Santa Claus</h2>
+            <h2>VRL</h2>
             <span class="right"></span>
         </header>
         
         <div class="messages-wrapper">
-            <div class="js-sms-chatoutput message to" style="">
+            <div class="js-sms-chatoutput message from" style="">
                 Thank you for joining us at Young Adult Crowd, Santa!
                 {% contentchannelitem where:'Id == 1902' securityenabled:'false' %}
                     {% assign var = contentchannelitem | Attribute:'memo_SMSmessage' %}
