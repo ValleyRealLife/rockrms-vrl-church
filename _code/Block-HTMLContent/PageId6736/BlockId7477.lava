@@ -12,6 +12,9 @@
     /* Section Today */
     .__section--today {
         background-color: hsl(88, 9%, 55%);
+        min-height: 1500px;
+        max-height: 1500px;
+        overflow-y: auto;
         padding-block: 2rem;
         /* background-image: url(/Content/christmas_texture.png); */
     }
@@ -119,7 +122,11 @@
     {% contentchannelitem where:'Id == {{ var_SelectedDevo }}' securityenabled:'false' %}
     <section class="__section--today" id="todaysDevotional">
         <div class="--wrapper--today">
-            <div style="grid-column: 2; grid-row: 1;"><a class="btn btn-info btn-lg" href="/dailydevos/edit/360/{{ var_SelectedDevo }}">Edit Devo</a></div>
+            <div style="grid-column: 2; grid-row: 1;">
+                <div style="width: auto; margin-left: 3em;">
+                    <a class="btn btn-info btn-lg" href="/dailydevos/edit/360/{{ var_SelectedDevo }}">Edit Devo</a>
+                </div>
+            </div>
             <article class="__article--today" id="{{ contentchannelitem.StartDateTime | Date:'yyyy-MM-dd' }}">
                 <div class="__article--header">
                     <h3>{{ contentchannelitem.Title }}</h3>
