@@ -10,6 +10,12 @@
 {% assign var_SelectedDevoId = 'Global' | PageParameter:'Devotional' %}
 
 <style>
+    .container--cards {
+        min-height: 1500px;
+        max-height: 1500px;
+        overflow-y: auto;
+    }
+    
     .card {
         width: 90%;
         margin: 5px;
@@ -40,6 +46,7 @@
     }
 </style>
 
+<div class="container--cards">
 {% for row in rows %}
     {% assign row_Id = row.Id %}
     {% if row_Id == var_SelectedDevoId %}
@@ -53,3 +60,4 @@
         <p>Last Edited <u>{{ row.ModifiedDateTime | HumanizeDateTime }}</u> by {{ row.Editor }}</p>
     </a>
 {% endfor %}
+</div>
