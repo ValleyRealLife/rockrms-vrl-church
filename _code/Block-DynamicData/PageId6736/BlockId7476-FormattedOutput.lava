@@ -1,0 +1,55 @@
+/------------------------------------------------------------------------
+    This Lava is found in
+    PageId:6736, BlockId:7476, [Show list of Devos] > Formatted Output
+    
+    Path:
+    _code/Block-DynamicData/PageId6736/BlockId7476-FormattedOutput.lava
+------------------------------------------------------------------------/
+
+{% assign var_URL = 'Global' | Page:'Url' %}
+{% assign var_SelectedDevoId = 'Global' | PageParameter:'Devotional' %}
+
+<style>
+    .card {
+        width: 90%;
+        margin: 5px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: translateX(5px); /* Card slightly moves right */
+    }
+
+    .card.highlight {
+        background-color: #eaf6ef;
+    }
+
+    .card h2 {
+        margin-top: 0;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .card p {
+        color: #666;
+        font-size: 16px;
+    }
+</style>
+
+{% for row in rows %}
+    {% assign row_Id = row.Id %}
+    {% if row_Id == var_SelectedDevoId %}
+        {% assign logic_highlight = 1 | AsBoolean %}
+    {% else %}
+        {% assign logic_highlight = 0 | AsBoolean %}
+    {% endif %}
+    <a href="{{ var_URL | SetUrlParameter:'Devotional', row_Id }}" class="card {% if logic_highlight %}highlight{% endif %}">
+        <h2>{{ row.DevoTitle }}</h2>
+        <p>Scheduled for <b>{{ row.ScheduledDate | Date:'M/d/yyyy' }}</b></p>
+        <p>Last Edited <u>{{ row.ModifiedDateTime | HumanizeDateTime }}</u> by {{ row.Editor }}</p>
+    </a>
+{% endfor %}
