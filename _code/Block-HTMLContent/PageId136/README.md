@@ -1,8 +1,11 @@
-# Workflow Configuration (BlockId 4651)
+# Workflow Configuration (PageId 136)
 This is one of Rock's default pages. It's also one of the pages that i visit most frequently and regularly. As such, i added a few QOL improvements for the sake of making my job a bit easier.
 1. A PageParameterFilter Block that allows me to easily find a WorkflowType either by name or id
 2. An HTMLContent Block that shows me a list of all the places that are referencing the current WorkflowType
 3. An HTMLContent Block that injects a table of `Attribute_Id`, `Attribute_Key`, and `Attribute_FieldType_Name` for the sake of quick reference.
+
+## 1. PageParameterFilter (BlockId 4651)
+Currently, this simply shows a single-select field that concatenates [WorkflowType].[Name] and [WorkflowType].[Id] so that i can search and select the desired WorkflowType quickly. Once selected, it will populate the `workflowTypeId` in the URL so that the page will show me the selected WorkflowType's Detail.
 
 ## 2. WorkflowType Info (BlockId 4596)
 Admin Tools > [General Settings](https://rock.vrl.church/admin/general) > [Workflow Configuration](https://rock.vrl.church/admin/general/workflows), the 'Main' Zone has an **HTML Content** Block titled, 'Workflowtype Info'.
