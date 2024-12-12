@@ -1,76 +1,92 @@
 /-------------------------------------------------------------------------------------------------------------------------------------
     This Lava is found in
     PageId=136, BLockId=7482, [RockCommunity Recipe 203] > HTML
-
+    
     This Lava is used to inject a table of WorkflowAttributes into the <fieldset> in BlockId=178
     This Lava requires the 'Sql' Lava command enabled.
-
+    
     i got this Lava from RecipeId=203 from the RockCommunity, which was authored by Kevin Rutledge in 2020
-    i am versioning this because i'm about to make some changes to it
-
+    i modified it because i didn't need [Attribute_Name] and [Attribute_Key]; rather, i preferred [Attribute_Id] and [Attribute_Key]
+    
     Path:
     _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
 -------------------------------------------------------------------------------------------------------------------------------------/
 
-{% if PageParameter['workflowTypeId'] and PageParameter['workflowTypeId'] != '' %}
-{% sql %}
-Select
-a.Name as AttributeName,
-a.[Key],
-ft.Name as FieldType
-From Attribute a
-Inner Join FieldType ft
-    on ft.Id = a.FieldTypeId
+{% assign var_WorkflowTypeId = 'Global' | PageParameter:'workflowTypeId' %}
 
-Where EntityTypeQualifierValue = '{{PageParameter['workflowTypeId']}}'
-and EntityTYpeId = 113
-Order By a.[Key]
-{% endsql %}
-<div id="attributeList" class="col-md-6" style="display:none;">
-<a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggleReadOnlyAttributeList" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
-<span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Attributes</span> ({{results | Size}})
-<b class="fa fa-caret-down"></b></a>
-<div class="row" >
-<div class="col-md-12 collapse" id="toggleReadOnlyAttributeList">
-<table class="table table-responsive table-striped">
-    <thead class="thead-light">
-        <tr>
-            <th>Attribute Name</th>
-            <th>Attribute Key</th>
-            <th>Attribute Type</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for row in results %}
-    <tr>
-            <td>{{row.AttributeName}}</td>
-            <td>{{ row.Key}}</td>
-            <td>{{row.FieldType}}</td>
-        </tr>
-    {% endfor%}
-    </tbody>
-</table>
-</div>
-</div>
-</div>
-<script>
+{% if var_WorkflowTypeId != null and var_WorkflowTypeId != empty %}
 
+    {% sql return:'sql_WorkflowAttributes' %}
+    SELECT
+        att.[Id] AS 'Attribute_Id'
+      , att.[Key] AS 'Attribute_Key'
+      , ft.[Name] AS 'FieldType_Name'
+    FROM
+        [Attribute] att
+        INNER JOIN [FieldType] ft ON ft.[Id] = att.[FieldTypeId]
+    WHERE
+        att.[EntityTypeQualifierValue] = '{{ var_WorkflowTypeId }}'
+        AND
+        att.[EntityTypeId] = 113 --This is the [EntityType].[Id] for 'Rock.Model.Workflow'
+    ORDER BY
+        att.[Key] ASC
+    ;
+    {% endsql %}
 
-// Run Loadscript on Partial Post Backs.
-var prm = Sys.WebForms.PageRequestManager.getInstance();
-prm.add_endRequest(function() {
-    moveList();
-});
+    <div id="attributeList" class="col-md-6" style="display:none;">
+        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggleReadOnlyAttributeList" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
+        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Attributes</span> ({{ sql_WorkflowAttributes | Size }})
+        <b class="fa fa-caret-down"></b></a>
+        <div class="row" >
+            <div class="col-md-12 collapse" id="toggleReadOnlyAttributeList">
+                <table class="table table-responsive table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Attribute Id</th>
+                            <th>Attribute Key</th>
+                            <th>Attribute Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in sql_WorkflowAttributes %}
+                        <tr>
+                            <td>{{ row.Attribute_Id }}</td>
+                            <td>{{ row.Attribute_Key }}</td>
+                            <td>{{ row.FieldType_Name }}</td>
+                        </tr>
+                    {% endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-// Run Loadscript on Document Read
-$(document).ready(moveList);
+    <script>
+    // Run Loadscript on Partial Post Backs.
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    prm.add_endRequest(function() {
+        moveList();
+    });
+    
+    // Run Loadscript on Document Read
+    $(document).ready(function() {
+        moveList();
+    });
+    
+    function moveList() {
+        $('.description')
+            .siblings('.row')
+            .children()
+            .first()
+            .addClass('col-md-6')
+            .removeClass('col-md-12');
+        
+        $('.description')
+            .siblings('.row')
+            .append($('#attributeList'));
+        
+        $('#attributeList').show();
+    }
+    </script>
 
-function moveList() {
-
-    $('.description').siblings('.row').children().first().addClass('col-md-6').removeClass('col-md-12')
-    $('.description').siblings('.row').append($('#attributeList'))
-    $('#attributeList').show();
-}
-
-</script>
 {% endif %}
