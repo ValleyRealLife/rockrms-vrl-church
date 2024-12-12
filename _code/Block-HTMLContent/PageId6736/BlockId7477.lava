@@ -1,0 +1,148 @@
+/------------------------------------------------------------
+    This Lava is found in
+    PageId=6736, [Show Selected Devo] > HTML
+    
+    Path:
+    _code/Block-HTMLContent/PageId6736/BlockId7477.lava
+------------------------------------------------------------/
+
+{% assign var_SelectedDevo = 'Global' | PageParameter:'Devotional' %}
+
+<style>
+    /* Section Today */
+    .__section--today {
+        background-color: hsl(88, 9%, 55%);
+        padding-block: 2rem;
+        /* background-image: url(/Content/christmas_texture.png); */
+    }
+    
+    .__section--today h2 {
+        font-size: 2.8rem;
+        margin-block-end: 2rem;
+        margin-inline: 1.5rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    /* Articles; Either Today or Previous Days */
+    .__article--date {
+        font-size: 1rem;
+        font-style: italic;
+    }
+    
+    .__article--scripture {
+        background-color: hsla(0, 0%, 80%, 0.2);
+        border-radius: 10px;
+        padding-block: 1.5rem;
+        padding-inline: 1.5rem;
+        margin-block: 2rem;
+        font-size: 1.4rem;
+        font-weight: 300;
+        max-width: 50ch;
+    }
+    
+    .__article--scripture p,
+    .__article--previous .__article--scripture p {
+        margin-block-start: 0;
+    }
+    
+    .__article--scripture--ref {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin-inline-end: 2rem;
+        text-align: right;
+    }
+    
+    .__article--scripture--ref .scripture {
+        border-bottom: 2px solid #fff7f4;
+        color: #fff;
+        font-weight: 400;
+        transition: all .4s ease-in-out;
+    }
+    
+    .__article--scripture--ref .scripture:hover {
+        color: #fff7f4;
+        text-shadow: 1px 1px 5px hsla(16, 100%, 98%, .7);
+    }
+    
+    .__article--content {
+        font-size: 1.2rem;
+    }
+    
+    .__article--content p {
+        margin-block-start: 1.5rem;
+        margin-block-end: 0;
+    }
+
+    /* Article Today */
+    .__article--today {
+        background-color: hsla(0, 0%, 10%, .7);
+        border-radius: 12px;
+        color: #fff7f4;
+        margin: 1.5rem .75rem;
+        margin-inline: 0 auto;
+        padding: 1.5rem;
+        scroll-margin-block-start: 200px;
+    }
+    
+    .__article--today h3 {
+        margin-block: 0;
+    }
+
+    @media screen and (min-width: 968px) {
+        .__section--today,
+        .__section--previous {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-inline: .75rem;
+        }
+        
+        .--wrapper--today {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(400px, 1fr);
+            grid-template-rows: auto;
+            gap: 1rem;
+            max-width: 1200px;
+        }
+        
+        .__article--today {
+            grid-column: 1;
+            grid-row: 1 / span 2;
+            margin: 0;
+            height: fit-content;
+        }
+    }
+</style>
+
+{% if var_SelectedDevo != null and var_SelectedDevo != empty %}
+    {% contentchannelitem where:'Id == {{ var_SelectedDevo }}' securityenabled:'false' %}
+    <section class="__section--today" id="todaysDevotional">
+        <div class="--wrapper--today">
+            <div style="grid-column: 2; grid-row: 1;"><a class="btn btn-info btn-lg" href="/dailydevos/edit/360/{{ var_SelectedDevo }}">Edit Devo</a></div>
+            <article class="__article--today" id="{{ contentchannelitem.StartDateTime | Date:'yyyy-MM-dd' }}">
+                <div class="__article--header">
+                    <h3>{{ contentchannelitem.Title }}</h3>
+                    <p class="__article--date">{{ contentchannelitem.StartDateTime | Date:'MMM d, yyyy' }}</p>
+                </div>
+                <div class="__article--content">
+                    <div class="__article--scripture">
+                        <p>{{ contentchannelitem | Attribute:'memo_BibleScripture' | NewlineToBr }}</p>
+                        {[ scripturize defaulttranslation:'NLT' landingsite:'YouVersion' cssclass:'scripture' ]}
+                        <p class="__article--scripture--ref">{{ contentchannelitem | Attribute:'txt_ScriptureReference' }}</p>
+                        {[ endscripturize ]}
+                    </div>
+                    <h4>Thought:</h4>
+                    <p>{{ contentchannelitem | Attribute:'memo_Thought' | NewlineToBr }}</p>
+                    <br>
+                    <h4>Question:</h4>
+                    <p>{{ contentchannelitem | Attribute:'memo_Question' | NewlineToBr }}</p>
+                    <br>
+                    <h4>Prayer:</h4>
+                    <p>{{ contentchannelitem | Attribute:'memo_Prayer' | NewlineToBr }}</p>
+                </div>
+            </article>
+        </div>
+    </section>
+    {% endcontentchannelitem %}
+{% endif %}

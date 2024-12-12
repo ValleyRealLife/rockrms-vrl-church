@@ -1,0 +1,32 @@
+/****************************************************************************************
+    This Lava/SQL is found in
+    PageId:6736, BlockId:7476, [Show list of Devos] > Query
+    
+    Path:
+    _code/Block-DynamicData/PageId6736/BlockId7476-Query.lava
+****************************************************************************************/
+
+{% assign var_PageParameter = 'Global' | PageParameter:'DevoDate' %}
+{% assign var_DateRange = var_PageParameter | DateRangeFromSlidingFormat %}
+
+SELECT {% unless var_PageParameter != null and var_PageParameter != empty %}TOP 31{% endunless %}
+    cci.[Id]
+  , cci.[Title] AS 'DevoTitle'
+  , CAST(cci.[StartDateTime] AS DATE) AS 'ScheduledDate'
+  , cci.[ModifiedDateTime]
+  , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'Editor'
+FROM
+    [ContentChannelItem] cci
+    LEFT JOIN [PersonAlias] pa2 ON pa2.[Id] = cci.[ModifiedByPersonAliasId]
+    LEFT JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
+WHERE
+    cci.[ContentChannelId] = 360
+    {% if var_PageParameter != null and var_PageParameter != empty %}
+    AND cci.[StartDateTime] >= '{{ var_DateRange.StartDate }}'
+    AND cci.[StartDateTime] <= '{{ var_DateRange.EndDate }}'
+    {% else %}
+    AND cci.[StartDateTime] >= CAST(GETDATE() AS DATE)
+    {% endif %}
+ORDER BY
+    cci.[StartDateTime] ASC
+;
