@@ -49,11 +49,12 @@
     SELECT
         att.[Id] AS 'Attribute_Id'
       , att.[Key] AS 'Attribute_Key'
-      , att.[EntityTypeQualifierValue]
-      , att.[Order]
+      , att.[Order] AS 'Attribute_Order'
       , ft.[Name] AS 'FieldType_Name'
+      , wat.[Name] AS 'Activity_Name'
     FROM
         [Attribute] att
+        LEFT JOIN [WorkflowActivityType] wat ON wat.[Id] = att.[EntityTypeQualifierValue]
         INNER JOIN [FieldType] ft ON ft.[Id] = att.[FieldTypeId]
     WHERE
         att.[EntityTypeId] = 116 --This is the [EntityType].[Id] for 'Rock.Model.WorkflowActivity'
@@ -62,7 +63,7 @@
     ;
     {% endsql %}
     
-    {% assign grouped_WorkflowActivityAttributes = sql_WorkflowActivityAttributes | GroupBy:'EntityTypeQualifierValue' %}
+    {% assign grouped_WorkflowActivityAttributes = sql_WorkflowActivityAttributes | GroupBy:'Activity_Name' %}
 
     <div id="attributeList" class="col-md-6" style="display:none;">
         <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_WorkflowAttributes" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
@@ -93,7 +94,7 @@
     {% for wactivity in grouped_WorkflowActivityAttributes%}
         {% assign parts = wactivity | PropertyToKeyValue %}
         <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
-        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity {{ parts.Key }}</span> ({{ parts.Value | Size }})
+        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity | {{ parts.Key }}</span> ({{ parts.Value | Size }})
         <b class="fa fa-caret-down"></b></a>
         <div class="row" >
             <div class="col-md-12 collapse" id="toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}">
@@ -106,7 +107,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Order' %}
+                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Attribute_Order' %}
                     {% for row in wactivityAttribute_Rows %}
                         <tr>
                             <td>{{ row.Attribute_Id }}</td>
