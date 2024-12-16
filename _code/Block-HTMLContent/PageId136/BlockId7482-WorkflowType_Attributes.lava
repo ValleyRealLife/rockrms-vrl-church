@@ -14,7 +14,7 @@
 
 {% assign var_WorkflowTypeId = 'Global' | PageParameter:'workflowTypeId' %}
 
-{% if var_WorkflowTypeId != null and var_WorkflowTypeId != empty %}
+{% if var_WorkflowTypeId != null and var_WorkflowTypeId != empty and var_WorkflowTypeId != 0 %}
 
     {% sql return:'sql_WorkflowAttributes' %}
     SELECT
