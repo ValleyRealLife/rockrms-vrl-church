@@ -2,7 +2,7 @@
     This Lava is found in
     PageId=136, BLockId=7482, [RockCommunity Recipe 203] > HTML
     
-    This Lava is used to inject a table of WorkflowAttributes into the <fieldset> in BlockId=178
+    This Lava is used to inject a table of WorkflowAttributes into the <fieldset></fieldset> in BlockId=178
     This Lava requires the 'Sql' Lava command enabled.
     
     i got this Lava from RecipeId=203 from the RockCommunity, which was authored by Kevin Rutledge in 2020
@@ -25,20 +25,51 @@
         [Attribute] att
         INNER JOIN [FieldType] ft ON ft.[Id] = att.[FieldTypeId]
     WHERE
-        att.[EntityTypeQualifierValue] = '{{ var_WorkflowTypeId }}'
-        AND
         att.[EntityTypeId] = 113 --This is the [EntityType].[Id] for 'Rock.Model.Workflow'
+        AND
+        att.[EntityTypeQualifierValue] = '{{ var_WorkflowTypeId }}'
     ORDER BY
         att.[Key] ASC
     ;
     {% endsql %}
+    
+    {% sql return:'sql_WorkflowActivityTypes' %}
+    SELECT
+        [Id], [IsActive], [Name], [Order]
+    FROM
+        [WorkflowActivityType]
+    WHERE
+        [WorkflowTypeId] = '{{ var_WorkflowTypeId }}'
+    ORDER BY
+        [Order] ASC
+    ;
+    {% endsql %}
+    
+    {% sql return:'sql_WorkflowActivityAttributes' %}
+    SELECT
+        att.[Id] AS 'Attribute_Id'
+      , att.[Key] AS 'Attribute_Key'
+      , att.[EntityTypeQualifierValue]
+      , att.[Order]
+      , ft.[Name] AS 'FieldType_Name'
+    FROM
+        [Attribute] att
+        INNER JOIN [FieldType] ft ON ft.[Id] = att.[FieldTypeId]
+    WHERE
+        att.[EntityTypeId] = 116 --This is the [EntityType].[Id] for 'Rock.Model.WorkflowActivity'
+        AND
+        att.[EntityTypeQualifierValue] IN ({{ sql_WorkflowActivityTypes | Map:'Id' | Join:', ' }})
+    ;
+    {% endsql %}
+    
+    {% assign grouped_WorkflowActivityAttributes = sql_WorkflowActivityAttributes | GroupBy:'EntityTypeQualifierValue' %}
 
     <div id="attributeList" class="col-md-6" style="display:none;">
-        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggleReadOnlyAttributeList" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
-        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Attributes</span> ({{ sql_WorkflowAttributes | Size }})
+        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_WorkflowAttributes" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
+        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Workflow Attributes</span> ({{ sql_WorkflowAttributes | Size }})
         <b class="fa fa-caret-down"></b></a>
         <div class="row" >
-            <div class="col-md-12 collapse" id="toggleReadOnlyAttributeList">
+            <div class="col-md-12 collapse" id="toggle_ReadOnlyList_WorkflowAttributes">
                 <table class="table table-responsive table-striped">
                     <thead class="thead-light">
                         <tr>
@@ -59,6 +90,35 @@
                 </table>
             </div>
         </div>
+    {% for wactivity in grouped_WorkflowActivityAttributes%}
+        {% assign parts = wactivity | PropertyToKeyValue %}
+        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
+        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity {{ parts.Key }}</span> ({{ parts.Value | Size }})
+        <b class="fa fa-caret-down"></b></a>
+        <div class="row" >
+            <div class="col-md-12 collapse" id="toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}">
+                <table class="table table-responsive table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Attribute Id</th>
+                            <th>Attribute Key</th>
+                            <th>Attribute Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Order' %}
+                    {% for row in wactivityAttribute_Rows %}
+                        <tr>
+                            <td>{{ row.Attribute_Id }}</td>
+                            <td>{{ row.Attribute_Key }}</td>
+                            <td>{{ row.FieldType_Name }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
     </div>
 
     <script>
