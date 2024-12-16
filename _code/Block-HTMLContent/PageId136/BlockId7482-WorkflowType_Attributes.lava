@@ -93,11 +93,11 @@
         </div>
     {% for wactivity in grouped_WorkflowActivityAttributes%}
         {% assign parts = wactivity | PropertyToKeyValue %}
-        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
+        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key | Replace:' ','_' }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
         <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity | {{ parts.Key }}</span> ({{ parts.Value | Size }})
         <b class="fa fa-caret-down"></b></a>
         <div class="row" >
-            <div class="col-md-12 collapse" id="toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}">
+            <div class="col-md-12 collapse" id="toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key | Replace:' ','_'  }}">
                 <table class="table table-responsive table-striped">
                     <thead class="thead-light">
                         <tr>
