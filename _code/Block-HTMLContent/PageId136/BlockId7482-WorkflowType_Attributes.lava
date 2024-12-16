@@ -50,7 +50,7 @@
         att.[Id] AS 'Attribute_Id'
       , att.[Key] AS 'Attribute_Key'
       , att.[EntityTypeQualifierValue]
-      , att.[Order]
+      , att.[Order] AS 'Attribute_Order'
       , ft.[Name] AS 'FieldType_Name'
     FROM
         [Attribute] att
@@ -106,7 +106,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Order' %}
+                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Attribute_Order' %}
                     {% for row in wactivityAttribute_Rows %}
                         <tr>
                             <td>{{ row.Attribute_Id }}</td>
