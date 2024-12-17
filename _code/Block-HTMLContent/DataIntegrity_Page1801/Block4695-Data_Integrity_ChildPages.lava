@@ -229,6 +229,11 @@
             <div class="tim-icon">UserLogin contains "Test"</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_UserLoginContainsTest }}</span></div>
         </a>
+        <a class="tim-block" href="/page/6741" style="color:#000000;">
+            <div class="tim-icon"><i class="fa fa-unlock"></i></div>
+            <div class="tim-icon">UserLogin notConfirmed</div>
+            <div></div>
+        </a>
         <a class="tim-block" href="#" style="color:#000000;">
             <div class="tim-icon"><i class="fa fa-database"></i></div>
             <div class="tim-icon">DataViews that are using Sql</div>
