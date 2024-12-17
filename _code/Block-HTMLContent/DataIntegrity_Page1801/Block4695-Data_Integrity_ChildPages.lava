@@ -1,7 +1,12 @@
-/------------------------------------------------------------
+/---------------------------------------------------------------------------------------------------------
     This Lava is found in
-    PageId=1801, BlockId=4695 [Data Integrity ChildPages] > HTML
-------------------------------------------------------------/
+    PageId=1801, BlockId=4695, [Data Integrity ChildPages] > HTML
+    
+    This Lava requires the 'Rock Entity' and 'Sql' Lava command(s) enabled.
+    
+    Path:
+    _code/Block-HTMLContent/DataIntegrity_Page1801/BlockId4695-Data_Integrity_ChildPages.lava
+---------------------------------------------------------------------------------------------------------/
 
 <head>
     <meta charset="UTF-8">
@@ -67,6 +72,7 @@
         }
     </style>
 </head>
+
 <body>
     /---------------------------------------------------------------------------------------------
     IMPORTANT:
@@ -218,7 +224,7 @@
             <div class="tim-icon">with 'Extreme' Prot Prof</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_PersonsWithProtectionProfile_Extreme }}</span></div>
         </a>
-        <a class="tim-block" href="/reporting/reports//156" style="color:#000000;">
+        <a class="tim-block" href="/reporting/reports/156" style="color:#000000;">
             <div class="tim-icon"><i class="fa fa-radiation-alt"></i></div>
             <div class="tim-icon">UserLogin contains "Test"</div>
             <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_UserLoginContainsTest }}</span></div>
