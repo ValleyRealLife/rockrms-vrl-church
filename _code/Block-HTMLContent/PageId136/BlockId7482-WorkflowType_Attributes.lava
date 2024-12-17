@@ -51,6 +51,7 @@
       , att.[Key] AS 'Attribute_Key'
       , att.[Order] AS 'Attribute_Order'
       , ft.[Name] AS 'FieldType_Name'
+      , wat.[Id] AS 'Activity_Id'
       , wat.[Name] AS 'Activity_Name'
     FROM
         [Attribute] att
@@ -63,12 +64,13 @@
     ;
     {% endsql %}
     
-    {% assign grouped_WorkflowActivityAttributes = sql_WorkflowActivityAttributes | GroupBy:'Activity_Name' %}
+    {% assign grouped_WorkflowActivityAttributes = sql_WorkflowActivityAttributes | GroupBy:'Activity_Id' %}
 
     <div id="attributeList" class="col-md-6" style="display:none;">
         <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_WorkflowAttributes" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
-        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Workflow Attributes</span> ({{ sql_WorkflowAttributes | Size }})
-        <b class="fa fa-caret-down"></b></a>
+            <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Workflow Attributes</span> ({{ sql_WorkflowAttributes | Size }})
+            <b class="fa fa-caret-down"></b>
+        </a>
         <div class="row" >
             <div class="col-md-12 collapse" id="toggle_ReadOnlyList_WorkflowAttributes">
                 <table class="table table-responsive table-striped">
@@ -93,11 +95,12 @@
         </div>
     {% for wactivity in grouped_WorkflowActivityAttributes%}
         {% assign parts = wactivity | PropertyToKeyValue %}
-        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key | Replace:' ','_' }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
-        <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity | {{ parts.Key }}</span> ({{ parts.Value | Size }})
-        <b class="fa fa-caret-down"></b></a>
+        <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
+            <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity | {{ parts.Value[0].Activity_Name }}</span> ({{ parts.Value | Size }})
+            <b class="fa fa-caret-down"></b>
+        </a>
         <div class="row" >
-            <div class="col-md-12 collapse" id="toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key | Replace:' ','_'  }}">
+            <div class="col-md-12 collapse" id="toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}">
                 <table class="table table-responsive table-striped">
                     <thead class="thead-light">
                         <tr>
