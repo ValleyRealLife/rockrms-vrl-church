@@ -39,7 +39,7 @@ The only discretion necessary is whether you'd use the multi-line [Lava comment 
 ```
 /---------------------------------------------------------------------------------------------------------
     This Lava is found in
-    PageId=1128, BLockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
+    PageId=1128, BlockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
     
     This Lava is used to mimic the Group List Personalized Lava Block type. However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
     This Lava requires the 'Sql' Lava commands enabled.
@@ -53,7 +53,7 @@ If the Lava file was created by copy+pasting an existing Lava Template (maybe it
 ```
 /---------------------------------------------------------------------------------------------------------
     This Lava is found in
-    PageId=1128, BLockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
+    PageId=1128, BlockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
     
     i am copy+pasting this here from the VRL Rock Site.
     i copy+pasted this on 09-APR-2024
