@@ -12,6 +12,14 @@
 {% assign pastorGuid = 'Global' | PageParameter:'LGPastor' | SanitizeSql %}
 {% assign coachGuid = 'Global' | PageParameter:'LGCoach' | SanitizeSql %}
 
+DECLARE @CurrentDate DATETIME;
+SET @CurrentDate = GETDATE()
+;
+
+DECLARE @TwoMonthsAgo DATETIME;
+SET @TwoMonthsAgo = DATEADD(MONTH, -2, @CurrentDate)
+;
+
 DECLARE @FilteredGroupIds TABLE(
     [Id] int NOT NULL
 );
@@ -97,6 +105,10 @@ FROM
     LEFT JOIN [Attendance] att ON att.[OccurrenceId] = attocc.[Id]
 WHERE
     attocc.[GroupId] IN (SELECT [Id] FROM @FilteredGroupIds)
+    AND
+    attocc.[OccurrenceDate] >= @TwoMonthsAgo
+    AND
+    attocc.[OccurrenceDate] <= @CurrentDate
 GROUP BY
     attocc.[Id]
   , attocc.[GroupId]
