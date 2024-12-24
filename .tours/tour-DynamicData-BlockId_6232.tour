@@ -1,0 +1,51 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "tour-DynamicData-BlockId_6232",
+  "steps": [
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "i want to begin this tour with the end in mind, so here! This SELECT statement in line 159 is the actual end-result that will be shown to the EndUser through the Dynamic Data Block.\n\n.\n\nAlso: For this particular Lava file, i find VSC's `bracketPairColorization` unhelpful. It's up to you, but i disabled it.\n(i'm talking about the guidelines, not the highlighting.)\n\n```json\n    \"editor.guides.bracketPairsHorizontal\": false,\n    \"editor.language.colorizedBracketPairs\": []\n```\n\n.\n\nThis CodeTour will skip the lines that are simply showing a static field value. i am creating this CodeTour mainly because i want to walk you through the various Table variables and joins.",
+      "line": 159
+    },
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "This one is pretty straight-forward. Each row of our end-result corresponds to one GroupId, and the 'Most Recent Checkin Form' Column is only interested in the most-recent [ContentChannelItem] row that corresponds to this row's GroupId.\n\n.\n\nThe next step in this CodeTour will show you the Table variable where I store each [Group].[Id] and [ContentChannelItem].[Id]",
+      "line": 165
+    },
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "Each Group will have a new Form submission periodically; and each new Form submission is essentially a new row in the [ContentChannelItem] Table. In other words, for each GroupId, there can be many ContentChannelItemIds.\n\n.\n\ni am only interested in the most-recent [ContentChannelItem] per [Group]. i store each of those pairs of Groups-and-ContentChannelItems in this @MostRecentCoachcChecinForm Table.\n\n.\n\nThe way i retrieve the most-recent [ContentChannelItem] is by using the `GROUP BY` and `MAX()`",
+      "line": 71,
+      "selection": {
+        "start": {
+          "line": 5,
+          "character": 89
+        },
+        "end": {
+          "line": 5,
+          "character": 94
+        }
+      }
+    },
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "This one is pretty interesting. 'Attendance Up To Date' used to be a \"Yes or No\" question that we asked the Form Submitter during v1.0\n\n.\n\nHowever, later we figured that we don't need to ask the Form Submitter because Rock already has the data of whether or not Attendance has been entered.\n\n.\n\nWe only needed to set some parameters as in which [Attendance] and [AttendanceOccurrence] rows we should aggregate when defining \"up to date\".\n\nWe are looking at the \"most recent\" attendance occurrences that occurred in the past two months; and from those, we see whether this Group has attended 3 of those 4.",
+      "line": 168
+    },
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "The @AttendanceSummary is where I store \"the most recent 4 rows\" for each Group, and aggregate it as a single integer.\n\nThe Filter, `WHERE [RowNum] <= 4` makes it so that it only counts the most recent 4 attendances per Group; and the `SELECT SUM()`is what aggregates+stores their attendances as an INT in a single row.\n\nThat way, we can say \"GroupId such-and-such attended x of the last 4\"\n\n.\n\nIn the next step of this CodeTour, i'll show you how I make it so that \"the last 4\" only considers the past 4 months-- That way, if the Group's \"last 4 attendances\" happen to be waaay back in 2018, it won't count towards their Attendace being considered \"up-to-date\"",
+      "line": 120
+    },
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "This is where i ensure that \"the most recent 4 attendances\" of the Group is only counting rows from the past two months. That way, if the Group's \"last 4 attendances\" happen to be waaay back in 2018, it won't count.\n\n@TwoMonthsAgo and @CurrentDate have been defined at the top of this SQL query.\n\nIf a Group does not have any Attendances in the past two months, it'll return no rows-- which is okay because it will still return \"No\" when we search for \"greater than or equal to 3\" at the end.",
+      "line": 94
+    },
+    {
+      "file": "_code/Block-DynamicData/Dashboards_PageId4609/BlockId6232-Query.lava",
+      "description": "This is me trying to figure out how to show the most-recent [GroupMember] per [Group]. There might be a more-efficient way to achieve this, but for now this seems to be working as intended.",
+      "line": 178
+    }
+  ]
+}
