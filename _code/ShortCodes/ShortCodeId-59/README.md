@@ -16,6 +16,6 @@ If the given PersonId has more than 1 overdue check-in, this ShortCode will outp
 ![screenshot_2](../../_attachments/ShortCodeId59-Example_2.png)
 
 ## Definitions:
-<sup>1</sup>The definition of "Life Group" in this context is any Group that has been tagged with TagId:20
-<sup>2</sup>The definition of "overdue" is 30 days. Therefore, we are checking for any Life Groups for whom their most-recent Check-in was >=30 days ago.
+<sup>1</sup>The definition of "Life Group" in this context is any Group that has been tagged with TagId:20  
+<sup>2</sup>The definition of "overdue" is 30 days. Therefore, we are checking for any Life Groups for whom their most-recent Check-in was >=30 days ago.  
 <sup>3</sup>After a Coach checks-in with a Life Group, they submit a Workflow Form that creates a ContentChannelItem. Therefore, "overdue for checkin" would mean that the most-recent ContentChannelItem associated with this Group has a `StartDate` of >=30 days ago.
