@@ -9,16 +9,13 @@
     _code/ShortCodes/ShortCodeId-59/ShortCodeId-59.lava
 ---------------------------------------------------------------------------------------------------------/
 
-{% assign var_PersonAliasId = personaliasid %}
 {% assign obj_Person = personaliasid | PersonByAliasId %}
+{% assign date_Now = 'Now' | Date:'yyyy-MM-dd' %}
+{% assign date_OneMonthAgo = date_Now | DateAdd:-30 %}
 
 {% sql return:'output' %}
-DECLARE @CurrentDate DATETIME;
-SET @CurrentDate = GETDATE()
-;
-
 DECLARE @OneMonthAgo DATETIME;
-SET @OneMonthAgo = DATEADD(MONTH, -1, @CurrentDate)
+SET @OneMonthAgo = '{{ date_OneMonthAgo }}'
 ;
 
 DECLARE @MostRecentCoachCheckinForm TABLE (
@@ -57,13 +54,15 @@ SELECT
   , CoachCheckinForm.[FormSubmissionDateTime]
 FROM
     [AttributeValue] attval
-    LEFT JOIN [Group] g ON g.[Id] = attval.[EntityId]
+    INNER JOIN [Group] g ON g.[Id] = attval.[EntityId]
     LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
-    LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = attval.[EntityId]
+    INNER JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = attval.[EntityId]
+    INNER JOIN [PersonAlias] pa ON TRY_CAST(pa.[Guid] AS NVARCHAR(36)) = attval.[Value]
+    INNER JOIN [Person] p ON p.[Id] = pa.[PersonId]
 WHERE
     attval.[AttributeId] = 8975
     AND
-    attval.[Value] = '{{ var_PersonAliasId }}'
+    p.[Id] = '{{ obj_Person.Id }}'
     AND
     g.[IsActive] = 1 AND g.[IsArchived] = 0
     AND
