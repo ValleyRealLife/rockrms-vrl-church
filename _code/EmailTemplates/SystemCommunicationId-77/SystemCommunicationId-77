@@ -1,3 +1,13 @@
+/--------------------------------------------------------------------------------------------------------------------
+    This Lava is found in SystemCommunicationId:77
+    
+    This SystemCommunication requires SQL,
+    so i moved the portion that requires SQL into a ShortCode, and this SystemCommunication is using that ShortCode.
+    
+    Path:
+    _code/EmailTemplates/SystemCommunicationId-77/SystemCommunicationId-77.lava
+--------------------------------------------------------------------------------------------------------------------/
+
 {{ 'Global' | Attribute:'EmailHeader' }}
 
 <style>
@@ -17,7 +27,7 @@
     }
 </style>
 
-{% assign var = Person.PrimaryAlias.Guid %}
+{% assign var = Person.PrimaryAlias.Id %}
 
 {[ LifeGroupCoach_Digest personaliasguid:'{{ var }}' ]}
 
