@@ -10,12 +10,14 @@
 ---------------------------------------------------------------------------------------------------------/
 
 {% assign obj_Person = personaliasid | PersonByAliasId %}
-{% assign date_Now = 'Now' | Date:'yyyy-MM-dd' %}
-{% assign date_OneMonthAgo = date_Now | DateAdd:-30 %}
 
 {% sql return:'output' %}
+DECLARE @CurrentDate DATETIME;
+SET @CurrentDate = GETDATE()
+;
+
 DECLARE @OneMonthAgo DATETIME;
-SET @OneMonthAgo = '{{ date_OneMonthAgo }}'
+SET @OneMonthAgo = DATEADD(MONTH, -1, @CurrentDate)
 ;
 
 DECLARE @MostRecentCoachCheckinForm TABLE (
