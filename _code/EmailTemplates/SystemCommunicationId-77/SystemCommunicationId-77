@@ -1,0 +1,29 @@
+{{ 'Global' | Attribute:'EmailHeader' }}
+
+<style>
+    table.tims-custom {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    table.tims-custom th, table.tims-custom td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    
+    table.tims-custom th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+{% assign var = Person.PrimaryAlias.Guid %}
+
+{[ LifeGroupCoach_Digest personaliasguid:'{{ var }}' ]}
+
+<br><br>
+Thank you!
+<br><br>
+-VRL Groups Team
+
+{{ 'Global' | Attribute:'EmailFooter' }}

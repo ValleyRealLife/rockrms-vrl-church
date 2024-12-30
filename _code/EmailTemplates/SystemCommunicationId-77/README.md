@@ -1,0 +1,2 @@
+# Reminder for LG Coach to Check-in with LG Leader(s)
+This is a SystemCommunication being sent to [DataViewId:958](https://rock.vrl.church/reporting/dataviews?DataViewId=958) via [ServiceJobId:209](https://rock.vrl.church/admin/system/jobs/209).
