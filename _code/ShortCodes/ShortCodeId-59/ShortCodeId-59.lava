@@ -10,12 +10,14 @@
 ---------------------------------------------------------------------------------------------------------/
 
 {% assign obj_Person = personaliasid | PersonByAliasId %}
-{% assign date_Now = 'Now' | Date:'yyyy-MM-dd' %}
-{% assign date_OneMonthAgo = date_Now | DateAdd:-30 %}
 
 {% sql return:'output' %}
+DECLARE @CurrentDate DATETIME;
+SET @CurrentDate = GETDATE()
+;
+
 DECLARE @OneMonthAgo DATETIME;
-SET @OneMonthAgo = '{{ date_OneMonthAgo }}'
+SET @OneMonthAgo = DATEADD(MONTH, -1, @CurrentDate)
 ;
 
 DECLARE @MostRecentCoachCheckinForm TABLE (
@@ -77,14 +79,7 @@ ORDER BY
 
 Hey {{ obj_Person.NickName }},
 <br><br>
-{% if size_Output == 1 %}
-    {% assign var = output | First %}
-    This is just a quick reminder that it has been at least 30 days since you've met with the leader(s) of <u>{{ var.GroupName }}</u> to check-in.
-    <br><br>
-    Consistent check-ins with our leaders is essential and we encourage you to reach out to them soon to set up a time to chat.
-    <br><br>
-    Click <a href="https://www.vrl.church/page/1128?CoachingGroupId={{ var.GroupId }}" target="_blank">this link</a> for a quick overview of <u>{{ var.GroupName }}</u> to prepare you for your next meeting.
-{% else %}
+{% if size_Output > 1 %}
     This is a just a quick reminder that it has been at least 30 days since you've checked-in with these Life Groups:
     <br><br>
     <table class="tims-custom">
@@ -99,4 +94,11 @@ Hey {{ obj_Person.NickName }},
         </tr>    
         {% endfor %}
     </table>
+{% else %}
+{% assign var = output | First %}
+    This is just a quick reminder that it has been at least 30 days since you've met with the leader(s) of the <b>{{ var.GroupName }}</b> to check-in.
+    <br><br>
+    Consistent check-ins with our leaders is essential and we encourage you to reach out to them soon to set up a time to chat.
+    <br><br>
+    Click <a href="https://www.vrl.church/page/1128?CoachingGroupId={{ var.GroupId }}" target="_blank">this link for a quick overview of the <b>{{ var.GroupName }}</b></a> to prepare you for your next meeting.
 {% endif %}

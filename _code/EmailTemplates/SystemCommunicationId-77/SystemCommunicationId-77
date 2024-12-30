@@ -29,7 +29,7 @@
 
 {% assign var = Person.PrimaryAlias.Id %}
 
-{[ LifeGroupCoach_Digest personaliasguid:'{{ var }}' ]}
+{[ LifeGroupCoach_Digest personaliasid:'{{ var }}' ]}
 
 <br><br>
 Thank you!
