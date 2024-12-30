@@ -1,0 +1,103 @@
+/---------------------------------------------------------------------------------------------------------
+    References:
+    - This ShortCode is used in SystemCommunicationId:77
+    
+    This Lava requires the 'Sql' Lava command(s) enabled.
+    This Lava is used in order to generate the Email Body of CommunicationId:77
+    
+    Path:
+    _code/ShortCodes/ShortCodeId-59/ShortCodeId-59.lava
+---------------------------------------------------------------------------------------------------------/
+
+{% assign var_PersonAliasId = personaliasid %}
+{% assign obj_Person = personaliasid | PersonByAliasId %}
+
+{% sql return:'output' %}
+DECLARE @CurrentDate DATETIME;
+SET @CurrentDate = GETDATE()
+;
+
+DECLARE @OneMonthAgo DATETIME;
+SET @OneMonthAgo = DATEADD(MONTH, -1, @CurrentDate)
+;
+
+DECLARE @MostRecentCoachCheckinForm TABLE (
+    [Id] INT
+  , [Title] NVARCHAR(255)
+  , [GroupId] INT
+  , [FormSubmissionDateTime] DATETIME
+);
+
+INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
+SELECT
+    cci.[Id]
+  , cci.[Title]
+  , cci_GroupId.[Value] AS 'GroupId'
+  , cci.[StartDateTime] AS 'FormSubmissionDateTime'
+FROM
+    [ContentChannelItem] cci
+    LEFT JOIN [AttributeValue] cci_GroupId ON cci_GroupId.[EntityId] = cci.[Id] AND cci_GroupId.[AttributeId] = 16514
+WHERE
+    cci.[ContentChannelId] = 351
+    AND
+    cci.[StartDateTime] = (
+        SELECT MAX(inner_cci.[StartDateTime])
+        FROM [ContentChannelItem] inner_cci
+            LEFT JOIN [AttributeValue] inner_cci_GroupId ON inner_cci_GroupId.[EntityId] = inner_cci.[Id] AND inner_cci_GroupId.[AttributeId] = 16514
+        WHERE
+            inner_cci_GroupId.[Value] = cci_GroupId.[Value]
+            AND
+            inner_cci.[ContentChannelId] = 351
+        )
+;
+
+SELECT
+    g.[Id] AS 'GroupId'
+  , g.[Name] AS 'GroupName'
+  , CoachCheckinForm.[FormSubmissionDateTime]
+FROM
+    [AttributeValue] attval
+    LEFT JOIN [Group] g ON g.[Id] = attval.[EntityId]
+    LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
+    LEFT JOIN @MostRecentCoachCheckinForm CoachCheckinForm ON CoachCheckinForm.[GroupId] = attval.[EntityId]
+WHERE
+    attval.[AttributeId] = 8975
+    AND
+    attval.[Value] = '{{ var_PersonAliasId }}'
+    AND
+    g.[IsActive] = 1 AND g.[IsArchived] = 0
+    AND
+    ti.[TagId] = 20
+    AND
+    CoachCheckinForm.[FormSubmissionDateTime] <= @OneMonthAgo
+ORDER BY
+    CoachCheckinForm.[FormSubmissionDateTime] DESC
+{% endsql %}
+
+{% assign size_Output = output | Size %}
+
+Hey {{ obj_Person.NickName }},
+<br><br>
+{% if size_Output == 1 %}
+    {% assign var = output | First %}
+    This is just a quick reminder that it has been at least 30 days since you've met with the leader(s) of <u>{{ var.GroupName }}</u> to check-in.
+    <br><br>
+    Consistent check-ins with our leaders is essential and we encourage you to reach out to them soon to set up a time to chat.
+    <br><br>
+    Click <a href="https://www.vrl.church/page/1128?CoachingGroupId={{ var.GroupId }}" target="_blank">this link</a> for a quick overview of <u>{{ var.GroupName }}</u> to prepare you for your next meeting.
+{% else %}
+    This is a just a quick reminder that it has been at least 30 days since you've checked-in with these Life Groups:
+    <br><br>
+    <table class="tims-custom">
+        <tr>
+            <th>Life Group Name</th>
+            <th>Last Check-in Date</th>
+        </tr>
+        {% for row in output %}
+        <tr>
+            <td><a href="https://www.vrl.church/page/1128?CoachingGroupId={{ row.GroupId }}" target="_blank">{{ row.GroupName }}</a></td>
+            <td>{{ row.FormSubmissionDateTime | Date:'M/d/yyyy' }} ({{ row.FormSubmissionDateTime | HumanizeDateTime }})</td>
+        </tr>    
+        {% endfor %}
+    </table>
+{% endif %}
