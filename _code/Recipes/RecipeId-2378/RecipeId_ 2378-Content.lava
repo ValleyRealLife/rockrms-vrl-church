@@ -1,0 +1,193 @@
+/------------------------------------------------------------
+    
+    Path:
+    _code/Recipes/RecipeId-2378/RecipeId_2378-Content.lava
+    
+------------------------------------------------------------/
+
+{% assign RockGuy = 'Global' | Attribute:'RockGuy', 'Object' %}
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .recipe-screenshot {
+        width: 60%;
+        margin: 0 auto;
+        border: 1px solid #000000;
+    }
+</style>
+
+<h1>Big Picture</h1>
+<p>
+    In order to send an email that contains an RSVP, you essentially need 2 things:
+    <ol>
+        <li>A <u>roster</u> of people that you're sending this invitation to</li>
+        <li>A <u>date/time</u> to which they are RSVP'ing whether they'll be there or not</li>
+    </ol>
+</p>
+
+<hr>
+<b>Outline:</b>
+<ol>
+    <li>
+        How to
+        <ol>
+            <li><a href="#Step-1">Create the Roster</a></li>
+            <li><a href="#Step-2">Create the DateTime</a></li>
+            <li><a href="#Step-3">Send the Email</a></li>
+            <li><a href="#Step-4">See the RSVPs from your Invitees</a></li>
+        </ol>
+    </li>
+</ol>
+<hr>
+
+<h1>How to</h1>
+<h2 id="Step-1">1. Create the Roster</h2>
+<p>
+    When i say "Roster", i'm essentially talking about a Group. <span style="background-color: yellow;">If you already have a Group that contains all the Persons you want to invite</span>, then you can skip this step and <a href="#Step-2" class="btn btn-grid-action btn-default btn-sm">scroll down to step #2</a>
+</p>
+<p>
+    If you don't have one yet, go ahead and create the Group under the appropriate folder.
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_01.png" class="recipe-screenshot" alt="Attachment_01.png">
+    <br><br>
+</p>
+<p>
+    <u>Note</u>: <span style="background-color: yellow;">If you are not certain which <b>Group Type</b> to choose, "Special Events" is a safe one to choose.</span> If you want to be completely certain, you can ask your Team Leader or {{ RockGuy.NickName }} {{ RockGuy.LastName }}.
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_02.png" class="recipe-screenshot" alt="Attachment_02.png">
+    <br><br>
+</p>
+<p>
+    Once the Group is craeted, add all the people to whom you'd like to send the RSVP invitation.
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_03.png" class="recipe-screenshot" alt="Attachment_03.png">
+    <br><br>
+</p>
+
+<br>
+
+<h2 id="Step-2">2. Create the DateTime</h2>
+<p>
+    Now, click the 'Group RSVP' button in order to create a Date/Time to which we'll be asking them to RSVP.
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_04.png" class="recipe-screenshot" alt="Attachment_04.png">
+    <br><br>
+</p>
+<p>
+    <span style="background-color: yellow;">If you have already created an RSVP for this particular Group before</a>, you'll see a screen like this:
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_05.png" class="recipe-screenshot" alt="Attachment_05.png">
+    <br>
+</p>
+<p>
+    Simply click the 'Add' button in order to create a new Date/Time for the RSVP.<br>
+    (It's the button that looks like <i class="fa fa-plus-circle fa-fw"></i>)
+</p>
+<br>
+<p>
+    The only required field is the <b>Date</b> field. But i recommend also choosing a <b>Name</b> that corresponds with the class/event/gathering that you are planning.<br>
+    (This 'Name' Field is not included in the email-- this 'Name' Field is for VRL Staff to reference in the future)
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_06.png" class="recipe-screenshot" alt="Attachment_06.png">
+    <br><br>
+</p>
+<p>
+    Optionally, you can also click the "Show Additional Fields" in order to further customize what the RSVP will look like for your recipients.
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_07.png" class="recipe-screenshot" alt="Attachment_07.png">
+    <br>
+</p>
+<p>
+    After you've created the Date/Time, go back to the Page where you can see the Group and the GroupMembers.<br>
+    (It's the same Page where you were at the beginning of step #2
+</p>
+
+<br>
+
+<h2 id="Step-3">3. Send the Email</h2>
+<p>
+    You're (probably) already familiar with sending Emails via Rock. The steps are the same except we are also adding an RSVP.
+</p>
+<p>
+    Click the 'Communicate' button.<br>
+    (It's the button that looks like <i class="fa fa-comment"></i>)
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_08.png" class="recipe-screenshot" alt="Attachment_08.png">
+    <br><br>
+</p>
+<p>
+    Choose a <b>Communication Name</b>.<br>
+    (This 'Communication Name' Field is for VRL Staff to reference in the future)
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_09.png" class="recipe-screenshot" alt="Attachment_09.png">
+    <br>
+</p>
+<p>
+    <span style="background-color: yellow;">Please ensure <b>Bulk</b> is toggled ON</span>.<br>
+    (it should be ON by default, but i like note this disclaimer in my step-by-step guides, just in case)<br>
+    The <b>Communication Medium</b> must be 'Email'.<br>
+    You can optionally click the "Send Immediately" if you want to schedule this email for later.
+</p>
+<br>
+<p>
+    Drag an 'RSVP' Block wherever you want it in the Email Body.
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_10.png" class="recipe-screenshot" alt="Attachment_10.png">
+    <br>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_11.png" class="recipe-screenshot" alt="Attachment_11.png">
+    <br><br>
+</p>
+<p>
+    Choose the Group from Step #1
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_12.png" class="recipe-screenshot" alt="Attachment_12.png">
+    <br><br>
+</p>
+<p>
+    Choose the RSVP DateTime that you created in Step #2
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_13.png" class="recipe-screenshot" alt="Attachment_13.png">
+    <br><br>
+</p>
+<p>
+    Please note: <span style="background-color: yellow;">It's important to click the "<b>Register Recipients</b>" button</span>.<br>
+    Also: i have sometimes had trouble when not clicking the "Complete" button, but i don't have hard-evidence for this one; just click it to be safe. 😅
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_14.png" class="recipe-screenshot" alt="Attachment_14.png">
+    <br><br>
+</p>
+<p>
+    Keep clicking 'Next' until you are done with the Email Wizard.
+</p>
+
+<br>
+
+<h2 id="Step-4">4. See the RSVPs from your Invitees</h2>
+<p>
+    Once the Email has been sent:
+    <ol>
+        <li>Go to the Group from Step #1</li>
+        <li>Click the 'Group RSVP' button<br>(it's the button you clicked at the beginning of Step #2)</li>
+        <li>You will see an RSVP with a green/red progress bar</li>
+    </ol>
+</p>
+<p>
+    <img src="/Content/RecipeAttachments/Recipe-2378/Attachment_15.png" class="recipe-screenshot" alt="Attachment_15.png">
+    <br><br>
+</p>
