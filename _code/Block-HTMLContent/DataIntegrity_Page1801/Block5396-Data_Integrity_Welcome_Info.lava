@@ -1,7 +1,12 @@
-/------------------------------------------------------------
+/------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=1801, BlockId=5396 [Data Integrity Welcome Info] > HTML
-------------------------------------------------------------/
+    
+    GitHub
+    rockrms-vrl-church/_code/Block-HTMLContent/DataIntegrity_Page1801/Block5396-Data_Integrity_Welcome_Info.lava
+    
+------------------------------------------------------------------------------------------------------------------/
 
 //- What is the Guid of the CurrentPage?
 {% page where:'Id == {{ 'Global' | Page:'Id' }}' securityenabled:'false' %}
@@ -148,6 +153,7 @@
             <ol>
                 <li><a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}page/3507/" target="_blank">Tool for Auditing/Deleting Families</a></li>
                 <li><a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}admin/communications/nameless-people" target="_blank">Nameless Person Records</a></li>
+                <li><a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}page/6745/" target="_blank">QuickQuery of [History]</a></li>
             </ol>
         [[ enditem ]]
     {[ endaccordion ]}
