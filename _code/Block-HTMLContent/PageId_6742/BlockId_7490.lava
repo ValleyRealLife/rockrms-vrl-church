@@ -1,0 +1,135 @@
+/---------------------------------------------------------------------------------------------------------
+    This Lava is found in
+    PageId=6742, BlockId=7490, [Report] > [Block.ConfigurationSection] > Block.ConfigurationField
+    
+    Steven Floyd (from DTS) wrote this for us.
+    i copy+pasted this on 09-JAN-2025
+    
+    Required Lava Commands:
+    - Rock Entity
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/PageId_6742/BlockId_7490.lava
+---------------------------------------------------------------------------------------------------------/
+
+{{ 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css' | AddCssLink }}
+{{ 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js' | AddScriptLink }}
+
+{% assign CheckInConfigurationId = PageParameter.CheckInConfiguration %}
+
+{% sql %}
+WITH RecursiveGroupTypes AS (
+    SELECT 
+        gt.[Id] AS 'GroupTypeId'
+      , gt.[Name] AS 'GroupTypeName'
+      , gta.[ChildGroupTypeId]
+      , CAST(gt.[Id] AS VARCHAR(MAX)) AS 'Path'
+      , gt.[Name] AS 'ConfigurationName'
+      , CAST(',' + CAST(gt.[Id] AS VARCHAR(MAX)) + ',' AS VARCHAR(MAX)) AS 'VisitedGroupTypes'
+    FROM 
+        [GroupType] gt
+        LEFT JOIN [GroupTypeAssociation] gta ON gt.[Id] = gta.[GroupTypeId]
+    WHERE gt.[GroupTypePurposeValueId] = 142
+    {% if CheckinConfigurationId %}
+    AND gt.[Id] = {{ CheckinConfigurationId }}
+    {% endif %}
+    
+    UNION ALL
+    
+    SELECT 
+        gt.[Id] AS 'GroupTypeId'
+      , gt.[Name] AS 'GroupTypeName'
+      , gta.[ChildGroupTypeId]
+      , CAST(rgt.[Path] + ' > ' + CAST(gt.[Id] AS VARCHAR) AS VARCHAR(MAX)) AS 'Path'
+      , rgt.[ConfigurationName]  -- Pass down the original configuration name
+      , CAST(rgt.[VisitedGroupTypes] + CAST(gt.[Id] AS VARCHAR(MAX)) + ',' AS VARCHAR(MAX)) AS 'VisitedGroupTypes'
+    FROM 
+        RecursiveGroupTypes rgt
+        JOIN [GroupTypeAssociation] gta ON gta.[GroupTypeId] = rgt.[ChildGroupTypeId]
+        JOIN [GroupType] gt ON gt.[Id] = gta.[ChildGroupTypeId]
+    WHERE CHARINDEX(',' + CAST(gt.[Id] AS VARCHAR(MAX)) + ',', rgt.[VisitedGroupTypes]) = 0  -- Check for cycles
+        AND gt.[GroupTypePurposeValueId] = 142
+    )
+
+SELECT 
+    [GroupTypeId]
+  , [GroupTypeName]
+  , [ConfigurationName]
+  , [ChildGroupTypeId]
+  , [Path]
+FROM 
+    RecursiveGroupTypes
+{% if CheckInConfigurationId %}
+WHERE [Path] = '{{ CheckInConfigurationId }}' OR [Path] LIKE '{{ CheckInConfigurationId }} >%'
+{% endif %}
+OPTION (MAXRECURSION 0);
+{% endsql %}
+
+{% if PageParameter.OccurrenceDate %}
+    {% assign TargetDate = PageParameter.OccurrenceDate | Date:'yyyy-MM-dd' %}
+{% endif %}
+
+<table id="checkinOccurrenceReport" class="table table-bordered table-striped">
+<thead>
+    <tr>
+        <th>Configuration</th>
+        <th>Group</th>
+        <th>Schedule</th>
+        <th>Location</th>
+    </tr>
+</thead>
+<tbody>
+{% for item in results %}
+    {% if item.ChildGroupTypeId == null or item.ChildGroupTypeId == '' %}
+        {% continue %}
+    {% endif %}
+    {% grouptype id:'{{ item.ChildGroupTypeId }}' %}
+        {% assign innerGroups = grouptype.Groups | Sort:'Name' %}
+        {% for innergroup in innerGroups %}
+            {% assign locations = innergroup.GroupLocations %}
+            {% for location in locations %}
+                {% assign schedules = location.Schedules | SortByAttribute:'NextStartDateTime' %}
+                {% for schedule in schedules %}
+                    {% if schedule.NextStartDateTime %}
+                        {% assign nextStartDateTimeDate = schedule.NextStartDateTime | Date:'yyyy-MM-dd' %}
+                        {% if TargetDate %}
+                            {% if nextStartDateTimeDate != TargetDate %}
+                                {% continue %}
+                            {% endif %}
+                        {% endif %}
+                        {% if PageParameter.Campus %}
+                        {% assign locCampusGuid = location.Location | Attribute:'Campus','RawValue' %}
+                        {% if locCampusGuid != PageParameter.Campus %}
+                            {% continue %}
+                        {% endif %}
+                        {% endif %}
+                        <tr>
+                            <td><span><strong>{{ item.ConfigurationName }}</strong></span></td>
+                            <td><span style="color: red;"><strong>{{ innergroup.Name }}</strong></span></td>
+                            <td>{{ schedule.Name }}: {{schedule.NextStartDateTime}}</td>
+                            <td>{{location.Location.Name}}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endgrouptype %}
+{% endfor %}
+</tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#checkinOccurrenceReport').DataTable({
+            "columns": [
+                { "type": "string" },
+                { "type": "string" },
+                { "type": "string" },
+                { "type": "date" },
+                { "type": "string" },
+            ],
+            "pageLength": 5
+        });
+    });
+</script>
