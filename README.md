@@ -42,7 +42,10 @@ The only discretion necessary is whether you'd use the multi-line [Lava comment 
     PageId=1128, BlockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
     
     This Lava is used to mimic the Group List Personalized Lava Block type. However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
-    This Lava requires the 'Sql' Lava command(s) enabled.
+    
+    Required Lava Commands:
+    - Rock Entity
+    - Sql
     
     Path:
     _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
