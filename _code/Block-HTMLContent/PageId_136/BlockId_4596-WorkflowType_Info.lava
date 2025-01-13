@@ -1,15 +1,19 @@
 /------------------------------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=136, BlockId=4596 [WorkflowType Info] > HTML
     
     This Lava is used to display a list of places that are referencing the WorkflowType that is currently specified in the Page Parameter.
-    This Lava requires the 'Sql' Lava command enabled.
+    
+    Required Lava Command(s):
+    - Sql
     
     i forget where i got this Lava (maybe Alex Fehr wrote it from scratch?)
     but the inspiration was from RecipeId=401 from the RockCommunity, which was authored by Jeff Richmond in 2023
     
     Path:
-    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+    _code/Block-HTMLContent/PageId_136/BlockId_4596-WorkflowType_Info.lava
+    
 ------------------------------------------------------------------------------------------------------------------------------------------/
 
 {% assign WorkflowTypeId = 'Global' | PageParameter:'WorkflowTypeId' | AsInteger %}

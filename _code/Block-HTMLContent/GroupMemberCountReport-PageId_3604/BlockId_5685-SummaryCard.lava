@@ -1,12 +1,14 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
-    PageId=3604, [HTML Content] > Content
-
+    PageId=3604, BlockId=5685, [HTML Content] > Content
+    
     This Lava is used to display a summary card of the member count for a group.
-
+    
     Path:
-    _code/Block-HTMLContent/GroupMemberCountReport_Page3604/Block5685-SummaryCard.lava
-------------------------------------------------------------/
+    _code/Block-HTMLContent/GroupMemberCountReport-PageId_3604/BlockId_5685-SummaryCard.lava
+    
+----------------------------------------------------------------------------------------------------/
 
 {% if PageParameter.Month and PageParameter.Year and PageParameter.Group %}
     {% group where:'Guid == "{{ PageParameter.Group }}"' securityenabled:'false' %}

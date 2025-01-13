@@ -3,8 +3,12 @@
     This Lava is found in
     PageId=1801, BlockId=5396 [Data Integrity Welcome Info] > HTML
     
-    GitHub
-    rockrms-vrl-church/_code/Block-HTMLContent/DataIntegrity_Page1801/Block5396-Data_Integrity_Welcome_Info.lava
+    Required Lava Command(s):
+    - Rock Entity
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/DataIntegrity-PageId_1801/BlockId_5396-DataIntegrity_WelcomeInfo.lava
     
 ------------------------------------------------------------------------------------------------------------------/
 

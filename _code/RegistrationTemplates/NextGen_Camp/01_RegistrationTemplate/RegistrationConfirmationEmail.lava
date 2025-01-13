@@ -1,4 +1,5 @@
 /---------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     RegistrationTemplateId=93, [Confirmation Email] > Email Template
     
@@ -7,6 +8,7 @@
     
     Path:
     _code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/RegistrationConfirmationEmail.lava
+    
 ---------------------------------------------------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}

@@ -1,13 +1,16 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
-    PageId=4608, [All Volunteer Teams and DNA] > HTML
-
+    PageId=4608, BlockId=6226, [All Volunteer Teams and DNA] > HTML
+    
     This Lava is used to display cards with progress percentages per Volunteer Group.
     The Progress percentage shows how many people need to take the DNA or DNAR course.
-
+    
     Path:
-    _code/Block-HTMLContent/AllVolunteerTeamsDNA_PageId4608/Block6226-EagleEyeView.lava
-------------------------------------------------------------/
+    _code/Block-HTMLContent/AllVolunteerTeamsDNA-PageId_4608/BlockId_6226-EagleEyeView.lava
+    
+----------------------------------------------------------------------------------------------------/
+
 <style>
     @media screen and (min-width:930px) {
         .tim-four-columns {

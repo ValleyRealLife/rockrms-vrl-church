@@ -1,11 +1,15 @@
 /------------------------------------------------------------------------------------
+    
     This Lava+HTML is found in
-    PageId:3598, BlockId:5670 [SMS Preview] > HTML
+    PageId:3598, BlockId:5670, [SMS Preview] > HTML
     
     This Lava requires the 'Rock Entity' Lava Command enabled.
+    Required Lava Command(s):
+    - Rock Entity
     
     Path:
-    _code/Block-HTMLContent/YoungAdultCrowd_PageId3598/BlockId5670-PreviewSMS.lava
+    _code/Block-HTMLContent/YoungAdultCrowd-PageId_3598/BlockId_5670-PreviewSMS.lava
+    
 ------------------------------------------------------------------------------------/
 
 <div class="device device-mobile hidden-sm hidden-xs mb-5">

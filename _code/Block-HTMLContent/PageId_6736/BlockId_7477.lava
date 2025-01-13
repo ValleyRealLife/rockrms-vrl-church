@@ -1,9 +1,11 @@
 /------------------------------------------------------------
+    
     This Lava is found in
-    PageId=6736, [Show Selected Devo] > HTML
+    PageId=6736, BlockId=7477, [Show Selected Devo] > HTML
     
     Path:
-    _code/Block-HTMLContent/PageId6736/BlockId7477.lava
+    _code/Block-HTMLContent/PageId_6736/BlockId_7477.lava
+    
 ------------------------------------------------------------/
 
 {% assign var_SelectedDevo = 'Global' | PageParameter:'Devotional' %}

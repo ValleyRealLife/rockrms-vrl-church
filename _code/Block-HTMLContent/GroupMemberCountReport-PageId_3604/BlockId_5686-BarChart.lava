@@ -1,11 +1,16 @@
 /------------------------------------------------------------
+    
     This Lava is found in
-    PageId=3604, [HTML Content] > Content
-
+    PageId=3604, BlockId=5685, [HTML Content] > Content
+    
     This Lava is used to display a bar chart of the member count history for a group.
-
+    
+    Required Lava Command(s):
+    - Sql
+    
     Path:
-    _code/Block-HTMLContent/GroupMemberCountReport_Page3604/Block5686-BarChart.lava
+    _code/Block-HTMLContent/GroupMemberCountReport-PageId_3604/BlockId_5686-BarChart.lava
+    
 ------------------------------------------------------------/
 
 {% if PageParameter.Group %}
@@ -68,22 +73,22 @@
                 <canvas id="groupCountChart" width="400" height="100"></canvas>
             </div>
         </div>
-
+        
         <script>
             var ctx = document.getElementById('groupCountChart').getContext('2d');
-
+            
             var labels = [
                 {% for row in ChartData %}
                     "{{ row.Date | Date:'MMMM yyyy' }}"{% if forloop.last == false %}, {% endif %}
                 {% endfor %}
             ];
-
+            
             var data = [
                 {% for row in ChartData %}
                     {{ row.MemberCount }}{% if forloop.last == false %}, {% endif %}
                 {% endfor %}
             ];
-
+            
             var chartData = {
                 labels,
                 datasets: [{
@@ -94,7 +99,7 @@
                     borderWidth: 1
                 }]
             };
-
+            
             var myChart = new Chart(ctx, {
                 type: 'bar',
                 data: chartData,
@@ -110,15 +115,15 @@
                             var index = activePoints[0].index;
                             var label = labels[index];
                             var selectedDate = new Date(label + ' 01');
-
+                            
                             var month = selectedDate.getMonth() + 1; // JavaScript months are 0-based
                             var year = selectedDate.getFullYear();
-
+                            
                             // Update URL with Month and Year parameters
                             var newUrl = new URL(window.location.href);
                             newUrl.searchParams.set('Month', month);
                             newUrl.searchParams.set('Year', year);
-
+                            
                             window.location.href = newUrl.toString();
                         }
                     }

@@ -1,13 +1,18 @@
-/------------------------------------------------------------
+/------------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
-    PageId=4609, [HTML Content] > HTML
+    PageId=4609, BlockId=6229, [HTML Content] > HTML
     
     This Lava is used to display cards with progress percentages per Life Group and their defined success metrics.
-    This Lava requires the 'RockEntity' and the 'Sql' Lava commands enabled.
+    
+    Required Lava Command(s):
+    - Rock Entity
+    - Sql
     
     Path:
-    _code/Block-HTMLContent/Dashboards_PageId4609/BlockId6229-SuccessKPI.lava
-------------------------------------------------------------/
+    _code/Block-HTMLContent/Dashboards-_-PageId_4609/BlockId_6229-SuccessKPI.lava
+    
+------------------------------------------------------------------------------------------------------------------------/
 
 <style>
     .tim-EasyPieContainer{

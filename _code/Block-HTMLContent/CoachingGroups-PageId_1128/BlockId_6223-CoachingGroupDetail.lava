@@ -1,12 +1,17 @@
 /--------------------------------------------------------------------------------------------
+    
     This Lava is found in
-    PageId=1128, [Coaching Group Detail] > HTML
+    PageId=1128, BlockId=6223, [Coaching Group Detail] > HTML
     
     This Lava is used to mimic the Group Detail Lava Block type.
-    This Lava requires the 'RockEntity' and the 'Sql' Lava commands enabled.
+    
+    Required Lava Command(s):
+    - Rock Entity
+    - Sql
     
     Path:
-    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6223-CoachingGroupDetail.lava
+    _code/Block-HTMLContent/CoachingGroups-PageId_1128/BlockId_6223-CoachingGroupDetail.lava
+
 --------------------------------------------------------------------------------------------/
 
 {% assign var_gray = '#616A71' %}

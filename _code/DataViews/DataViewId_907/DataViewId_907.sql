@@ -1,4 +1,5 @@
-/****************************************************************************************
+/**************************************************************************************************************
+    
     This SQL is found in DataViewId:907
     Currently, this DataView is named "LG Members (joined in last seven days)"
     
@@ -6,8 +7,9 @@
     - This SQL is used to parametrize an entity command that feeds into a kpi shortcode in BlockId:6227
     
     Path:
-    _code/DataViews/DataViewId-907/DataViewId-907.sql
-****************************************************************************************/
+    _code/DataViews/DataViewId_907/DataViewId_907.sql
+    
+**************************************************************************************************************/
 
 DECLARE @date_today date = GETDATE();
 DECLARE @date_querystart date = DATEADD(DAY, -6, @date_today);

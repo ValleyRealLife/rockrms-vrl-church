@@ -1,9 +1,14 @@
 /------------------------------------------------------------
+    
     This Lava is found in
     RegistrationTemplateId=93, [Wait List Transition Email] > Email Template
-
+    
     I am copy+pasting this here from the VRL Rock Site.
     I copy+pasted this on 09-APR-2024
+    
+    Path:
+    _code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/WaitListTransitionEmail.lava
+    
 ------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}

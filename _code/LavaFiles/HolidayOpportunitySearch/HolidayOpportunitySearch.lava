@@ -1,13 +1,12 @@
 /-------------------------------------------------------------------------------
-    There is a README in the GitHub repo
     
     Please note:
     This Lava relies on a PageParameter with key:'Campus' that contains the name of a campus.
     (E.g. `?Campus=Barker`)
     
     Path:
-    _code/LavaFiles/HolidayOpportunitySearch/README.md
     _code/LavaFiles/HolidayOpportunitySearch/HolidayOpportunitySearch.lava
+    
 -------------------------------------------------------------------------------/
 
 {% assign opportunityCount = Opportunities | Size %}

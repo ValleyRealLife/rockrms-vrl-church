@@ -1,7 +1,12 @@
-/------------------------------------------------------------
+/------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=100, BlockId=4704 [Info for ConnOppId=63] > HTML
-------------------------------------------------------------/
+    
+    Path:
+    _code/Block-HTMLContent/Connections-PageId_1009/BlockId_4704-Info_ConnOppId_63.lava
+    
+------------------------------------------------------------------------------------------/
 
 {% assign var_ConnectionOpportunityId = PageParameter.ConnectionOpportunityId %}
 

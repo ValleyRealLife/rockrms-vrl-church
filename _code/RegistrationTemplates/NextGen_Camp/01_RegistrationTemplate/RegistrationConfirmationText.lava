@@ -1,4 +1,5 @@
 /---------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     RegistrationTemplateId=93, [Terms/Text] > Registration Confirmation Text
     
@@ -7,6 +8,7 @@
     
     Path:
     _code/RegistrationTemplates/NextGen_Camp/01_RegistrationTemplate/RegistrationConfirmationText.lava
+    
 ---------------------------------------------------------------------------------------------------------/
 
 {% assign registrants = Registration.Registrants | Where:'OnWaitList', false %}

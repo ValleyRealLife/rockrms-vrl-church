@@ -1,4 +1,5 @@
 /****************************************************************************************
+    
     This SQL is found in DataViewId:958
     Currently, this DataView is named "LG Coaches with overdue LG Leader Check-in"
     
@@ -6,7 +7,8 @@
     - This DataView is used in ServiceJobId:209
     
     Path:
-    _code/DataViews/DataViewId-958/DataViewId-958.sql
+    _code/DataViews/DataViewId_958/DataViewId_958.sql
+
 ****************************************************************************************/
 
 DECLARE @CurrentDate DATETIME;

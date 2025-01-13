@@ -1,4 +1,5 @@
 /-------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId:418, BlockId:1489, [Prayer Request Assigned to Me] > Lava Template
     
@@ -6,12 +7,13 @@
     I copy+pasted this on 16-AUG-2023
     
     Path:
-    rockrms-vrl-church/_code/Block-PrayerRequestListLava/PageId418/BlockId1489-LavaTemplate.lava
+    _code/Block-PrayerRequestListLava/PageId_418/BlockId_1489-LavaTemplate.lava
+    
 -------------------------------------------------------------------------------------------------/
 
 <div class='panel panel-block'> 
     <div class='panel-heading'>
-       <h4 class='panel-title'>Prayer Request Assigned to Me</h4>
+        <h4 class='panel-title'>Prayer Request Assigned to Me</h4>
     </div>
     <div class='panel-body'>
         <ul> 

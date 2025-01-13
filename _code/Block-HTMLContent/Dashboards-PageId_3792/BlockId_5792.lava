@@ -1,13 +1,18 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
-    PageId=3792, [Dashboards for the Groups Team] > HTML
+    PageId=3792, BlockId=5792, [Dashboards for the Groups Team] > HTML
     
     This Lava is used to display various KPIs and Cards designed to help the Groups Team have an easy visualization of the metrics they want to keep an eye on.
-    This Lava requires the 'RockEntity' and the 'Sql' Lava commands enabled.
+    
+    Required Lava Command(s):
+    - Rock Entity
+    - Sql
     
     Path:
-    _code/Block-HTMLContent/Dashboards_PageId3792/BlockId5792.lava
-------------------------------------------------------------/
+    _code/Block-HTMLContent/Dashboards-PageId_3792/BlockId_5792.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------------------------------------/
 
 <style>
     .tim-EasyPieContainer{

@@ -1,13 +1,18 @@
-/------------------------------------------------------------
-    This Lava is found in
-    PageId=1128, [List of Coaching Groups] > HTML
+/------------------------------------------------------------------------------------------------------------------------------------------------------
     
-    This Lava is used to mimic the Group List Personalized Lava Block type. However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
-    This Lava requires the 'Sql' Lava commands enabled.
+    This Lava is found in
+    PageId=1128, BlockId=6222, [List of Coaching Groups] > HTML
+    
+    This Lava is used to mimic the Group List Personalized Lava Block type.
+    However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
+    
+    Required Lava Command(s):
+    - Sql
     
     Path:
-    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
-------------------------------------------------------------/
+    _code/Block-HTMLContent/CoachingGroups-PageId_1128/BlockId_6222-ListOfCoachingGroups.lava
+    
+------------------------------------------------------------------------------------------------------------------------------------------------------/
 
 {% if CurrentPerson.Id != empty %}
     {% sql return:'var_CoachingGroups' %}

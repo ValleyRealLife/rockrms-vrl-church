@@ -1,15 +1,19 @@
 /-------------------------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=136, BLockId=7482, [RockCommunity Recipe 203] > HTML
     
     This Lava is used to inject a table of WorkflowAttributes into the <fieldset></fieldset> in BlockId=178
-    This Lava requires the 'Sql' Lava command enabled.
+
+    Required Lava Command(s):
+    - Sql
     
     i got this Lava from RecipeId=203 from the RockCommunity, which was authored by Kevin Rutledge in 2020
     i modified it because i didn't need [Attribute_Name] and [Attribute_Key]; rather, i preferred [Attribute_Id] and [Attribute_Key]
     
     Path:
-    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+    _code/Block-HTMLContent/PageId_136/BlockId_7482-Attributes.lava
+
 -------------------------------------------------------------------------------------------------------------------------------------/
 
 {% assign var_WorkflowTypeId = 'Global' | PageParameter:'workflowTypeId' %}
