@@ -1,9 +1,11 @@
 /****************************************************************************************
+    
     This SQL is found in
     PageId:4798, BlockId:6357, [Dynamic Data] > Query
-
+    
     Path:
-    _code/Block-DynamicData/Report_LifeGroups_PageId4798/BlockId6357-Query.lava
+    _code/Block-DynamicData/Report_LifeGroups-PageId_4798/BlockId_6357-Query.lava
+    
 ****************************************************************************************/
 
 DECLARE @MostRecentCoachCheckinForm TABLE (

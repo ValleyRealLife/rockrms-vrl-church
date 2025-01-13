@@ -1,9 +1,11 @@
 /****************************************************************************************
+    
     This Lava/SQL is found in
     PageId:145, BlockId:6933, [Dataview List Dynamic Data] > Query
     
     Path:
-    _code/Block-DynamicData/PageId145/BlockId6933-Query.lava
+    _code/Block-DynamicData/PageId_145/BlockId_6933-Query.lava
+
 ****************************************************************************************/
 
 {% assign var_FolderId = PageParameter.CategoryId | AsInteger %}

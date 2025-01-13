@@ -1,9 +1,11 @@
 /****************************************************************************************
+    
     This Lava/SQL is found in
     PageId:1798, BlockId:6953, [Dynamic Data] > Query
     
     Path:
-    _code/Block-DynamicData/PageId1798/BlockId6953-Query.lava
+    _code/Block-DynamicData/PageId_1798/BlockId_6953-Query.lava
+
 ****************************************************************************************/
 
 {% assign str_PersonRecordStatus = 'Global' | PageParameter:'PersonRecordStatus' %}

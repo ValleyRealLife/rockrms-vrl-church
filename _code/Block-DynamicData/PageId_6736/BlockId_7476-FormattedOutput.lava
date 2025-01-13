@@ -1,9 +1,11 @@
 /------------------------------------------------------------------------
+    
     This Lava is found in
     PageId:6736, BlockId:7476, [Show list of Devos] > Formatted Output
     
     Path:
-    _code/Block-DynamicData/PageId6736/BlockId7476-FormattedOutput.lava
+    _code/Block-DynamicData/PageId_6736/BlockId_7476-FormattedOutput.lava
+    
 ------------------------------------------------------------------------/
 
 {% assign var_URL = 'Global' | Page:'Url' %}

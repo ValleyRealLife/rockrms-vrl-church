@@ -1,10 +1,15 @@
-/------------------------------------------------------------
+/******************************************************************************************
+    
     This Lava is found in
-    PageId=1923, [Dynamic Data Block] > Query
-
+    PageId=1923, BlockId=4665, [Dynamic Data Block] > Query
+    
     I am copy+pasting this here from the VRL Rock Site.
     I copy+pasted this on 15-APR-2024
-------------------------------------------------------------/
+    
+    Path:
+    _code/Block-DynamicData/LifeGroupLeaders_and_RDT-PageId_1923/BlockId_4665-Query.lava
+    
+******************************************************************************************/
 
 {% assign var_GroupId = PageParameter.GroupId | SanitizeSql %}
 

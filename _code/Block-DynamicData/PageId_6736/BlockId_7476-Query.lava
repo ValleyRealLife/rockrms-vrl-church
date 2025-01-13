@@ -1,9 +1,11 @@
 /****************************************************************************************
+    
     This Lava/SQL is found in
     PageId:6736, BlockId:7476, [Show list of Devos] > Query
     
     Path:
-    _code/Block-DynamicData/PageId6736/BlockId7476-Query.lava
+    _code/Block-DynamicData/PageId_6736/BlockId_7476-Query.lava
+
 ****************************************************************************************/
 
 {% assign var_PageParameter = 'Global' | PageParameter:'DevoDate' %}
