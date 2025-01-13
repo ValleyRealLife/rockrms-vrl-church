@@ -1,11 +1,18 @@
-/--------------------------------------------------------------------------------
-Note:
-Lines 9-17 are all the variables needed in this script.
-Because of the way Lava works, you technically don't need to "declare" the variables up front.
-In other words, among all these variables, you can omit the empty assignations when you copy+paste this code into the 'Shortcode Markup' of the Lava Shortcode
-Also:
-This ShortCode necessitates the 'person_id' Parameter to be configured.
---------------------------------------------------------------------------------/
+/--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Note:
+    Lines 16-24 are all the variables needed in this script.
+    Because of the way Lava works, you technically don't need to "declare" the variables up front.
+    In other words, among all these variables, you can omit the empty assignations when you copy+paste this code into the 'Shortcode Markup' of the Lava Shortcode
+    
+    Also:
+    This ShortCode necessitates the 'person_id' Parameter to be configured.
+    
+    Path:
+    _code/ShortCodes/Badge-course_CAT/badge-cat.lava
+    
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
 {% assign var_Badge_Color = '' %}
 {% assign var_Badge_Icon = '' %}
 {% assign var_DateDiff = '' %}

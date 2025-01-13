@@ -1,4 +1,5 @@
 /---------------------------------------------------------------------------------------------
+    
     This Lava is found in
     Communications > System Communications > "[VRL] Christmas Volunteer Signup"
     This is [SystemCommunication] sc WHERE sc.[Id] = 73
@@ -7,7 +8,8 @@
     WorkflowTypeId:303 is triggered when a ConnectionRequest is created under ConnTypeId:1
     
     Path:
-    _code/SystemCommunications/SystemCommunicationId-73/SystemCommunicationId73-EmailBody.lava
+    _code/SystemCommunications/SystemCommunicationId_73/SystemCommunicationId_73-EmailBody.lava
+    
 ---------------------------------------------------------------------------------------------/
 
 {% assign obj_Recipient = Workflow | Attribute:'obj_Requester', 'Object' %}

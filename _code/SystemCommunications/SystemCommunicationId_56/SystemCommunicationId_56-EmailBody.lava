@@ -1,8 +1,12 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     Communications > System Communications > "Background Check Consent"
     This is [SystemCommunication] sc WHERE sc.Id = 56
-------------------------------------------------------------/
+    Path:
+    _code/SystemCommunications/SystemCommunicationId_56/SystemCommunicationId_56-EmailBody.lava
+    
+----------------------------------------------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}
 

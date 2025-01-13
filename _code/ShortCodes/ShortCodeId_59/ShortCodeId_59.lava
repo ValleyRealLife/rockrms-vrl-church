@@ -1,12 +1,14 @@
 /---------------------------------------------------------------------------------------------------------
+    
     References:
     - This ShortCode is used in SystemCommunicationId:77
     
-    This Lava requires the 'Sql' Lava command(s) enabled.
-    This Lava is used in order to generate the Email Body of CommunicationId:77
+    Required Lava Command(s):
+    - Sql
     
     Path:
-    _code/ShortCodes/ShortCodeId-59/ShortCodeId-59.lava
+    _code/ShortCodes/ShortCodeId_59/ShortCodeId_59.lava
+    
 ---------------------------------------------------------------------------------------------------------/
 
 {% assign obj_Person = personaliasid | PersonByAliasId %}

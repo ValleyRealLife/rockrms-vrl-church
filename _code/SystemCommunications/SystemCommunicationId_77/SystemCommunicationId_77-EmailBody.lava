@@ -1,11 +1,13 @@
 /--------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in SystemCommunicationId:77
     
     This SystemCommunication requires SQL,
     so i moved the portion that requires SQL into a ShortCode, and this SystemCommunication is using that ShortCode.
     
     Path:
-    _code/EmailTemplates/SystemCommunicationId-77/SystemCommunicationId-77.lava
+    _code/EmailTemplates/SystemCommunicationId_77/SystemCommunicationId_77-EmailBody.lava
+
 --------------------------------------------------------------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}

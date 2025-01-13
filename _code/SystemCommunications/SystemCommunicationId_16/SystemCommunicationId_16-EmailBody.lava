@@ -1,12 +1,17 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     Communications > System Communications > "Pending Group Members Notification"
     This is [SystemCommunication] sc WHERE sc.Id = 16
     Thankfully, this sc.Id is the same in Rock Demo Site and VRL Rock Site
-
+    
     I am copy+pasting this here from the VRL Rock Site.
     I copy+pasted this on 02-FEB-2024
-------------------------------------------------------------/
+    
+    Path:
+    _code/SystemCommunications/SystemCommunicationId_16/SystemCommunicationId_16-EmailBody.lava
+    
+----------------------------------------------------------------------------------------------------/
 
 {{ 'Global' | Attribute:'EmailHeader' }}
 
@@ -28,26 +33,26 @@
         {%- assign mobilePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 136 | Select:'NumberFormatted' -%}
         {%- assign homePhone = pendingIndividual.PhoneNumbers | Where:'NumberTypeValueId', 13 | Select:'NumberFormatted' -%}
         {%- assign homeAddress = pendingIndividual | Address:'Home' -%}
-
+        
         {%- if mobilePhone != empty -%}
             Mobile Phone: {{ mobilePhone }}<br />
         {%- endif -%}
-
+        
         {%- if homePhone != empty -%}
             Home Phone: {{ homePhone }}<br />
         {%- endif -%}
-
+        
         {%- if pendingIndividual.Email != empty -%}
             {{ pendingIndividual.Email }}<br />
         {%- endif -%}
-
+        
         <p>
         {%- if homeAddress != empty -%}
             Home Address <br />
             {{ homeAddress }}
         {%- endif -%}
         </p>
-
+        
     </td></tr>
     {% endfor %}
 </table>
