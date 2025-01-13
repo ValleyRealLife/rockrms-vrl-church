@@ -38,23 +38,26 @@ The only discretion necessary is whether you'd use the multi-line [Lava comment 
 ## Examples
 ```
 /---------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=1128, BlockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
     
     This Lava is used to mimic the Group List Personalized Lava Block type. However, rather than showing a list of Groups where CurrentPerson is the Leader, it shows a list of Groups where CurrentPerson is the Coach.
     
-    Required Lava Commands:
+    Required Lava Command(s):
     - Rock Entity
     - Sql
     
     Path:
     _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+
 ---------------------------------------------------------------------------------------------------------/
 ```
 
 If the Lava file was created by copy+pasting an existing Lava Template (maybe it was written by SparkDev or Triumph in core Rock), then please make note of it like this:
 ```
 /---------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=1128, BlockId=6222, [Block.Name] > [Block.ConfigurationSection] > Block.ConfigurationField
     
@@ -63,6 +66,7 @@ If the Lava file was created by copy+pasting an existing Lava Template (maybe it
     
     Path:
     _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+    
 ---------------------------------------------------------------------------------------------------------/
 ```
 
