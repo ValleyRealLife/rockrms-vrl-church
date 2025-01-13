@@ -1,13 +1,14 @@
-/****************************************************************************************
+/**************************************************************************************************************
+    
     This Lava/SQL is found in
     PageId:3794, BlockId:5794, [Dynamic Data] > Query
     
-    This Lava/SQL is used in the Dynamic Data block.
     This Lava/SQL is essentially the same as DataViewId:907, but with the ability to filter by DateRange
     
     Path:
-    _code/Block-DynamicData/GroupMemberCountReport_Page3794/BlockId5794-Query.lava
-****************************************************************************************/
+    _code/Block-DynamicData/GroupMemberCountReport-PageId_3794/BlockId_5794-Query.lava
+    
+    **************************************************************************************************************/
 
 {% assign var_DateRange = 'Global' | PageParameter:'DateRange' | DateRangeFromSlidingFormat %}
 {% assign var_DateRange_Start = var_DateRange.StartDate %}

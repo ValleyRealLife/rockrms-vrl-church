@@ -1,23 +1,28 @@
 /----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=1927, [Content Channel View] Block > Format
+    
+    Path:
+    _code/Block-ContentChannelView/VRL_Internal_Recipes/BlockId_4681-Format.lava
+    
 ----------------------------------------------------------------------------------------------------/
 
 {% for item in Items %}
     {% assign author = item.CreatedByPersonId | PersonById %}
-
+    
     {% following where:'EntityTypeId == 208 && EntityId == "{{ item.Id }}"' securityenabled:'false' count:'true' %}
         {% assign votes = count %}
     {% endfollowing %}
-
+    
     {% attributevalue where:'AttributeId == 15028 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_Department' %}
     {% comment %} i use the values from this Entity Command later, by using the 'cci_av_Department' iterator{% endcomment %}
     {% endattributevalue %}
-
+    
     {% attributevalue where:'AttributeId == 15029 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_Category' %}
     {% comment %} i use the values from this Entity Command later, by using the 'cci_av_Category' iterator{% endcomment %}
     {% endattributevalue %}
-
+    
     {% attributevalue where:'AttributeId == 15030 && EntityId == {{ item.Id }}' securityenabled:'false' iterator:'cci_av_SecurityRoles' %}
     {% comment %} i am currently not using the values from this Entity Command, i just wrote this in here for future reference in case i change my mind{% endcomment %}
     {% endattributevalue %}

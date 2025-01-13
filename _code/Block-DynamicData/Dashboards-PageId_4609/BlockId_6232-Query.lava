@@ -1,11 +1,13 @@
 /****************************************************************************************
+    
     This Lava/SQL is found in
     PageId:4609, BlockId:6232, [LG by Pastor/Coach] > Query
     
     This Lava/SQL is used in the Dynamic Data block
     
     Path:
-    _code/Block-DynamicData/Dashboard_PageId4609/BlockId6232-Query.lava
+    _code/Block-DynamicData/Dashboards-PageId_4609/BlockId_6232-Query.lava
+
 ****************************************************************************************/
 
 {% assign var_filter = 'Global' | PageParameter:'FilterType' | AsString | SanitizeSql %}

@@ -1,12 +1,14 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId:4807, BlockId:6378, [Content Channel Itme View] > Lava Template
     
     This Lava does not require any specific Lava commands enabled.
     
     Path:
-    _code/Block-ContentChannelItemView/VRL_Internal_PageId4807/BlockId6378-LavaTemplate.lava
-------------------------------------------------------------/
+    _code/Block-ContentChannelItemView/CoachingGroups-PageId_4807/BlockId_6378-LavaTemplate.lava
+    
+----------------------------------------------------------------------------------------------------/
 
 <style>
     .tim-old-question {

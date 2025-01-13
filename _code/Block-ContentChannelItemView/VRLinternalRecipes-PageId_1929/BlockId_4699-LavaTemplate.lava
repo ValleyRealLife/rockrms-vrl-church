@@ -1,7 +1,12 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
-    PageId=1929, [ContentChannelItemView] Block
-------------------------------------------------------------/
+    PageId=1929, [ContentChannelItemView] Block > Lava Template
+    
+    Path:
+    _code/Block-ContentChannelItemView/VRLinternalRecipes-PageId_1929/BlockId_4699-LavaTemplate.lava
+    
+----------------------------------------------------------------------------------------------------/
 
 {% assign cci_Id = Item.Id %}
 

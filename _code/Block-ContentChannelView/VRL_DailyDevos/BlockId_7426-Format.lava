@@ -1,14 +1,14 @@
-/----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/--------------------------------------------------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId=6645, BlockId=7426, [Content Channel View] > [Format]
     
     This Lava is used to format the way EndUsers will view Content in the ContentChannel labeled "Daily Devotions" [ContentChannelId: 360]
     
-    Until we find a better way to backup our WebApp's Lava files, please forgive the redundancy and the copy+pasting that must occur between this file and the file in our GitHub repository.
-    
     Path:
-    _code/Block-ContentChannelView/VRL_DailyDevos/BlockId7426-ContentChannelView-Format.lava
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+    _code/Block-ContentChannelView/VRL_DailyDevos/BlockId_7426-Format.lava
+    
+--------------------------------------------------------------------------------------------------------------------------------------------/
 
 {% assign itemCount = Items | Size %} //- itemCount is referenced only in the IF statement that controls whether we show the <section> where id="previousDevotionals"
 {% assign todaysDevo = Items | First %} //- todaysDevo is referenced only inside the <section> where id="todaysDevotional"

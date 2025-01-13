@@ -1,12 +1,14 @@
-/------------------------------------------------------------
-    This Lava is found in
+/**************************************************************************************************************
+    
+    This Lava/SQL is found in
     PageId=3604, [Dynamic Data] > Query
-
+    
     This Lava is used to generate a query for a table of group members for a group at a specified month/year.
-
+    
     Path:
-    _code/Block-DynamicData/GroupMemberCountReport_Page3604/Block5683-GroupMemberTable.lava
-------------------------------------------------------------/
+    _code/Block-DynamicData/GroupMemberCountReport-PageId_3604/BlockId_5683-Query.lava
+    
+    **************************************************************************************************************/
 
 {% if PageParameter.Group %}
     {% group where:'Guid == "{{ PageParameter.Group }}"' securityenabled:'false' %}

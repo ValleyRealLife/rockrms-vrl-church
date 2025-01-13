@@ -1,13 +1,17 @@
-/------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------
+    
     This Lava is found in
     PageId:4607, BlockId:6225, [Coaching Form, Past Submission] > Lava Template
     
     This Lava is used to mimic the Group Detail Lava Block type.
-    This Lava requires the 'RockEntity' Lava command enabled.
+    
+    Required Lava Command(s):
+    - Rock Entity
     
     Path:
-    _code/Block-ContentChannelItemView/CoachingGroups_PageId4607/BlockId6225-CoachingFormPastSubmission.lava
-------------------------------------------------------------/
+    _code/Block-ContentChannelItemView/CoachingGroups-PageId_4607/BlockId_6225-LavaTemplate.lava
+    
+----------------------------------------------------------------------------------------------------/
 
 <style>
     .tim-old-question {

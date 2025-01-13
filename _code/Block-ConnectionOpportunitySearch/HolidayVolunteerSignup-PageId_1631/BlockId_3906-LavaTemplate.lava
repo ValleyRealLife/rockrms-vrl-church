@@ -1,11 +1,13 @@
 /-------------------------------------------------------------------------------------------------------------------------------------------------
+
     This LavaTemplate includes `HolidayOpportunitySearch.lava`, which expects a PageParameter with key:'Campus' that contains the name of a campus.
     (E.g. `?Campus=Barker`)
     
     Path:
-    _code/Block-ConnectionOpportunitySearch/HolidayVolunteerSignup_PageId1631/BlockId3906-LavaTemplate.lava
+    _code/Block-ConnectionOpportunitySearch/HolidayVolunteerSignup-PageId_1631/BlockId_3906-LavaTemplate.lava
     _code/LavaFiles/HolidayOpportunitySearch/README.md
     _code/LavaFiles/HolidayOpportunitySearch/HolidayOpportunitySearch.lava
+
 -------------------------------------------------------------------------------------------------------------------------------------------------/
 
 <style>
