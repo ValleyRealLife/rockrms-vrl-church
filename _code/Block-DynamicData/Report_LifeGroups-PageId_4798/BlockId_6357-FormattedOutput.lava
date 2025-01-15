@@ -8,6 +8,9 @@
     
 ------------------------------------------------------------------------------------------/
 
+{{ 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css' | AddCssLink }}
+{{ 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js' | AddScriptLink }}
+
 <style>
     table {
         background-color: #fff;
@@ -107,7 +110,7 @@
                 <div class="tab-content">
                     <div class="tab-pane active">
                         <div class="table-responsive">
-                            <table class="grid-table table js-sticky-headers sticky-headers table-bordered table-striped table-hover">
+                            <table id="Leahs-View" class="grid-table table js-sticky-headers sticky-headers table-bordered table-striped table-hover">
                                 <thead>
                                     <tr align="left" data-original-title="" title="">
                                         <th class="grid-select-field" align="center" data-priority="1" scope="col"><div class="checkbox"><label title=""><input type="checkbox" class="select-all"><span class="label-text">&nbsp;</span></label></div></th>
@@ -186,3 +189,23 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#Leahs-View').DataTable({
+            "ordering": true,
+            "paging": false,
+            "columns": [
+                { "type": "string", orderable: false },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+            ],
+            "pageLength": 5
+        });
+    });
+</script>
