@@ -1,0 +1,44 @@
+{{ 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css' | AddCssLink }}
+{{ 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js' | AddScriptLink }}
+
+<table>
+    <thead>
+        <tr>
+            <th>ColumnHeader-1</th>
+            <th>ColumnHeader-2</th>
+            <th>ColumnHeader-3</th>
+            <th>ColumnHeader-4</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Row1-Column1</th>
+            <th>Row1-Column2</th>
+            <th>Row1-Column3</th>
+            <th>Row1-Column4</th>
+        </tr>
+        <tr>
+            <th>Row2-Column1</th>
+            <th>Row2-Column2</th>
+            <th>Row2-Column3</th>
+            <th>Row2-Column4</th>
+        </tr>
+    </tbody>
+</table>
+
+//- Note that the `columns` property must have an array with as many items as there are columns in the <table></table> element above
+<script>
+    $(document).ready(function () {
+        $('#checkinOccurrenceReport').DataTable({
+            "ordering": true,
+            "paging": true,
+            "columns": [
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+                { "type": "string", orderable: true },
+            ],
+            "pageLength": 5
+        });
+    });
+</script>
