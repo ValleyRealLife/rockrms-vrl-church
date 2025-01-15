@@ -143,7 +143,7 @@
                                             {% if int_CoachPersonId != null and int_CoachPersonId != empty and int_CoachPersonId != blank %}<img src="/GetAvatar.ashx?PersonId={{ int_CoachPersonId }}" class="timtest-avatar avatar" alt="Photo of {{ row.GroupCoach }}"> {{ row.GroupCoach }}{% endif %}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
-                                            {{ row.NextCheckInDue }}
+                                            {{ row.NextCheckInDue | Date:'MM/dd/yyyy' }}
                                         </td>
                                         <td class="grid-select-cell" data-priority="1">
                                             {% assign var_GC = row.GroupComp %}
@@ -199,7 +199,7 @@
                 { "type": "string", orderable: false },
                 { "type": "string", orderable: true },
                 { "type": "string", orderable: true },
-                { "type": "string", orderable: true },
+                { "type": "date", orderable: true },
                 { "type": "string", orderable: true },
                 { "type": "string", orderable: true },
                 { "type": "string", orderable: true },
