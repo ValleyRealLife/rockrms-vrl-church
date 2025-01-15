@@ -124,8 +124,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for row in rows %}
-                                        <tr align="left" data-row-index="0" data-original-title="" title="" onclick="GenerateUrlWithCorrectParams('WorkflowTypeId', '290', 'GroupId', '{{ row.GroupId }}')" data-toggle="modal" data-target="#timcustom-modal-with-workflowtypeid290">
+                                {% for row in rows %}
+                                    <tr align="left" data-row-index="0" data-original-title="" title="" onclick="GenerateUrlWithCorrectParams('WorkflowTypeId', '290', 'GroupId', '{{ row.GroupId }}')" data-toggle="modal" data-target="#timcustom-modal-with-workflowtypeid290">
                                         <td class="grid-select-field" align="center" data-priority="1">
                                             <div class="checkbox">
                                                 <label title=""><input type="checkbox"><span class="label-text">&nbsp;</span></label>
@@ -171,7 +171,7 @@
                                             {{ row.Campus }}
                                         </td>
                                     </tr>
-                                    {% endfor %}
+                                {% endfor %}
                                 </tbody>
                                 <tfoot>
                                     <tr data-original-title="" title="">
