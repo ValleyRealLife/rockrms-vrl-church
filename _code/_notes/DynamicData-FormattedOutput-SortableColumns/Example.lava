@@ -1,7 +1,7 @@
 {{ 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css' | AddCssLink }}
 {{ 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js' | AddScriptLink }}
 
-<table>
+<table id="id-of-table-element">
     <thead>
         <tr>
             <th>ColumnHeader-1</th>
@@ -26,10 +26,11 @@
     </tbody>
 </table>
 
+//- Note that the id being passed into .DataTable() must match the id of the <table></table> element above
 //- Note that the `columns` property must have an array with as many items as there are columns in the <table></table> element above
 <script>
     $(document).ready(function () {
-        $('#checkinOccurrenceReport').DataTable({
+        $('#id-of-table-element').DataTable({
             "ordering": true,
             "paging": true,
             "columns": [
