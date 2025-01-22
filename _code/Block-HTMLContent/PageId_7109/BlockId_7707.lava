@@ -1,0 +1,100 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=7109, BlockId=7707, Zone SectionF > [Timeout Warning]
+    
+    This Lava uses SQL in order to query the [Reservation] row corresponding to the one that the user selected via BlockId_7704
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/PageId_7109/BlockId_7707.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var_SelectedReservationId = 'Global' | PageParameter:'ReservationId' %}
+
+{% sql return:'SelectedReservations' %}
+    SELECT
+        res.[Id]
+      , res.[ReservationTypeId]
+      , restyp.[Name] AS 'ReservationType'
+      , res.[Name]
+      , res.[CampusId]
+      , res.[ScheduleId]
+      , res.[ReservationMinistryId]
+      , resmin.[Name] AS 'ReservationMinistry'
+      , res.[RequesterAliasId]
+      , res.[EventItemOccurrenceId]
+      , res.[FirstOccurrenceStartDateTime]
+      , res.[LastOccurrenceEndDateTime]
+      , res.[ReservationStatusId]
+      , res.[ApprovalState]
+      , res.[ApproverAliasId]
+      , res.[InitialApproverAliasId]
+      , res.[InitialApprovalDateTime]
+      , res.[SpecialApproverAliasId]
+      , res.[SpecialApprovalDateTime]
+      , res.[FinalApproverAliasId]
+      , res.[FinalApprovalDateTime]
+      , res.[EventContactPersonAliasId]
+      , res.[EventContactPhone]
+      , res.[EventContactEmail]
+      , res.[AdministrativeContactPersonAliasId]
+      , res.[AdministrativeContactPhone]
+      , res.[AdministrativeContactEmail]
+      , res.[NumberAttending]
+      , res.[SetupTime]
+      , res.[CleanupTime]
+      , res.[Note]
+      , res.[SetupPhotoId]
+      , res.[CreatedByPersonAliasId]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , res.[CreatedDateTime]
+      , res.[ModifiedByPersonAliasId]
+      , res.[ModifiedDateTime]
+    FROM
+        [_com_bemaservices_RoomManagement_Reservation] res
+        INNER JOIN [_com_bemaservices_RoomManagement_ReservationType] restyp ON restyp.[Id] = res.[ReservationTypeId]
+        INNER JOIN [_com_centralaz_RoomManagement_ReservationMinistry] resmin ON resmin.[Id] = res.[ReservationMinistryId]
+        INNER JOIN [PersonAlias] pa1 ON pa1.[Id] = res.[CreatedByPersonAliasId]
+        INNER JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+    WHERE
+        res.[Id] = '{{ var_SelectedReservationId }}'
+    ORDER BY
+        res.[ModifiedDateTime] DESC
+    ;
+{% endsql %}
+
+{% assign reservation = SelectedReservations | First %}
+{% assign reservation_CreatedDate = reservation.CreatedDateTime %}
+{% assign reservation_WarningDate = reservation_CreatedDate | DateAdd:25 %}
+{% assign reservation_DeletionDate = reservation_CreatedDate | DateAdd:30 %}
+{% assign date_Today = 'Now' | Date:'yyyy-MM-dd' %}
+
+<style>
+    .timcustom--hideBlock {
+        display: none;
+    }
+</style>
+
+<div class="{% unless var_SelectedReservationId > 0 %}timcustom--hideBlock{% endunless %}">
+{% if date_Today > reservation_WarningDate %}
+    <div class="alert alert-info" role="alert">
+        <ol>
+            <li>{{ reservation.CreatedBy }} created <u>{{ reservation.Name }}</u> {{ reservation.CreatedDateTime | HumanizeDateTime }}.</li>
+            <li>If this Reservation is not approved by <u>{{ reservation_WarningDate | Date:'MMMM d, yyyy' }}</u>, Rock will send a reminder to {{ reservation.AdministrativeContactEmail }}.</li>
+            <li>If this Reservation is not approved by <u>{{ reservation_DeletionDate | Date:'MMMM d, yyyy' }}</u>, Rock will remove this Reservation.</li>
+        </ol>
+    </div>
+{% else %}
+    <div class="alert alert-danger" role="alert">
+        <ol>
+            <li>{{ reservation.CreatedBy }} created <u>{{ reservation.Name }}</u> {{ reservation.CreatedDateTime | HumanizeDateTime }}.</li>
+            <li>Rock sent a reminder email to {{ reservation.AdministrativeContactEmail }} on <u>{{ reservation_WarningDate | Date:'MMMM d, yyyy' }}</u>.</li>
+            <li>If this Reservation is not approved by <u>{{ reservation_DeletionDate | Date:'MMMM d, yyyy' }}</u>, Rock will remove this Reservation.</li>
+        </ol>
+    </div>
+{% endif %}
+</div>

@@ -1,0 +1,148 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=7109, BlockId=7704, Zone SectionE > [List of RoomReservation Drafts-and-PlaceHolders]
+    
+    This Lava uses SQL in order to query [Reservation] rows that are scheduled for the future, yet they have not been approved yet.
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/PageId_7109/BlockId_7704.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var_URL = 'Global' | Page:'Url' %}
+{% assign var_SelectedReservationId = 'Global' | PageParameter:'ReservationId' %}
+
+<style>
+    .timcustom--container-cards {
+        max-height: 1500px;
+        overflow-y: auto;
+    }
+
+    .timcustom--card {
+        width: 90%;
+        margin: 5px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .timcustom--card:hover {
+        transform: translateX(5px); /* Card slightly moves right */
+    }
+
+    .timcustom--card.highlight {
+        background-color: #eaf6ef;
+    }
+
+    .timcustom--card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .timcustom--card-header h2 {
+        margin-top: 0;
+        font-size: 24px;
+    }
+
+    .timcustom--card-header .timcustom--container-badges {
+        display: flex;
+        gap: 0.5em;
+    }
+
+    .timcustom--card p {
+        color: #666;
+        font-size: 16px;
+    }
+</style>
+
+{% sql return:'DraftedReservations' %}
+    SELECT
+        res.[Id]
+      , res.[ReservationTypeId]
+      , restyp.[Name] AS 'ReservationType'
+      , res.[Name]
+      , res.[CampusId]
+      , res.[ScheduleId]
+      , res.[ReservationMinistryId]
+      , resmin.[Name] AS 'ReservationMinistry'
+      , res.[RequesterAliasId]
+      , res.[EventItemOccurrenceId]
+      , res.[FirstOccurrenceStartDateTime]
+      , res.[LastOccurrenceEndDateTime]
+      , res.[ReservationStatusId]
+      , res.[ApprovalState]
+      , res.[ApproverAliasId]
+      , res.[InitialApproverAliasId]
+      , res.[InitialApprovalDateTime]
+      , res.[SpecialApproverAliasId]
+      , res.[SpecialApprovalDateTime]
+      , res.[FinalApproverAliasId]
+      , res.[FinalApprovalDateTime]
+      , res.[EventContactPersonAliasId]
+      , res.[EventContactPhone]
+      , res.[EventContactEmail]
+      , res.[AdministrativeContactPersonAliasId]
+      , res.[AdministrativeContactPhone]
+      , res.[AdministrativeContactEmail]
+      , res.[NumberAttending]
+      , res.[SetupTime]
+      , res.[CleanupTime]
+      , res.[Note]
+      , res.[SetupPhotoId]
+      , res.[CreatedByPersonAliasId]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , res.[CreatedDateTime]
+      , res.[ModifiedByPersonAliasId]
+      , res.[ModifiedDateTime]
+    FROM
+        [_com_bemaservices_RoomManagement_Reservation] res
+        INNER JOIN [_com_bemaservices_RoomManagement_ReservationType] restyp ON restyp.[Id] = res.[ReservationTypeId]
+        INNER JOIN [_com_centralaz_RoomManagement_ReservationMinistry] resmin ON resmin.[Id] = res.[ReservationMinistryId]
+        INNER JOIN [PersonAlias] pa1 ON pa1.[Id] = res.[CreatedByPersonAliasId]
+        INNER JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+    WHERE
+        res.[LastOccurrenceEndDateTime] >= '{{ 'Now' | Date:'yyyy-MM-dd' }}'
+        AND
+        (
+            (res.[ReservationTypeId] <> 6 AND res.[ApprovalState] IN (0, 1, 6))
+            OR
+            (res.[ReservationTypeId] = 6)
+        )
+    ORDER BY
+        res.[ModifiedDateTime] DESC
+    ;
+{% endsql %}
+
+<div class="timcustom--container-cards">
+{% for row in DraftedReservations %}
+    {% assign row_Id = row.Id %}
+    {% if row_Id == var_SelectedReservationId %}
+        {% assign logic_highlight = 1 | AsBoolean %}
+    {% else %}
+        {% assign logic_highlight = 0 | AsBoolean %}
+    {% endif %}
+    <a href="{{ var_URL | SetUrlParameter:'ReservationId', row_Id }}" style="text-decoration: none; color: inherit;">
+        <div class="timcustom--card {% if logic_highlight %}highlight{% endif %}">
+            <div class="timcustom--card-header">
+                <h2>{{ row.Name }}</h2>
+                <div class="timcustom--container-badges">
+                    <span class="label label-info">{{ row.ReservationMinistry }}</span>
+                    <span class="label label-default">{{ row.ReservationType }}</span>
+                </div>
+            </div>
+            <p>
+                Reservation Created By: {{ row.CreatedBy }} <br>
+                Reservation Created On: <b>{{ row.CreatedDateTime | Date:'MMMM d, yyyy' }}</b>
+            </p>
+            <p>Reservation Happening On: <b>{{ row.FirstOccurrenceStartDateTime | Date:'MMMM d, yyyy' }}</b></p>
+        </div>
+    </a>
+{% endfor %}
+</div>
