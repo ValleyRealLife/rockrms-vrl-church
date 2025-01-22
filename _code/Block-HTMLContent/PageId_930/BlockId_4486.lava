@@ -1,0 +1,72 @@
+/---------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=930, BlockId=4486, [Helpful text]
+    
+    This Lava is used to show a button that will toggle a modal with help text
+    
+    Required Lava Command(s):
+    - n/a
+    
+    Path:
+    _code/Block-HTMLContent/PageId_930/BlockId_4486.lava
+    
+---------------------------------------------------------------------------------------------------------/
+
+<!-- Some Internal CSS -->
+<style>
+    .timcustom-modal-dialog {
+        display: inline-block;
+        width: 500px;
+        float: left;
+        margin-right: 20px;
+    }
+</style>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" style="margin-left:10px; margin-bottom:10px;" data-target="#tim-helptext-reservationtypes">
+    Help
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="tim-helptext-reservationtypes" tabindex="-1" role="dialog" aria-labelledby="tim-helptext-reservationtypes-label">
+    <div class="modal-dialog timcustom-modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="tim-helptext-reservationtypes-label">Help Text</h4>
+            </div>
+            <div class="modal-body timcustom-modal-body">
+                <p>
+                    Reservation Types
+                    <ul>
+                        <li>
+                            <b>Major Events</b><br>
+                            Formerly "Tier 1", refers to all-church or large-reach programs and events.<br>
+                            (E.g. Trunk-or-Treat, Life Group Launch, Easter, Christmas, DNA)<br><br>
+                        </li>
+                        <li>
+                            <b>Events</b><br>
+                            Formerly "Tier 2", refers to medium-to-large size events that may target the whole church or a segment of the congregation.<br>
+                            (E.g. Conferences, Men's Breakfast, XP, CR, Bunco, MDWK)<br><br>
+                        </li>
+                        <li>
+                            <b>Programs</b><br>
+                            Formerly "Tier 3", refers to smaller gatherings focused on groups, studies, or affinity.<br>
+                            (E.g. Bible Studies, FPU, CR Groups, student groups)<br><br>
+                        </li>
+                        <li>
+                            <b>Meetings</b><br>
+                            You know, like staff meetings<br><br>
+                        </li>
+                        <li>
+                            <b>Placeholder</b><br>
+                            Use this one when you want to begin fleshing out your Reservation, but you are missing some details.<br>
+                            You can at least put a hold on the day/time slot!<br>
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
