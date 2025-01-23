@@ -104,7 +104,7 @@
     FROM
         [_com_bemaservices_RoomManagement_Reservation] res
         INNER JOIN [_com_bemaservices_RoomManagement_ReservationType] restyp ON restyp.[Id] = res.[ReservationTypeId]
-        INNER JOIN [_com_centralaz_RoomManagement_ReservationMinistry] resmin ON resmin.[Id] = res.[ReservationMinistryId]
+        LEFT JOIN [_com_centralaz_RoomManagement_ReservationMinistry] resmin ON resmin.[Id] = res.[ReservationMinistryId]
         INNER JOIN [PersonAlias] pa1 ON pa1.[Id] = res.[CreatedByPersonAliasId]
         INNER JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
     WHERE
