@@ -1,0 +1,33 @@
+/---------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    WorkflowTypeId 324 > [START] > [Set (txt_ReservationStatusId) from (obj_RoomReservation]
+    
+    This Lava Run uses SQL in order to retrieve the [ReservationStatusId] property of the corresponding [RoomReservation].
+    i had to do it this way because [ReservationStatusId] was not accessible via Lava Entity.
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/WorkfowTypes/WorkflowTypeId_324/ActionTypeId_4536-LavaRun.lava
+    
+---------------------------------------------------------------------------------------------------------/
+
+{% assign RoomReservationId = Workflow | Attribute:'obj_RoomReservation', 'Id' %}
+
+{% sql return:'output' %}
+SELECT
+    res.[Id]
+  , res.[Name]
+  , res.[ReservationStatusId]
+FROM
+    [_com_bemaservices_RoomManagement_Reservation] res
+WHERE
+    res.[Id] = {{ RoomReservationId }}
+;
+{% endsql %}
+
+{% assign reservation = output | First %}
+
+{{ reservation.ReservationStatusId }}
