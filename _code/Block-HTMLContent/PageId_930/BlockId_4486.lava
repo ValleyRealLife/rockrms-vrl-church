@@ -107,6 +107,8 @@
     </div>
 </div>
 
+<!-- Please note: Anything related to #timseo--modal-WorkflowTypeId325 must only be rendered/shown if there is a ReservationId in the Page Context -->
+{% if int_ReservationId and int_ReservationId > 0 %}
 <!-- Button that toggles #timseo--modal-WorkflowTypeId325 -->
 <button type="button" id="timseo--button-WorkflowTypeId325" class="btn btn-default" onclick="GenerateUrlWorkflowTypeId325('WorkflowTypeId', '325', 'ReservationId', '{{ int_ReservationId }}')" data-toggle="modal" data-target="#timseo--modal-WorkflowTypeId325">
     Change Reservation Type
@@ -128,3 +130,4 @@
         </div>
     </div>
 </div>
+{% endif %}
