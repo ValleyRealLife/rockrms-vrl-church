@@ -42,7 +42,7 @@
     
     function moveButton() {
         $('#timseo--button-WorkflowTypeId325')
-            .insertBefore('.actions .btn-link')
+            .insertAfter('.actions .btn-primary')
             .addClass('btn-default')
             .show();
     }
