@@ -1,7 +1,12 @@
-/---------------------------------------------------------------------------------------------------------
+/-----------------------------------------------------------------------------------------------------------------------------------------------
     
     This Lava is found in
     PageId=930, BlockId=4486, [Custom HTML for PageId_930]
+    
+    IMPORTANT:
+    The [HtmlContent] displayed in this Block is also displayed in BlockId=7716
+    This happens via ContextParameter and ContextName
+    Therefore, please do not modify the ContextParameter and ContextName of this Block's Configuration nor the Configuration of BlockId=7716
     
     This Lava is used to add a few QOL features to PageId=930
     (1) This Lava adds a button that will toggle a modal with help text
@@ -13,7 +18,7 @@
     Path:
     _code/Block-HTMLContent/PageId_930/BlockId_4486.lava
     
----------------------------------------------------------------------------------------------------------/
+-----------------------------------------------------------------------------------------------------------------------------------------------/
 
 {% comment %} Define all Lava Variables up-top {% endcomment %}
 {% assign int_ReservationId = 'Global' | PageParameter:'ReservationId' %}
