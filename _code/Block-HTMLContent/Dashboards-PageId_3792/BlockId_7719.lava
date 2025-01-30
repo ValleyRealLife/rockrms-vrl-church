@@ -1,0 +1,45 @@
+/-----------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=3792, BlockId=7719, [Subpages nav-pills]
+    
+    IMPORTANT:
+    The [HtmlContent] displayed in this Block is also displayed in BlockId=7719
+    This happens via ContextParameter and ContextName
+    Therefore, please do not modify the ContextParameter and ContextName of this Block's Configuration nor the Configuration of BlockId=7719
+    
+    This Lava is used to add Subpages navbar in some pages. The reason why i am not using the dedicated BLockType is because Jeremy Anglin needed me to hide certain pages from this navbar.
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/Dashboards-PageId_3792/BlockId_7719.lava
+    
+-----------------------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var_CurrentPageId = CurrentPage.Id %}
+
+{% sql return:'subpages' %}
+    SELECT
+        *
+    FROM
+        [Page] p
+    WHERE
+        p.[ParentPageId] = 1746
+        AND
+        p.[Id] NOT IN (1761, 3598)
+    ORDER BY
+        p.[Order] ASC
+    ;
+{% endsql %}
+
+<ul class="nav nav-pills">
+    {% for row in subpages %}
+        <li {% if row.Id == var_CurrentPageId %}class="active"{% endif %}>
+            <a href="/page/{{ row.Id }}">{{ row.PageTitle }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<br>
