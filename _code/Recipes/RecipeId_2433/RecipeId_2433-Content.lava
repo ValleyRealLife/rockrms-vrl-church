@@ -1,0 +1,59 @@
+/------------------------------------------------------------
+
+    Path:
+    _code/Recipes/RecipeId_2433/RecipeId_2433-Content.lava
+
+------------------------------------------------------------/
+
+{% assign RockGuy = 'Global' | Attribute:'RockGuy', 'Object' %}
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .recipe-screenshot {
+        width: 60%;
+        margin: 0 auto;
+        border: 1px solid #000000;
+    }
+</style>
+
+<h1>Big Picture</h1>
+<p>
+    In order to set up an iPad for checking-in, you really only need one thing: An iPad with internet.<br>
+    In short, all you have to do is open the web browser and navigate to <code>https://rock.vrl.church/checkin</code>
+</p>
+
+<hr>
+
+<h1>Color Key:</h1>
+<ul>
+    <li><span style="color: purple;">Purple</span> = This means it's the name of a Field</li>
+    <li><span style="color: green;">Green</span> = This means it's something you need to click or fill-in</li>
+</ul>
+
+<hr>
+
+<h1>Details</h1>
+<ol>
+    <li><u>Open</u> the web browser, and <u>navigate</u> to <code>https://rock.vrl.church/checkin</code>. It will look like this:</li>
+    <img src="/Content/RecipeAttachments/Recipe-2433/Attachment_01.png" class="recipe-screenshot" alt="Attachment_01.png">
+    <br><br>
+    <li><u>Ensure</u> that the '<span style="color: purple;">Theme</span>' is set to "<span style="color: green;">CheckinVRL</span>"</li>
+    <img src="/Content/RecipeAttachments/Recipe-2433/Attachment_02-1.png" class="recipe-screenshot" alt="Attachment_02-1.png">
+    <img src="/Content/RecipeAttachments/Recipe-2433/Attachment_02-2.png" class="recipe-screenshot" alt="Attachment_02-2.png">
+    <br><br>
+    <li><u>Change</u> the '<span style="color: purple;">Kiosk Device</span>' to "<span style="color: green;">Mobile iPad</span>",<br>and the '<span style="color: purple;">Check-in Configuration</span>' to "<span style="color: green;">Classes, Groups, & Events</span>"</li>
+    <img src="/Content/RecipeAttachments/Recipe-2433/Attachment_03.png" class="recipe-screenshot" alt="Attachment_03.png">
+    <br><br>
+    <li><u>Ensure</u> that '<span style="color: purple;">Check-in Area(s)</span>' has "<span style="color: green;">Men's Ministry</span>" selected, and<br><u>Click</u> the 'OK' button.</li>
+    <img src="/Content/RecipeAttachments/Recipe-2433/Attachment_04.png" class="recipe-screenshot" alt="Attachment_04.png">
+</ol>
+<p>
+    Now People can click the 'Start' button, and search themselves by the last four digits of their phone number.
+</p>
+<p>
+    <u>Please Note</u>:<br>
+    If they enter the last four digits of their phone number, and they cannot select themselves, the first thing you should check is whether we have their correct phone number in the '<span style="color: purple;">Mobile Phone</span>' field of their Rock Profile.
+</p>
