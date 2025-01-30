@@ -1,0 +1,293 @@
+/-----------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=7115, BlockId=7726, [Group Change Log]
+    
+    Please remember that the SQL queries rely on TagId:20
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/Dashboards-PageId_7115/BlockId_7726.lava
+    
+-----------------------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign daterange = 'Global' | PageParameter:'DateRange' %}
+{% assign url_CurrentPage = 'Global' | Page:'Url' %}
+{% assign var_SelectedGroupId = 'Global' | PageParameter:'SelectedGroupId' %}
+
+{% if daterange != null and daterange != empty %}
+    {% assign var_DateRange = daterange | DateRangeFromSlidingFormat %}
+{% else %}
+    {% assign var_Date = 'Now' | Date:'yyyy-MM-dd' %}
+{% endif %}
+
+{% sql return:'createdGroups' %}
+    SELECT
+        g.[Id]
+      , g.[ParentGroupId]
+      , g.[CampusId]
+      , g.[Name]
+      , g.[CreatedDateTime]
+      , g.[CreatedByPersonAliasId]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , g.[ModifiedDateTime]
+      , g.[ModifiedByPersonAliasId]
+      , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'ModifiedBy'
+    FROM
+        [Group] g
+        LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
+        INNER JOIN [PersonAlias] pa1 ON pa1.[Id] = g.[CreatedByPersonAliasId]
+        INNER JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+        INNER JOIN [PersonAlias] pa2 ON pa2.[Id] = g.[ModifiedByPersonAliasId]
+        INNER JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
+    WHERE
+        g.[GroupTypeId] = 25 --GroupType is 'LifeGroup'
+        AND
+        ti.[TagId] = 20 --IsTagged as 'LifeGroup'
+        AND
+        g.[IsActive] = 1 AND g.[IsArchived] = 0
+    {% if daterange != null and daterange != empty %}
+        AND
+        g.[CreatedDateTime] >= '{{ var_DateRange.StartDate }}'
+        AND
+        g.[CreatedDateTime] <= '{{ var_DateRange.EndDate }}'
+    {% else %}
+        AND
+        CAST(g.[CreatedDateTime] AS DATE) = CAST('{{ var_Date }}' AS DATE)
+    {% endif %}
+    ORDER BY
+        g.[Id] ASC
+    ;
+{% endsql %}
+
+{% sql return:'modifiedGroups' %}
+    SELECT
+        g.[Id]
+      , g.[ParentGroupId]
+      , g.[CampusId]
+      , g.[Name]
+      , g.[CreatedDateTime]
+      , g.[CreatedByPersonAliasId]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , g.[ModifiedDateTime]
+      , g.[ModifiedByPersonAliasId]
+      , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'ModifiedBy'
+    FROM
+        [Group] g
+        LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
+        INNER JOIN [PersonAlias] pa1 ON pa1.[Id] = g.[CreatedByPersonAliasId]
+        INNER JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+        INNER JOIN [PersonAlias] pa2 ON pa2.[Id] = g.[ModifiedByPersonAliasId]
+        INNER JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
+    WHERE
+        g.[GroupTypeId] = 25 --GroupType is 'LifeGroup'
+        AND
+        ti.[TagId] = 20 --IsTagged as 'LifeGroup'
+        AND
+        g.[IsActive] = 1 AND g.[IsArchived] = 0
+        AND
+        CAST(g.[CreatedDateTime] AS DATE) <> CAST(g.[ModifiedDateTime] AS DATE)
+    {% if daterange != null and daterange != empty %}
+        AND
+        g.[ModifiedDateTime] >= '{{ var_DateRange.StartDate }}'
+        AND
+        g.[ModifiedDateTime] <= '{{ var_DateRange.EndDate }}'
+    {% else %}
+        AND
+        CAST(g.[ModifiedDateTime] AS DATE) = CAST('{{ var_Date }}' AS DATE)
+    {% endif %}
+    ORDER BY
+        g.[Id] ASC
+    ;
+{% endsql %}
+
+{% sql return:'archivedGroups' %}
+    SELECT
+        g.[Id]
+      , g.[ParentGroupId]
+      , g.[CampusId]
+      , g.[Name]
+      , g.[CreatedDateTime]
+      , g.[CreatedByPersonAliasId]
+      , CONCAT(p1.[NickName], ' ', p1.[LastName]) AS 'CreatedBy'
+      , g.[ModifiedDateTime]
+      , g.[ModifiedByPersonAliasId]
+      , CONCAT(p2.[NickName], ' ', p2.[LastName]) AS 'ModifiedBy'
+      , g.[ArchivedDateTime]
+      , g.[ArchivedByPersonAliasId]
+      , CONCAT(p3.[NickName], ' ', p3.[LastName]) AS 'ArchivedBy'
+    FROM
+        [Group] g
+        LEFT JOIN [TaggedItem] ti ON ti.[EntityGuid] = g.[Guid] AND ti.[EntityTypeId] = 16 AND ti.[TagId] = 20
+        INNER JOIN [PersonAlias] pa1 ON pa1.[Id] = g.[CreatedByPersonAliasId]
+        INNER JOIN [Person] p1 ON p1.[Id] = pa1.[PersonId]
+        INNER JOIN [PersonAlias] pa2 ON pa2.[Id] = g.[ModifiedByPersonAliasId]
+        INNER JOIN [Person] p2 ON p2.[Id] = pa2.[PersonId]
+        INNER JOIN [PersonAlias] pa3 ON pa3.[Id] = g.[ArchivedByPersonAliasId]
+        INNER JOIN [Person] p3 ON p3.[Id] = pa3.[PersonId]
+    WHERE
+        g.[GroupTypeId] = 25 --GroupType is 'LifeGroup'
+        AND
+        ti.[TagId] = 20 --IsTagged as 'LifeGroup'
+        AND
+        CAST(g.[CreatedDateTime] AS DATE) <> CAST(g.[ModifiedDateTime] AS DATE)
+    {% if daterange != null and daterange != empty %}
+        AND
+        g.[ArchivedDateTime] >= '{{ var_DateRange.StartDate }}'
+        AND
+        g.[ArchivedDateTime] <= '{{ var_DateRange.EndDate }}'
+    {% else %}
+        AND
+        CAST(g.[ArchivedDateTime] AS DATE) = CAST('{{ var_Date }}' AS DATE)
+    {% endif %}
+    ORDER BY
+        g.[Id] ASC
+    ;
+{% endsql %}
+
+<style>
+    .container--main {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    
+    .container--column {
+        flex: 1;
+        margin: 0 10px;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .container--cards {
+        max-height: 1500px;
+        overflow-y: auto;
+        text-align: left;
+    }
+    
+    .card {
+        width: 90%;
+        margin: 5px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: translateX(5px); /* Card slightly moves right */
+    }
+
+    .card.highlight {
+        background-color: #eaf6ef;
+    }
+
+    .card h2 {
+        margin-top: 0;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .card p {
+        color: #666;
+        font-size: 16px;
+    }
+</style>
+
+<script>
+// This JavaScript generates the URL that will be used in #timseo-modal-GroupHistory
+function GenerateUrlGroupHistory(param1, param1Value) {
+    var baseUrl = new URL("https://rock.vrl.church/page/7116");
+    
+    baseUrl.searchParams.set(param1, param1Value);
+    
+    // Set the iframe src to this newly-generated URL
+    document.querySelector("#timseo--modal-GroupHistory iframe").src = baseUrl.href;
+}
+</script>
+
+<div class="container--main">
+    <div class="container--column">
+        <div style="text-align: left;">
+            <h2>These Groups were created:</h2>
+        </div>
+        
+        <div class="container--cards">
+        {% for row in createdGroups %}
+            {% assign row_GroupId = row.Id %}
+            {% if row_GroupId == var_SelectedGroupId %}
+                {% assign logic_highlight = 1 | AsBoolean %}
+            {% else %}
+                {% assign logic_highlight = 0 | AsBoolean %}
+            {% endif %}
+            <div type="button" class="card" onclick="GenerateUrlGroupHistory('GroupId', '{{ row_GroupId }}')" data-toggle="modal" data-target="#timseo--modal-GroupHistory">
+                <h2>{{ row.Name }}</h2>
+                <p>Created On <b>{{ row.CreatedDateTime | Date:'M/d/yyyy' }}</b> by <b>{{ row.CreatedBy }}</b></p>
+                <p>Last Edited {{ row.ModifiedDateTime | Date:'M/d/yyyy' }} by {{ row.ModifiedBy }}</p>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="container--column">
+        <div style="text-align: left;">
+            <h2>These Groups were edited:</h2>
+        </div>
+        
+        <div class="container--cards">
+        {% for row in modifiedGroups %}
+            {% assign row_GroupId = row.Id %}
+            {% if row_GroupId == var_SelectedGroupId %}
+                {% assign logic_highlight = 1 | AsBoolean %}
+            {% else %}
+                {% assign logic_highlight = 0 | AsBoolean %}
+            {% endif %}
+            <div type="button" class="card" onclick="GenerateUrlGroupHistory('GroupId', '{{ row_GroupId }}')" data-toggle="modal" data-target="#timseo--modal-GroupHistory">
+                <h2>{{ row.Name }}</h2>
+                <p>Created On {{ row.CreatedDateTime | Date:'M/d/yyyy' }} by {{ row.CreatedBy }}</p>
+                <p>Last Edited <b>{{ row.ModifiedDateTime | Date:'M/d/yyyy' }}</b> by <b>{{ row.ModifiedBy }}</b></p>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="container--column">
+        <div style="text-align: left;">
+            <h2>These Groups were archived:</h2>
+        </div>
+        
+        <div class="container--cards">
+        {% for row in archivedGroups %}
+            {% assign row_GroupId = row.Id %}
+            {% if row_GroupId == var_SelectedGroupId %}
+                {% assign logic_highlight = 1 | AsBoolean %}
+            {% else %}
+                {% assign logic_highlight = 0 | AsBoolean %}
+            {% endif %}
+            <div type="button" class="card" onclick="GenerateUrlGroupHistory('GroupId', '{{ row_GroupId }}')" data-toggle="modal" data-target="#timseo--modal-GroupHistory">
+                <h2>{{ row.Name }}</h2>
+                <p>Created On {{ row.CreatedDateTime | Date:'M/d/yyyy' }} by {{ row.CreatedBy }}</p>
+                <p>Archived On <b>{{ row.ArchivedDateTime | Date:'M/d/yyyy' }}</b> by <b>{{ row.ArchivedBy }}</b></p>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal #timseo--modal-GroupHistory -->
+<div class="modal fade timseo--modal-GroupHistory" id="timseo--modal-GroupHistory" tabindex="-1" role="dialog" aria-labelledby="timseo--modal-GroupHistory-label">
+    <div class="timseo--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="fa fa-redo" data-dismiss="modal" aria-label="Close" onClick="window.location.href = window.location.pathname;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body timseo--modal-body">
+                <iframe src="/this-URL-is-Generated-via-JavaScript" width="100%" height="400px" frameborder="0" allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
