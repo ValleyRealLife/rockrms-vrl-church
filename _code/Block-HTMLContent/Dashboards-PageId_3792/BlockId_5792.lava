@@ -1,18 +1,15 @@
-/----------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
+/-------------------------------------------------------------------------------------------------------------------------------------------------
     This Lava is found in
     PageId=3792, BlockId=5792, [Dashboards for the Groups Team] > HTML
     
     This Lava is used to display various KPIs and Cards designed to help the Groups Team have an easy visualization of the metrics they want to keep an eye on.
     
     Required Lava Command(s):
-    - Rock Entity
     - Sql
     
     Path:
     _code/Block-HTMLContent/Dashboards-PageId_3792/BlockId_5792.lava
-    
-----------------------------------------------------------------------------------------------------------------------------------------------------------------/
+-------------------------------------------------------------------------------------------------------------------------------------------------/
 
 <style>
     .tim-EasyPieContainer{
@@ -139,7 +136,7 @@
 {% endsql %}
 {% assign int_GroupsServingTogether = CountGroupsServingTogether[0].GroupServingTogether %}
 
-//- Get how many groups have a NextLeader ientified
+//- Get how many groups have a NextLeader identified
 //- If you ever make a change to this SQL query, it's likely you'll need to make the same change to BlockId:6229
 {% sql return:'CountGroupNextLeaderIdentified' %}
     DECLARE @MostRecentCoachCheckinForm TABLE (
@@ -234,7 +231,7 @@
 {% assign int_GroupIsAccurate = CountGroupIsAccurate[0].GroupIsAccurate %}
 
 //- This is the panel that uses the 'KPI' ShortCode for some simple metrics
-{[ panel ]}
+{[ panel footer:'<a href="/page/7115" class="btn btn-default" >Group Change Log</a>' ]}
 <div>
     {[ kpis size:'lg' ]}
         [[ kpi icon:'fa fa-home' value:'{{ int_TotalGroups | Format:'0' }}' label:'Group Count' secondarylabel:'(from DataView 448)' color:'#98BE4B' url:'#' ]][[ endkpi ]]
