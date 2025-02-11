@@ -32,6 +32,7 @@
 </style>
 
 //- This means "Last 29 Days" in SlidingDateRange
+{% assign txt_last_29_days = 'Last|29|Day||' %}
 {% assign last_29_days = 'Last|29|Day||' | DateRangeFromSlidingFormat %}
 
 //- These are the various queries that source the visualizations for this page
@@ -49,8 +50,8 @@
 
 {% sql return:'GroupsTeamCheckinGroups' %}
     SELECT
-        g.[Id] AS 'Group-Id'
-      , g.[Name] AS 'Group-Name'
+        g.[Id] AS 'group-Id'
+      , g.[Name] AS 'group-Name'
       , groloc.[Id] AS 'groloc-Id'
       , sch.[Id] AS 'sch-Id'
       , sch.[Name] AS 'sch-Name'
@@ -253,6 +254,25 @@
 {% endsql %}
 {% assign int_GroupIsAccurate = CountGroupIsAccurate[0].GroupIsAccurate %}
 
+//- I am building the URL to the Attendance Analytics Page here, in order to reference this later
+//- If this is a visual eyesore, you can fold the code from here...
+{% assign url_attendance = 'Global' | Attribute:'InternalApplicationRoot' %}
+{% assign url_attendance = url_attendance | Append:'reporting/attendance-analytics' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'TemplateGroupTypeId','39' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'SlidingDateRange',txt_last_29_days %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'GroupBy','0' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'CampusIds','1' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'ScheduleIds','aaa' %} {% comment %}ScheduleIds will be provided later {% endcomment %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'DataView','0' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'GroupIds','aaa' %} {% comment %}GroupIds will be provided later {% endcomment %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'ShowBy','1' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'ViewBy','0' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'AttendeesFilterByType','0' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'AttendeesFilterByPattern','|False||' %} {% comment %}i do not need to explicitly use the 'EscapeDataString' Filter{% endcomment %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'GraphBy','' %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'AttendeesFilterByVisit','' %}
+//- ...to here
+
 //- This is the panel that uses the 'KPI' ShortCode for some simple metrics
 {[ panel footer:'<a href="/page/7115" class="btn btn-default" >Group Change Log</a>' ]}
 <div>
@@ -337,7 +357,7 @@
                 <tbody>
                 {% for row in GroupsTeamCheckinGroups %}
                     <tr>
-                        <td>{{ row.Group-Name }}</td>
+                        <td>{{ row.group-Name }}</td>
                         <td>{{ row.sch-Name }}</td>
                         <td>{% schedule where:'Id == {{ row.sch-Id }}' securityenabled:'false' %}{{ schedule.NextStartDateTime | Date:'MMM' }} {{ schedule.NextStartDateTime | Date:'d' | NumberToOrdinal }} ({{ schedule.NextStartDateTime | DaysFromNow }}){% endschedule %}</td>
                     </tr>
@@ -352,13 +372,15 @@
             <div>
                 {[ kpis size:'md' columncount:'2' ]}
                     {% for row in GroupsTeamCheckinGroups %}
-                        {% sql %}SELECT attocc.[GroupId], CAST(att.[StartDateTime] AS DATE) AS 'Attendance-Date', COUNT(*) AS 'Attendance-Count' FROM [Attendance] att INNER JOIN [AttendanceOccurrence] attocc ON attocc.[Id] = att.[OccurrenceId] INNER JOIN [Schedule] sch ON sch.[Id] = attocc.[ScheduleId] INNER JOIN [Group] g ON g.[Id] = attocc.[GroupId] WHERE attocc.[GroupId] = '{{ row.Group-Id }}' AND att.[DidAttend] = 1 AND att.[StartDateTime] BETWEEN '{{ last_29_days.StartDate }}' AND '{{ last_29_days.EndDate }}' GROUP BY attocc.[GroupId], CAST(att.[StartDateTime] AS DATE);
+                        {% sql %}SELECT attocc.[GroupId], CAST(att.[StartDateTime] AS DATE) AS 'Attendance-Date', COUNT(*) AS 'Attendance-Count' FROM [Attendance] att INNER JOIN [AttendanceOccurrence] attocc ON attocc.[Id] = att.[OccurrenceId] INNER JOIN [Schedule] sch ON sch.[Id] = attocc.[ScheduleId] INNER JOIN [Group] g ON g.[Id] = attocc.[GroupId] WHERE attocc.[GroupId] = '{{ row.group-Id }}' AND att.[DidAttend] = 1 AND att.[StartDateTime] BETWEEN '{{ last_29_days.StartDate }}' AND '{{ last_29_days.EndDate }}' GROUP BY attocc.[GroupId], CAST(att.[StartDateTime] AS DATE);
                         {% endsql %}
                         
                         {% assign AttendanceCount = results | First | Property:'Attendance-Count' %}
                         {% assign AttendanceDate = results | First | Property:'Attendance-Date' %}
+                        {% assign AttendanceScheduleId = row.sch-Id %}
+                        {% assign AttendanceGroupId = row.group-Id %}
                         {% if AttendanceCount > 1 %}
-                            [[ kpi icon:'fa fa-calendar-check' value:'{{ AttendanceCount | Format:'0' }}' label:'{{ row.Group-Name }}' secondarylabel:'{{ AttendanceDate | Date:'MMM' }} {{ AttendanceDate | Date:'d' | NumberToOrdinal }} ({{ AttendanceDate | DaysFromNow }})' color:'#000000' url:'#' ]][[ endkpi ]]
+                            [[ kpi icon:'fa fa-calendar-check' value:'{{ AttendanceCount | Format:'0' }}' label:'{{ row.group-Name }}' secondarylabel:'{{ AttendanceDate | Date:'MMM' }} {{ AttendanceDate | Date:'d' | NumberToOrdinal }} ({{ AttendanceDate | DaysFromNow }})' color:'#000000' url:'{{ url_attendance | SetUrlParameter:'ScheduleIds',AttendanceScheduleId | SetUrlParameter:'GroupIds',AttendanceGroupId }}' ]][[ endkpi ]]
                         {% endif %}
                     {% endfor %}
                 {[ endkpis ]}
