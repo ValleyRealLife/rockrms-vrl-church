@@ -32,8 +32,9 @@
 </style>
 
 //- This means "Last 29 Days" in SlidingDateRange
+{% assign txt_current_month = 'Current||Month||' %} {% comment %}i am defining this because the Block in the destination Page does not support "last 29 days" as a value for the Filter field{% endcomment %}
 {% assign txt_last_29_days = 'Last|29|Day||' %}
-{% assign last_29_days = 'Last|29|Day||' | DateRangeFromSlidingFormat %}
+{% assign last_29_days = txt_last_29_days | DateRangeFromSlidingFormat %}
 
 //- These are the various queries that source the visualizations for this page
 {% group dataview:'448' securityenabled:'false' count:'true' %}
@@ -259,7 +260,7 @@
 {% assign url_attendance = 'Global' | Attribute:'InternalApplicationRoot' %}
 {% assign url_attendance = url_attendance | Append:'reporting/attendance-analytics' %}
 {% assign url_attendance = url_attendance | SetUrlParameter:'TemplateGroupTypeId','39' %}
-{% assign url_attendance = url_attendance | SetUrlParameter:'SlidingDateRange',txt_last_29_days %}
+{% assign url_attendance = url_attendance | SetUrlParameter:'SlidingDateRange',txt_current_month %} {% comment %}i defined txt_current_month because the Block in the destination Page does not support "last 29 days" as a value for the Filter field{% endcomment %}
 {% assign url_attendance = url_attendance | SetUrlParameter:'GroupBy','0' %}
 {% assign url_attendance = url_attendance | SetUrlParameter:'CampusIds','1' %}
 {% assign url_attendance = url_attendance | SetUrlParameter:'ScheduleIds','aaa' %} {% comment %}ScheduleIds will be provided later {% endcomment %}
