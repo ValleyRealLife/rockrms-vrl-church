@@ -1,0 +1,90 @@
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .timseo-custom-ol {
+        list-style: none;
+        counter-reset: steps;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .timseo-custom-li {
+        background-color: #f5f7fa;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+        padding-left: 60px;
+    }
+    
+    .timseo-custom-li::before {
+        counter-increment: steps;
+        content: counter(steps);
+        position: absolute;
+        left: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .recipe-screenshot {
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    i.timseo {
+        margin: 0 4px;
+    }
+    
+    .timseo-custom-li br {
+        display: block;
+        margin: 10px 0;
+    }
+</style>
+
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        Navigate to <a href="https://rock.vrl.church/" target="_blank">https://rock.vrl.church/</a>
+    </li>
+    <li class="timseo-custom-li">
+        Hover over the 'Wrench' icon (<i class="timseo fa fa-wrench"></i>)<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_02.png" class="recipe-screenshot" alt="Step_02.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click 'Event Registration'<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_03.png" class="recipe-screenshot" alt="Step_03.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click on the Registration Instance name. In this case, you'd click 'DNA - April 2024'<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_04.png" class="recipe-screenshot" alt="Step_04.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click the 'Registrants' tab<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_05.png" class="recipe-screenshot" alt="Step_05.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click here to select all Registrants.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_06.png" class="recipe-screenshot" alt="Step_06.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click the 'Merge Template' button (<i class="timseo fa fa-copy"></i>)<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_07.png" class="recipe-screenshot" alt="Step_07.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Set the 'Merge Template' to "DNA Attendee Name Tags"<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_08a.png" class="recipe-screenshot" alt="Step_08a.png"><br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_08b.png" class="recipe-screenshot" alt="Step_08b.png"><br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_08c.png" class="recipe-screenshot" alt="Step_08c.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click 'Merge'. This will automatically download for you<br>
+        <img src="/Content/RecipeAttachments/Recipe-2471/Step_09.png" class="recipe-screenshot" alt="Step_09.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Print the downloaded file.
+    </li>
+</ol>
