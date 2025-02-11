@@ -1,12 +1,15 @@
-/------------------------------------------------------------------------------------------------------------------------
+/----------------------------------------------------------------------------------------------------------------------------------
     
     Leah created this SOP before she left; She created it using Scribe.
     i essentially copy+pasted her stuff into this recipe, and used Claude to generate some CSS that matches her style.
     
+    Note:
+    This comment block will be visible in the ContentChannelItemView Block unless this ContentChannelItem has 'RunLava'=True
+    
     Path:
     _code/Recipes/RecipeId_2471/RecipeId_2471-Content.lava
     
-------------------------------------------------------------------------------------------------------------------------/
+----------------------------------------------------------------------------------------------------------------------------------/
 
 <style>
     html {
