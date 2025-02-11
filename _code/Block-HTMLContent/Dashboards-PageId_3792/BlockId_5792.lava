@@ -31,18 +31,41 @@
     }
 </style>
 
+//- This means "Last 29 Days" in SlidingDateRange
+{% assign last_29_days = 'Last|29|Day||' | DateRangeFromSlidingFormat %}
+
 //- These are the various queries that source the visualizations for this page
 {% group dataview:'448' securityenabled:'false' count:'true' %}
     {% assign int_TotalGroups = count %}
 {% endgroup %}
-    
+
 {% person dataview:'907' securityenabled:'false' count:'true' %}
     {% assign int_NewLGMembers = count %}
 {% endperson %}
-    
+
 {% groupmember dataview:'706' securityenabled:'false' count:'true' %}
     {% assign int_PendingLGMembers = count %}
 {% endgroupmember %}
+
+{% sql return:'GroupsTeamCheckinGroups' %}
+    SELECT
+        g.[Id] AS 'Group-Id'
+      , g.[Name] AS 'Group-Name'
+      , groloc.[Id] AS 'groloc-Id'
+      , sch.[Id] AS 'sch-Id'
+      , sch.[Name] AS 'sch-Name'
+    FROM
+        [Group] g
+        INNER JOIN [GroupLocation] groloc ON groloc.[GroupId] = g.[Id]
+        INNER JOIN [GroupLocationSchedule] gls ON gls.[GroupLocationId] = groloc.[Id] --This Table only has two columns: GroupLocationId and ScheduleId
+        INNER JOIN [Schedule] sch ON sch.[Id] = gls.[ScheduleId]
+    WHERE
+        g.[GroupTypeId] IN (74, 75, 106)
+        AND
+        sch.[IsActive] = 1
+    ORDER BY
+        g.[Name] ASC
+{% endsql %}
 
 //- Get how many groups have Next Step
 //- If you ever make a change to this SQL query, it's likely you'll need to make the same change to BlockId:6229
@@ -53,7 +76,7 @@
       , [GroupId] INT
       , [FormSubmissionDateTime] DATETIME
     );
-    
+
     INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
     SELECT
         cci.[Id]
@@ -73,7 +96,7 @@
                 inner_cci_GroupId.[Value] = cci_GroupId.[Value]
                 AND inner_cci.[ContentChannelId] = 351
     );
-    
+
     SELECT
         COUNT(*) AS 'GroupsWithNextStep'
     FROM
@@ -99,7 +122,7 @@
       , [GroupId] INT
       , [FormSubmissionDateTime] DATETIME
     );
-    
+
     INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
     SELECT
         cci.[Id]
@@ -119,7 +142,7 @@
                 inner_cci_GroupId.[Value] = cci_GroupId.[Value]
                 AND inner_cci.[ContentChannelId] = 351
     );
-    
+
     SELECT
         COUNT(*) AS 'GroupServingTogether'
     FROM
@@ -145,7 +168,7 @@
       , [GroupId] INT
       , [FormSubmissionDateTime] DATETIME
     );
-    
+
     INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
     SELECT
         cci.[Id]
@@ -165,7 +188,7 @@
                 inner_cci_GroupId.[Value] = cci_GroupId.[Value]
                 AND inner_cci.[ContentChannelId] = 351
     );
-    
+
     SELECT
         COUNT(*) AS 'GroupNextLeaderIdentified'
     FROM
@@ -191,7 +214,7 @@
       , [GroupId] INT
       , [FormSubmissionDateTime] DATETIME
     );
-    
+
     INSERT INTO @MostRecentCoachCheckinForm ([Id], [Title], [GroupId], [FormSubmissionDateTime])
     SELECT
         cci.[Id]
@@ -211,7 +234,7 @@
                 inner_cci_GroupId.[Value] = cci_GroupId.[Value]
                 AND inner_cci.[ContentChannelId] = 351
     );
-    
+
     SELECT
         COUNT(*) AS 'GroupIsAccurate'
     FROM
@@ -293,6 +316,53 @@
         <div class="kpi-stat">
             <span class="kpi-value text-color">{{ int_GroupIsAccurate }}</span>
             <span class="kpi-label">Group Accuracy</span>
+        </div>
+    </div>
+</div>
+{[ endpanel ]}
+
+{[ panel title:'Check-in & Attendances' icon:'fa fa-calendar-check']}
+<div class="row">
+    <div class="col-md-6" style="border-right: 1px solid #ccc;">
+        <div>
+            <h3>Upcoming Check-ins</h3>
+            <table id="GroupsTeamCheckinSchedule" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Check-in Session</th>
+                        <th>Schedule Name</th>
+                        <th>Next Check-in Session</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in GroupsTeamCheckinGroups %}
+                    <tr>
+                        <td>{{ row.Group-Name }}</td>
+                        <td>{{ row.sch-Name }}</td>
+                        <td>{% schedule where:'Id == {{ row.sch-Id }}' securityenabled:'false' %}{{ schedule.NextStartDateTime | Date:'MMM' }} {{ schedule.NextStartDateTime | Date:'d' | NumberToOrdinal }} ({{ schedule.NextStartDateTime | DaysFromNow }}){% endschedule %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div>
+            <h3>Attendance Analytics</h3>
+            <div>
+                {[ kpis size:'md' columncount:'2' ]}
+                    {% for row in GroupsTeamCheckinGroups %}
+                        {% sql %}SELECT attocc.[GroupId], CAST(att.[StartDateTime] AS DATE) AS 'Attendance-Date', COUNT(*) AS 'Attendance-Count' FROM [Attendance] att INNER JOIN [AttendanceOccurrence] attocc ON attocc.[Id] = att.[OccurrenceId] INNER JOIN [Schedule] sch ON sch.[Id] = attocc.[ScheduleId] INNER JOIN [Group] g ON g.[Id] = attocc.[GroupId] WHERE attocc.[GroupId] = '{{ row.Group-Id }}' AND att.[DidAttend] = 1 AND att.[StartDateTime] BETWEEN '{{ last_29_days.StartDate }}' AND '{{ last_29_days.EndDate }}' GROUP BY attocc.[GroupId], CAST(att.[StartDateTime] AS DATE);
+                        {% endsql %}
+                        
+                        {% assign AttendanceCount = results | First | Property:'Attendance-Count' %}
+                        {% assign AttendanceDate = results | First | Property:'Attendance-Date' %}
+                        {% if AttendanceCount > 1 %}
+                            [[ kpi icon:'fa fa-calendar-check' value:'{{ AttendanceCount | Format:'0' }}' label:'{{ row.Group-Name }}' secondarylabel:'{{ AttendanceDate | Date:'MMM' }} {{ AttendanceDate | Date:'d' | NumberToOrdinal }} ({{ AttendanceDate | DaysFromNow }})' color:'#000000' url:'#' ]][[ endkpi ]]
+                        {% endif %}
+                    {% endfor %}
+                {[ endkpis ]}
+            </div>
         </div>
     </div>
 </div>
