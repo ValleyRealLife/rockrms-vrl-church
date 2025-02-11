@@ -1,0 +1,87 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    Leah created this SOP before she left; She created it using Scribe.
+    i essentially copy+pasted her stuff into this recipe, and used Claude to generate some CSS that matches her style.
+    
+    Note:
+    This comment block will be visible in the ContentChannelItemView Block unless this ContentChannelItem has 'RunLava'=True
+    
+    Path:
+    _code/Recipes/RecipeId_2472/RecipeId_2472-Content.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .timseo-custom-ol {
+        list-style: none;
+        counter-reset: steps;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .timseo-custom-li {
+        background-color: #f5f7fa;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+        padding-left: 60px;
+    }
+    
+    .timseo-custom-li::before {
+        counter-increment: steps;
+        content: counter(steps);
+        position: absolute;
+        left: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .recipe-screenshot {
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    i.timseo {
+        margin: 0 4px;
+    }
+    
+    .timseo-custom-li br {
+        display: block;
+        margin: 10px 0;
+    }
+</style>
+
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        Navigate to <a href="https://rock.vrl.church/" target="_blank">https://rock.vrl.church/</a>
+    </li>
+    <li class="timseo-custom-li">
+        Hover over the 'Groups' icon (<i class="fa fa-users"></i>) and navigate to a Group Viewer. In this case, I'm clicking 'Women's Life Groups'<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_02.png" class="recipe-screenshot" alt="Step_02.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Select a Life Group. In this case, I'm selecting 'TBS - French/Peck'<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_03.png" class="recipe-screenshot" alt="Step_03.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click the 'Add New' button (<i class="fa fa-plus-circle"></i>) found in the 'Group Members' grid.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_04.png" class="recipe-screenshot" alt="Step_04.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Select the Person that you want to add to this Group.<br>
+        You can double-click the circle to the left of the Person's Name.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_05.png" class="recipe-screenshot" alt="Step_05.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click 'Save' and your selected Person will be added to the Group.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_06.png" class="recipe-screenshot" alt="Step_06.png"><br><br>
+    </li>
+</ol>
