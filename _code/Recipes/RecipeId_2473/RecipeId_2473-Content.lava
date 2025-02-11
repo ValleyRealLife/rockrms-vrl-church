@@ -1,0 +1,78 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    Leah created this SOP before she left; She created it using Scribe.
+    i essentially copy+pasted her stuff into this recipe, and used Claude to generate some CSS that matches her style.
+    
+    Note:
+    This comment block will be visible in the ContentChannelItemView Block unless this ContentChannelItem has 'RunLava'=True
+    
+    Path:
+    _code/Recipes/RecipeId_2473/RecipeId_2473-Content.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .timseo-custom-ol {
+        list-style: none;
+        counter-reset: steps;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .timseo-custom-li {
+        background-color: #f5f7fa;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+        padding-left: 60px;
+    }
+    
+    .timseo-custom-li::before {
+        counter-increment: steps;
+        content: counter(steps);
+        position: absolute;
+        left: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .recipe-screenshot {
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    i.timseo {
+        margin: 0 4px;
+    }
+    
+    .timseo-custom-li br {
+        display: block;
+        margin: 10px 0;
+    }
+</style>
+
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        Navigate to <a href="https://rock.vrl.church/" target="_blank">https://rock.vrl.church/</a>
+    </li>
+    <li class="timseo-custom-li">
+        Hover over the 'Speedometer' icon (<i class="fa fa-tachometer-alt"></i>) and navigate to 'Volunteers and DNA'<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_02.png" class="recipe-screenshot" alt="Step_02.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Use the drop-down menu to choose a roster. In this case, I am selecting the "Life Group Leader 4/11/24" Group.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_03.png" class="recipe-screenshot" alt="Step_03.png"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Click the 'Filter' button and your report will populate.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2472/Step_04.png" class="recipe-screenshot" alt="Step_04.png"><br><br>
+    </li>
+</ol>
