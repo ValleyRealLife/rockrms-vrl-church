@@ -1,0 +1,20 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=7392, BlockId=7897, Zone Main > [HTML Content]
+    
+    Required Lava Command(s):
+    - None
+    
+    Path:
+    _code/Block-HTMLContent/PageId_7392/BlockId_7897.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var = 'Global' | PageParameter:'RegInsId' %}
+
+{% if var != null and var != '' %}
+    <hr>
+    <div style="break-after: page;"></div>
+    {[ HealthChartForCampNurse reginsid:'{{ var }}' ]}
+{% endif %}
