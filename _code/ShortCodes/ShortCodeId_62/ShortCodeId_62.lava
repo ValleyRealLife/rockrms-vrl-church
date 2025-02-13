@@ -1,0 +1,262 @@
+/---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    References:
+    - This ShortCode is used in PageId:7392
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/ShortCodes/ShortCodeId_62/ShortCodeId_62.lava
+    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{%- assign var =  reginsid -%}
+
+{% sql return:'array_PersonAliasId' %}
+    SELECT
+        regreg.[PersonAliasId]
+    FROM
+        [RegistrationRegistrant] regreg
+        INNER JOIN [PersonAlias] pa ON pa.[Id] = regreg.[PersonAliasId]
+        INNER JOIN [Person] p ON p.[Id] = pa.[PersonId]
+    WHERE
+        regreg.[RegistrationId] IN (SELECT [Id] FROM [Registration] WHERE [RegistrationInstanceId] = {{ var }})
+    ORDER BY
+        p.[LastName] ASC
+      , p.[NickName] ASC
+{% endsql %}
+
+<html>
+    <head>
+        <style>
+            .timcustom--highlight {
+                background-color: yellow;
+            }
+        </style>
+    </head>
+    <body>
+    {% for row in array_PersonAliasId %}
+        {% assign obj_Person = row.PersonAliasId | PersonByAliasId %}
+        {% assign var_CM = obj_Person | Attribute:'CurrentMedications', 'RawValue' %}
+        {% capture CM_JSON %}{[ MatrixToJSON guid:'{{ var_CM }}' ]}{% endcapture %}
+        {% assign CM_Object = CM_JSON | FromJSON %}
+        {% assign CM_Size = CM_Object.Rows | Size %}
+        {% if CM_Size >=1 %}
+            {% assign logic_highlight = 1 | AsBoolean %}
+        {% else %}
+            {% assign logic_highlight = 0 | AsBoolean %}
+        {% endif %}
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="col-md-2">
+                <div class="d-flex align-items-center">
+                    <a href="https://rock.vrl.church/person/{{ obj_Person.Id }}/health" target="_blank">
+                        <img src="/GetAvatar.ashx?PersonId={{ obj_Person.Id }}" alt="Photo of {{ obj_Person.FullName }}">
+                    </a>
+                    <h1 style="margin-left: 20px;">{{ obj_Person.FirstName }} {{ obj_Person.LastName }}</h1>
+                </div>
+            </div>
+            <div class="col-md-10">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="col-md-12">
+                <div class="zone-instance">
+                    <div class="zone-content">
+                        <div data-zone-location="Page" class="block-instance js-block-instance attribute-values">
+                            <div class="block-content">
+                                <div class="context-attribute-values">
+                                    <section class="panel panel-persondetails">
+                                        <div class="panel-heading rollover-container clearfix">
+                                            <h3 class="panel-title pull-left">
+                                                <i class="fa fa-medkit"></i>
+                                                Health
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <fieldset class="attribute-values ui-sortable">
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Health History
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'HealthHistory' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Dietary Restrictions
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'DietaryRestrictions' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Allergies
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'Allergies' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group static-control matrix-attribute">
+                                                    <label class="control-label {% if logic_highlight == true %}timcustom--highlight{% endif %}">
+                                                        Current Medications
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'CurrentMedications' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 25px;">
+            <div class="col-md-4">
+                <div class="zone-instance">
+                    <div class="zone-content">
+                        <div data-zone-location="Page" class="block-instance js-block-instance attribute-values">
+                            <div class="block-content">
+                                <div class="context-attribute-values">
+                                    <section class="panel panel-persondetails">
+                                        <div class="panel-heading rollover-container clearfix">
+                                            <h3 class="panel-title pull-left">
+                                                <i class=""></i>
+                                                Emergency Contacts
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <fieldset class="attribute-values ui-sortable">
+                                                <div class="form-group static-control matrix-attribute">
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'EmergencyContact' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="zone-instance">
+                    <div class="zone-content">
+                        <div data-zone-location="Page" class="block-instance js-block-instance attribute-values">
+                            <div class="block-content">
+                                <div class="context-attribute-values">
+                                    <section class="panel panel-persondetails">
+                                        <div class="panel-heading rollover-container clearfix">
+                                            <h3 class="panel-title pull-left">
+                                                <i class=""></i>
+                                                Medical Insurance
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <fieldset class="attribute-values ui-sortable">
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Medical Insurance Carrier
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'medicalinsurance_carrier' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Medical Insurance Policy Number
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'medicalinsurance_policynumber' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Medical Insurance Phone Number
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'medicalinsurance_phonenumber' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="zone-instance">
+                    <div class="zone-content">
+                        <div data-zone-location="Page" class="block-instance js-block-instance attribute-values">
+                            <div class="block-content">
+                                <div class="context-attribute-values">
+                                    <section class="panel panel-persondetails">
+                                        <div class="panel-heading rollover-container clearfix">
+                                            <h3 class="panel-title pull-left">
+                                                <i class=""></i>
+                                                Primary Care Physician
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <fieldset class="attribute-values ui-sortable">
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Primary Care Physician Name
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'primarycare_physicianname' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group static-control">
+                                                    <label class="control-label">
+                                                        Primary Care Physician Number
+                                                    </label>
+                                                    <div class="control-wrapper">
+                                                        <div class="form-control-static">
+                                                            {{ obj_Person | Attribute:'primarycare_physiciannumber' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="break-after: page;"></div>
+    {% endfor %}
+    </body>
+</html>
