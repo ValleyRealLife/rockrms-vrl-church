@@ -1,0 +1,140 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=3598, BlockId=5668, Zone SectionA > [HTML Content]
+    
+    This Lava uses various Entity Commands in order to show some SUM numbers
+    
+    Required Lava Command(s):
+    - Rock Entity
+    
+    Path:
+    _code/Block-HTMLContent/YoungAdultCrowd-PageId_3598/BlockId_5668.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .tim-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            padding: 20px;
+            background: #FFFFFF;
+            border: 1px solid #EBEBEB;
+            border-radius: 5px;
+        }
+        .tim-container .tim-block {
+            flex: 1; /* Distribute equal space to each div */
+            padding: 10px;
+            margin: 10px;
+            max-width: 300px;
+            min-width: 300px;
+            max-height: 150px;
+            min-height: 150px;
+            box-sizing: border-box;
+            background: #F3F3F3;
+            border: 1px solid #DBDBDD;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .tim-block:hover {
+            background: gray;
+            color: white;
+        }
+        .tim-block .tim-icon {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            margin: auto;
+            box-sizing: border-box;
+            font-size: 20px;
+            text-align: center;
+            }
+        .tim-block .tim-icon i {
+            max-width: 35px;
+            min-width: 35px;
+            max-height: 35px;
+            min-height: 35px;
+            font-size: 35px;
+        }
+        .tim-block .tim-count {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            margin: 1px;
+            font-size: 35px;
+            box-sizing: border-box;
+        }
+        .tim-count .badge-pill {
+            font-size: 35px;
+        }
+    </style>
+</head>
+
+<body>
+{% groupmember where:'GroupId == 128930' securityenabled:'false' count:'true' %}
+    {% assign count_GroupMember_YACparticipants = count %}
+{% endgroupmember %}
+
+{% groupmember where:'GroupId == 83079' securityenabled:'false' count:'true' %}
+    {% assign count_GroupMember_YACtextList = count %}
+{% endgroupmember %}
+
+{% person dataview:'899' securityenabled:'false' iterator:'YoungAdults_Baptized_ThisMonth' %}
+    {% assign int_YoungAdultsBaptizedThisMonth = YoungAdults_Baptized_ThisMonth | Size %}
+{% endperson %}
+
+{% person dataview:'906' securityenabled:'false' iterator:'YoungAdults_Volunteering' %}
+    {% assign int_YoungAdultsVolunteering = YoungAdults_Volunteering | Size %}
+{% endperson %}
+
+    {[ panel title:'Active Person Records (Ages 18-30)']}
+    <div>
+        {[kpis size:'lg' ]}
+            [[ kpi icon:'fa fa-tint' value:'{{ int_YoungAdultsBaptizedThisMonth | Format:'0' }}' label:'Baptisms this month' color:'blue-700' url:'/reporting/dataviews?DataViewId=899']][[ endkpi ]]
+            [[ kpi icon:'fa fa-handshake' value:'{{ int_YoungAdultsVolunteering | Format:'0' }}' label:'Volunteering' color:'#EBCA5D' url:'/reporting/dataviews?DataViewId=906']][[ endkpi ]]
+        {[endkpis]}
+    </div>
+    {[ endpanel]}
+
+    <div class="tim-container">
+        <a class="tim-block" href="/page/531?GroupId=128930" target="_blank" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-users"></i></div>
+            <div class="tim-icon">YAC Participants</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_GroupMember_YACparticipants | AsInteger }}</span></div>
+        </a>
+        <p style="padding: 1.5em;;">
+            Everybody who texts "Here" to <font color="#6659F6">509-260-3377</font> gets added to this group.
+            <br><br>
+            Everybody who checks-in with the iPad will get added to this group.
+            <br><br>
+            You use this Group in order to access the 'Attendance' report too.
+        </p>
+    </div>
+
+    <div class="tim-container">
+        <a class="tim-block" href="/page/697?GroupId=83079" target="_blank" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-sms"></i></div>
+            <div class="tim-icon">YAC Text List</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_GroupMember_YACtextList | AsInteger }}</span></div>
+        </a>
+        <p style="padding: 1.5em;;">
+            Everybody who submitted the <a href="https://rock.vrl.church/page/1835" target="_blank">Young Adult Check-in Form</a> and said "Yes" to the SMS has been (manually) added to this list.
+            <br>
+            (The last time anybody was added to this list was March 2024.)
+            <br><br>
+            This Communication List is also being synced to Clearstream.
+            <br><br>
+            This Communication List will be replaced once we standardize the <a href="https://www.vrl.church/MyAccount/Manage/CommunicationPreferences" target="_blank">Congregation Communication Preferences</a> in the 'Unfinished' campaign (09/15/2024)
+        </p>
+    </div>
+</body>
+
+<br><br>
