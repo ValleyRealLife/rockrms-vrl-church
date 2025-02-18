@@ -1,0 +1,199 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=7483, BlockId=7946, [HTML Content] > HTML
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/Dashboards-PageId_7483/BlockId_7946.lava
+    
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+<style>
+    .timseo--column-10 {
+        width: 10em;
+    }
+
+    .timseo--column-15 {
+        width: 15em;
+    }
+
+    .timseo--column-20 {
+        width: 20em;
+    }
+</style>
+
+//- These are some definitions 
+{% assign datekey_today = 'Now' | Date:'yyyyMMdd' %}
+{% assign date_Today_plus_7days = 'Now' | DateAdd:7,'d'%}
+
+//- These are the various queries that source the visualizations for this page
+{% sql return:'sql_schedules' %}
+    SELECT
+        sch.[Id] AS 'sch-Id'
+      , sch.[Name] AS 'sch-Name'
+      , sch.[iCalendarContent] AS 'iCal'
+      , grotyp.[Order] AS 'grotyp-Order'
+      , grotyp.[Name] AS 'grotyp-Name'
+      , g.[Order] AS 'group-Order'
+      , g.[Name] AS 'group-Name'
+      , loc.[Name] AS 'loc-Name'
+      FROM
+        [Schedule] sch
+        INNER JOIN [GroupLocationSchedule] gls ON gls.[ScheduleId] = sch.[Id]
+        INNER JOIN [GroupLocation] groloc ON groloc.[Id] = gls.[GroupLocationId]
+        INNER JOIN [Location] loc ON loc.[Id] = groloc.[LocationId]
+        INNER JOIN [Group] g ON g.[Id] = groloc.[GroupId]
+        INNER JOIN [GroupType] grotyp ON grotyp.[Id] = g.[GroupTypeId]
+    WHERE
+        sch.[IsActive] = 1 AND sch.[CategoryId] NOT IN (538)
+        AND
+        g.[IsActive] = 1 AND g.[IsArchived] = 0
+    GROUP BY
+        sch.[Id], sch.[Name], sch.[iCalendarContent], grotyp.[Order], grotyp.[Name], g.[Order], g.[Name], loc.[Name]
+    ORDER BY
+        sch.[Id] DESC
+{% endsql %}
+
+/- Currently not using this one, but it was useful in BlockId_5792 therefore i am copying it here just in case ----------------------------------
+{% sql return:'NextGenTeamCheckinGroups' %}
+    SELECT
+        g.[Id] AS 'group-Id'
+      , g.[Name] AS 'group-Name'
+      , groloc.[Id] AS 'groloc-Id'
+      , sch.[Id] AS 'sch-Id'
+      , sch.[Name] AS 'sch-Name'
+    FROM
+        [Group] g
+        INNER JOIN [GroupLocation] groloc ON groloc.[GroupId] = g.[Id]
+        INNER JOIN [GroupLocationSchedule] gls ON gls.[GroupLocationId] = groloc.[Id] --This Table only has two columns: GroupLocationId and ScheduleId
+        INNER JOIN [Schedule] sch ON sch.[Id] = gls.[ScheduleId]
+    WHERE
+        g.[GroupTypeId] IN (19, 35, 20, 38, 21, 22)
+        AND
+        sch.[IsActive] = 1
+    ORDER BY
+        g.[Name] ASC
+{% endsql %}
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+//- This FOR loop formats the results from sql_schedules into JSON, so that i can create a Lava Object later
+{% for row in sql_schedules %}
+    {% assign var_iCalDate = row.iCal | DatesFromICal:1 %}
+    {% if var_iCalDate != null and var_iCalDate != empty %}
+        {% for date in var_iCalDate %}
+        {% capture txt_GroupsAndDates %}
+        {
+            "ScheduleId": {{ row.sch-Id | ToJSON }},
+            "ScheduleName": {{ row.sch-Name | ToJSON }},
+            "GroupTypeOrder": {{ row.grotyp-Order | ToJSON }},
+            "GroupType": {{ row.grotyp-Name | ToJSON }},
+            "GroupOrder": {{ row.group-Order | ToJSON }},
+            "Group": {{ row.group-Name | ToJSON }},
+            "GroupLocation": {{ row.loc-Name | ToJSON }},
+            "DateTime": {{ date | ToJSON }},
+            "DateKey": {{ date | Date:'yyyyMMdd' | AsInteger }}
+        }
+        {% endcapture %}
+        {% assign array_GroupsAndDates = array_GroupsAndDates | AddToArray:txt_GroupsAndDates %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}
+
+{% capture json_GroupsAndDates %}
+[
+{% for item in array_GroupsAndDates %}
+    {{ item }}{% unless forloop.last %},{% endunless %}
+{% endfor %}
+]
+{% endcapture %}
+
+{% assign obj_GroupsAndDates = json_GroupsAndDates | FromJSON %}
+{% assign grouped_GroupsAndDates = obj_GroupsAndDates | OrderBy:'DateTime' | GroupBy:'DateKey' %}
+
+//- From here on, I am writing HTML that visualizes the data that I have queried/built thus far
+<h2>Today's Check-in Configurations:</h2>
+<h3>{{ 'Now' | Date:'dddd MMM' }} {{ 'Now' | Date:'d' | NumberToOrdinal }}</h3>
+{% for thing in grouped_GroupsAndDates %}
+    {% assign parts = thing | PropertyToKeyValue %} {% comment %} After this, 'Key' will be the DateKey {% endcomment %}
+    {% if parts.Key == datekey_today %}
+        {% assign rows = parts.Value | OrderBy:'DateTime, GroupTypeOrder, GroupOrder' %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th class="timseo--column-15">Schedule Name</th>
+                    <th class="timseo--column-10">Check-in Opens</th>
+                    <th class="timseo--column-10">Check-in Closes</th>
+                    <th class="timseo--column-15">Group</th>
+                    <th class="timseo--column-15">Designated Location</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in rows %}
+                {% schedule where:'Id == {{ row.ScheduleId }}' securityenabled:'false' iterator:'thisSchedule' %}
+                    {% assign var_StartTimeOfDay = thisSchedule[0].StartTimeOfDay %}
+                    {% assign var_CheckInStartOffsetMinutes = thisSchedule[0].CheckInStartOffsetMinutes | Times:-1 %}
+                    {% assign var_CheckInEndOffsetMinutes = thisSchedule[0].CheckInEndOffsetMinutes %}
+                    {% assign date_ScheduleStartDateTime = 'Now' | Date:'yyyy-MM-dd' | Append:' ' | Append:var_StartTimeOfDay %}
+                    {% assign date_CheckInStartTime = date_ScheduleStartDateTime | DateAdd:var_CheckInStartOffsetMinutes,'m'  | Date:'h:mm tt' %}
+                    {% assign date_CheckInEndTime = date_ScheduleStartDateTime | DateAdd:var_CheckInEndOffsetMinutes,'m' | Date:'h:mm tt' %}
+                {% endschedule %}
+                <tr>
+                    <td>{{ row.ScheduleName }}</td>
+                    <td>{{ date_CheckInStartTime }}</td>
+                    <td>{{ date_CheckInEndTime }}</td>
+                    <td>{{ row.Group }}</td>
+                    <td>{{ row.GroupLocation }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endfor %}
+
+<br><hr>
+
+<h2>Upcoming Check-in Configurations</h2>
+{% for thing in grouped_GroupsAndDates %}
+    {% assign parts = thing | PropertyToKeyValue %} {% comment %} After this, 'Key' will be the DateKey {% endcomment %}
+    {% if parts.Key != datekey_today %}
+        {% assign rows = parts.Value | OrderBy:'DateTime, GroupTypeOrder, GroupOrder' %}
+        {% assign logic_ShowRow = rows | First | Property:'DateTime' %}
+        {% if logic_ShowRow < date_Today_plus_7days %}
+            <h3>{{ rows | First | Property:'DateTime' | Date:'ddd MMM' }} {{ rows | First | Property:'DateTime' | Date:'d' | NumberToOrdinal }}</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="timseo--column-15">Schedule Name</th>
+                        <th class="timseo--column-10">Check-in Opens</th>
+                        <th class="timseo--column-10">Check-in Closes</th>
+                        <th class="timseo--column-15">Group</th>
+                        <th class="timseo--column-15">Designated Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    {% schedule where:'Id == {{ row.ScheduleId }}' securityenabled:'false' iterator:'thisSchedule' %}
+                        {% assign var_StartTimeOfDay = thisSchedule[0].StartTimeOfDay %}
+                        {% assign var_CheckInStartOffsetMinutes = thisSchedule[0].CheckInStartOffsetMinutes | Times:-1 %}
+                        {% assign var_CheckInEndOffsetMinutes = thisSchedule[0].CheckInEndOffsetMinutes %}
+                        {% assign date_ScheduleStartDateTime = 'Now' | Date:'yyyy-MM-dd' | Append:' ' | Append:var_StartTimeOfDay %}
+                        {% assign date_CheckInStartTime = date_ScheduleStartDateTime | DateAdd:var_CheckInStartOffsetMinutes,'m'  | Date:'h:mm tt' %}
+                        {% assign date_CheckInEndTime = date_ScheduleStartDateTime | DateAdd:var_CheckInEndOffsetMinutes,'m' | Date:'h:mm tt' %}
+                    {% endschedule %}
+                    <tr>
+                        <td>{{ row.ScheduleName }}</td>
+                        <td>{{ date_CheckInStartTime }}</td>
+                        <td>{{ date_CheckInEndTime }}</td>
+                        <td>{{ row.Group }}</td>
+                        <td>{{ row.GroupLocation }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br><br>
+        {% endif %}
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,10 @@
+{% group where:'GroupTypeId == 74 || GroupTypeId == 75 || GroupTypeId == 106' iterator:'GroupsTeamCheckinGroups' %}
+{% endgroup %}
+
+{% for group in GroupsTeamCheckinGroups %}
+    {% assign locations = group.GroupLocations %}
+    {% for location in locations %}
+        {% assign schedules = location.Schedules | OrderBy:'NextStartDateTime' %}
+        {{ group.Id }} - {{ location.Id }} - {{ schedules | First | Property:'Id' }}<br>
+    {% endfor %}
+{% endfor %}
