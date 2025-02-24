@@ -11,7 +11,10 @@
     
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
 
-{%- assign var =  reginsid -%}
+{%- if reginsid == '' -%}
+    Error: The 'reginsid' isBlank.
+    {% return %}
+{%- endif -%}
 
 {% sql return:'array_PersonAliasId' %}
     SELECT
@@ -21,7 +24,7 @@
         INNER JOIN [PersonAlias] pa ON pa.[Id] = regreg.[PersonAliasId]
         INNER JOIN [Person] p ON p.[Id] = pa.[PersonId]
     WHERE
-        regreg.[RegistrationId] IN (SELECT [Id] FROM [Registration] WHERE [RegistrationInstanceId] = {{ var }})
+        regreg.[RegistrationId] IN (SELECT [Id] FROM [Registration] WHERE [RegistrationInstanceId] = {{ reginsid }})
     ORDER BY
         p.[LastName] ASC
       , p.[NickName] ASC

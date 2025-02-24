@@ -11,6 +11,11 @@
     
 ---------------------------------------------------------------------------------------------------------/
 
+{%- if personaliasid == '' -%}
+    Error: The 'personaliasid' isBlank.
+    {% return %}
+{%- endif -%}
+
 {% assign obj_Person = personaliasid | PersonByAliasId %}
 
 {% sql return:'output' %}
