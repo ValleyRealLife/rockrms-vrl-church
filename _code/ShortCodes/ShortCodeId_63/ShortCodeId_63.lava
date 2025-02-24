@@ -1,0 +1,52 @@
+/---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/ShortCodes/ShortCodeId_63/ShortCodeId_63.lava
+    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{%- if idtype == '' or identifier == '' or output == '' -%}
+    Error: One or more of the required parameters isBlank.
+    {% return %}
+{%- endif -%}
+
+{%- if idtype == 'Id' or idtype == 'Guid' -%}
+{%- else -%}
+    Error: Typo in 'idtype' Parameter.
+    {% return %}
+{%- endif -%}
+
+{% sql return:'sql_Location' %}
+    SELECT
+        loc.[Id]
+      , loc.[Guid]
+      , loc.[Name]
+    FROM
+        [Location] loc
+    WHERE
+        {%- if idtype == 'Id' -%}
+        loc.[Id] = '{{ identifier }}'
+        {%- endif -%}
+        {%- if idtype == 'Guid' -%}
+        loc.[Guid] = '{{ identifier }}'
+        {%- endif -%}
+{% endsql %}
+
+{%- case output -%}
+{%- when 'Id' -%}
+    {{- sql_Location | First | Property:'Id' -}}
+{%- when 'Guid' -%}
+    {{- sql_Location | First | Property:'Guid' -}}
+{%- when 'Name' -%}
+    {%- assign var_Output = sql_Location | First | Property:'Name' -%}
+    {%- if var_Output == '' or var_Output == empty or var_Output == blank or var_Output == null -%}
+        NameIsBlank
+    {%- else -%}
+        {{- var_Output -}}
+    {%- endif -%}
+{%- else -%}
+    Error: Possibly typo in 'output' Parameter.
+{%- endcase -%}
