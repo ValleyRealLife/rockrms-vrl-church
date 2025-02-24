@@ -1,0 +1,29 @@
+/---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/ShortCodes/ShortCodeId_58/ShortCodeId_58.lava
+    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{%- if person_id == '' -%}
+    Error: The 'person_id' isBlank.
+    {% return %}
+{%- endif -%}
+
+{%- sql return:'PledgeTotal' -%}
+    SELECT SUM(fp.[TotalAmount]) AS 'Total'
+    FROM [FinancialPledge] fp
+        JOIN [PersonAlias] pa ON pa.[Id] = fp.[PersonAliasId]
+        JOIN [AttributeValue] av ON av.[EntityId] = fp.[Id] AND av.[AttributeId] = 16804
+        JOIN [DefinedValue] cdv ON cdv.[Guid] = cast(av.[Value] as uniqueidentifier)
+    WHERE av.[Value] IS NOT NULL
+        AND pa.[PersonId] = {{ person_id }}
+        AND cdv.[Id] in (2004, 2005);
+{%- endsql -%}
+
+{%- assign totalAmount = PledgeTotal | Select:'Total' | First -%}
+
+{{- totalAmount | Format:'#,#0.00' -}}
