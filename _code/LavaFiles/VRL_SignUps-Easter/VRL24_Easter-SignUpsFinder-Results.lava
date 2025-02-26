@@ -1,0 +1,68 @@
+/----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Until we find a better way to backup our WebApp's Lava files, please forgive the redundancy and the copy+pasting that must occur between this file and the file in our GitHub repository.
+    
+    This Lava File is being used in:
+    - PageId: 1706, BlockId: 8135
+    - PageId: 1706, BlockId: 8136
+    - PageId: 1706, BlockId: 8137
+    
+    This Lava is a slight modification of the default Lava Template found in Sign-Up Blocks. The main differences are:
+    - This LavaTemplate uses `ScheduleName` as the card-title
+    - This LavaTemplate uses a ShortCode in order to convert LocationId into LocationName
+    - This LavaTemplate will define the href of the "Register" button depending on the `VolunteerArea` URL Parameter
+    
+    Path:
+    _code/Block-HTMLContent/CoachingGroups_PageId1128/BlockId6222-ListOfCoachingGroups.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign projectCount = Projects | Size %}
+{% if projectCount > 0 %}
+    <div class="row d-flex flex-wrap">
+        {% for project in Projects %}
+            <div class="col-xs-12 col-sm-6 col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title mt-0">{{ project.ScheduleName }}</h3>
+                        <p class="card-subtitle text-muted mb-3">{[ LocationFromIdentifier idtype:'Id' identifier:'{{ project.LocationId }}' output:'Name' ]}</p>
+                        <p class="mb-2">{{ project.FriendlySchedule }}</p>
+                        <div class="d-flex justify-content-between mb-3">
+                            {% if project.AvailableSpots != null %}
+                                <span class="badge badge-info">Available Spots: {{ project.AvailableSpots }}</span>
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                            {% if project.DistanceInMiles != null %}
+                                <span class="badge">{{ project.DistanceInMiles | Format:'0.0' }} miles<span>
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        </div>
+                        {% if project.MapCenter and project.MapCenter != empty %}
+                            <div class="mb-3">
+                                {[ googlestaticmap center:'{{ project.MapCenter }}' zoom:'15' ]}
+                                {[ endgooglestaticmap ]}
+                            </div>
+                        {% endif %}
+                        {% if project.Description and project.Description != empty %}
+                            <p class="card-text">
+                                {{ project.Description }}
+                            </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        {% if project.ShowRegisterButton %}
+                            <a href="{{ project.RegisterPageUrl }}" class="btn btn-primary btn-xs">Register</a>
+                        {% endif %}
+                        <a href="{{ project.ProjectDetailPageUrl }}" class="btn btn-link btn-xs">Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div>
+        No projects found.
+    </div>
+{% endif %}
