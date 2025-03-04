@@ -21,7 +21,7 @@ WHERE
     (
         (res.[ReservationTypeId] <> 6 AND res.[ApprovalState] IN (0, 1, 6))
         OR
-        (res.[ReservationTypeId] = 6)
+        (res.[ReservationTypeId] = 6 AND res.[ApprovalState] IN (0, 7))
     )
 ORDER BY
     res.[CreatedDateTime] ASC
