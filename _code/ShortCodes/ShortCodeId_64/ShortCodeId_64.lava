@@ -1,0 +1,26 @@
+<nav class="progress-tracker" style="margin: 20px auto; width: 100%;">
+    <div class="progress-tracker-container d-none d-md-block">
+        <ul class="progress-steps">
+            {%- for header in items -%}
+            <li class="progress-step progress-tracker-priority">
+                <div class="progress-step-link">
+                    <div class="progress-tracker-icon {% case header.current %}{% when 1 %}current{% when 2 %}upcoming{% endcase %}">{%- if header.current == 0 -%}<i class="fa fa-check"></i>{%- endif -%}</div>
+                    <div class="progress-tracker-details">
+                        <span class="progress-tracker-title text-truncate">{{ header.title }}</span>
+                        {%- if header.subtitle != '' -%}
+                        <p class="progress-tracker-subtitle text-truncate">{{ header.subtitle }}</p>
+                        {%- endif -%}
+                    </div>
+                </div>
+                {%- unless forloop.last -%}
+                <div class="progress-tracker-arrow">
+                    <svg viewBox="0 0 22 80" fill="none" preserveAspectRatio="none">
+                        <path d="M0 -2L20 40L0 82" vector-effect="non-scaling-stroke" stroke="currentcolor" stroke-linejoin="round"></path>
+                    </svg>
+                </div>
+                {%- endunless -%}
+            </li>
+            {%- endfor -%}
+        </ul>
+    </div>
+</nav>
