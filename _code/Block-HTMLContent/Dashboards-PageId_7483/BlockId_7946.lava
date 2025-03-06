@@ -28,6 +28,7 @@
 //- These are some definitions 
 {% assign datekey_today = 'Now' | Date:'yyyyMMdd' %}
 {% assign date_Today_plus_7days = 'Now' | DateAdd:7,'d'%}
+{% assign RockGuyId = 'Global' | Attribute:'RockGuy', 'Id' %}
 
 //- These are the various queries that source the visualizations for this page
 {% sql return:'sql_schedules' %}
@@ -123,10 +124,10 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th class="timseo--column-15">Schedule Name</th>
-                    <th class="timseo--column-10">Check-in Opens</th>
-                    <th class="timseo--column-10">Check-in Closes</th>
-                    <th class="timseo--column-15">Group</th>
+                    <th class="timseo--column-15">Schedule Name {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[ScheduleId]</span>{% endif %}</th>
+                    <th class="timseo--column-10">Check-in Opens {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[Start Offset]</span>{% endif %}</th>
+                    <th class="timseo--column-10">Check-in Closes {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[End Offset]</span>{% endif %}</th>
+                    <th class="timseo--column-15">Group {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[GroupType]</span>{% endif %}</th>
                     <th class="timseo--column-15">Designated Location</th>
                 </tr>
             </thead>
@@ -141,10 +142,10 @@
                     {% assign date_CheckInEndTime = date_ScheduleStartDateTime | DateAdd:var_CheckInEndOffsetMinutes,'m' | Date:'h:mm tt' %}
                 {% endschedule %}
                 <tr>
-                    <td>{{ row.ScheduleName }}</td>
-                    <td>{{ date_CheckInStartTime }}</td>
-                    <td>{{ date_CheckInEndTime }}</td>
-                    <td>{{ row.Group }}</td>
+                    <td>{{ row.ScheduleName }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[ {{ row.ScheduleId }} ]</span>{% endif %}</td>
+                    <td>{{ date_CheckInStartTime }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[{{ var_CheckInStartOffsetMinutes | Times:-1 }} mins]</span>{% endif %}</td>
+                    <td>{{ date_CheckInEndTime }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[{{ var_CheckInEndOffsetMinutes }} mins]</span>{% endif %}</td>
+                    <td>{{ row.Group }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[{{ row.GroupType }}]</span>{% endif %}</td>
                     <td>{{ row.GroupLocation }}</td>
                 </tr>
             {% endfor %}
@@ -166,10 +167,10 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th class="timseo--column-15">Schedule Name</th>
-                        <th class="timseo--column-10">Check-in Opens</th>
-                        <th class="timseo--column-10">Check-in Closes</th>
-                        <th class="timseo--column-15">Group</th>
+                        <th class="timseo--column-15">Schedule Name {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[ScheduleId]</span>{% endif %}</th>
+                        <th class="timseo--column-10">Check-in Opens {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[Start Offset]</span>{% endif %}</th>
+                        <th class="timseo--column-10">Check-in Closes {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[End Offset]</span>{% endif %}</th>
+                        <th class="timseo--column-15">Group {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[GroupType]</span>{% endif %}</th>
                         <th class="timseo--column-15">Designated Location</th>
                     </tr>
                 </thead>
@@ -184,10 +185,10 @@
                         {% assign date_CheckInEndTime = date_ScheduleStartDateTime | DateAdd:var_CheckInEndOffsetMinutes,'m' | Date:'h:mm tt' %}
                     {% endschedule %}
                     <tr>
-                        <td>{{ row.ScheduleName }}</td>
-                        <td>{{ date_CheckInStartTime }}</td>
-                        <td>{{ date_CheckInEndTime }}</td>
-                        <td>{{ row.Group }}</td>
+                        <td>{{ row.ScheduleName }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[ {{ row.ScheduleId }} ]</span>{% endif %}</td>
+                        <td>{{ date_CheckInStartTime }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[{{ var_CheckInStartOffsetMinutes | Times:-1 }} mins]</span>{% endif %}</td>
+                        <td>{{ date_CheckInEndTime }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[{{ var_CheckInEndOffsetMinutes }} mins]</span>{% endif %}</td>
+                        <td>{{ row.Group }} {% if CurrentPerson.Id == RockGuyId %}<span style="color:gray;">[{{ row.GroupType }}]</span>{% endif %}</td>
                         <td>{{ row.GroupLocation }}</td>
                     </tr>
                 {% endfor %}
