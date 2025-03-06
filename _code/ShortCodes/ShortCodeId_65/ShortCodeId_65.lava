@@ -1,0 +1,204 @@
+/---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Summary of input and output:
+    - Starting from a combination of FirstName, LastName, BirthDate, EmailAddress, and MobilePhone, we will attempt to return the corresponding PersonAliasGuid
+    - If there is not enough information to make a confident match, we will output 'tim_blank'
+    
+    Notes about input params:
+    - For best results, please enure the 'birthdate' param is formatted as 'yyyy-MM-dd'
+    - The 'mobilephone' value will be matched against Rock's [dbo].[PhoneNumber].[NumberFormatted]
+    
+    Path:
+    _code/ShortCodes/ShortCodeId_65/ShortCodeId_65.lava
+    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+//- These are all the variables that i will eventually use throughout this Lava File:
+{% assign output = 'tim_blank' %}
+{% assign var_option = '' %}
+{% assign var_count_1 = 0 %}
+{% assign var_count_2 = 0 %}
+{% assign var_count_3 = 0 %}
+{% assign var_count_4 = 0 %}
+
+{% comment %}
+This is what this ShortCode will do:
+    Step#1
+    Search by FirstName, LastName, DOB, EmailAddress, and MobilePhone
+    If only one result, output that PersonAlisGuid
+    If more than one result, output the PersonAliasGuid of the oldest record
+    If zero results, proceed to Step #2
+    
+    Step#2
+    Search by FirstName, LastName, EmailAddress, and MobilePhone
+    If only one result, output that PersonAliasGuid
+    If more than one result, output the PersonAliasGuid of the oldest record
+    If zero results, proceed to Step #3
+    
+    Step#3
+    Search by FirstName, LastName, and EmailAddress
+    If only one result, output that PersonAliasGuid
+    If more than one result, output the PersonAliasGuid of the oldest record
+    If zero results, proceed to Step #4
+    
+    Step#4
+    Search by FirstName, LastName, and MobilePhone
+    If only one result, output that PersonAliasGuid
+    If more than one result, output the PersonAliasGuid of the oldest record
+    If zero results, output 'tim_blank'
+{% endcomment %}
+
+//- Check whether ShortCode has necessary inputs
+{% if firstname == 0 or lastname == 0 %}
+    {% assign output = 'Error: We need both firstname AND lastname parameters' %}
+    {{ output }}
+    {% return %}
+{% elseif emailaddress == 0 and mobilephone == 0 %}
+    {% assign output = 'Error: We need at least one between emailaddress and mobilephone' %}
+    {{ output }}
+    {% return %}
+{% endif %}
+
+//- query_1 is FirstName, LastName, DOB, EmailAddress, and MobilePhone
+{% if birthdate != 0 and emailaddress != 0 and mobilephone != 0 %}
+    {% sql return:'query_1_result' %}
+        SELECT TOP 3
+            pa.[Guid]
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+            INNER JOIN [PhoneNumber] pn ON pn.[PersonId] = p.[Id] AND pn.[NumberTypeValueId] = 12
+        WHERE
+            (p.[NickName] LIKE '{{ firstname }}%'
+            OR
+            p.[FirstName] LIKE '{{ firstname }}%'
+            )
+            AND
+            p.[LastName] LIKE '{{ lastname }}%'
+            AND
+            p.[BirthDate] = '{{ birthdate }}'
+            AND
+            p.[Email] = '{{ emailaddress }}'
+            AND
+            pn.[NumberFormatted] = '{{ mobilephone }}'
+        ORDER BY
+            p.[CreatedDateTime] ASC
+    {% endsql %}
+    
+    {% assign var_count_1 = query_1_result | Size %}
+{% endif %}
+
+//- If query_1 has more than 0 results, output the corresponding PersonAliasGuid and RETURN out of this ShortCode
+{% if var_count_1 > 0 %}
+    {% assign output = query_1_result | First | Property:'Guid' %}
+    {{ output}}
+    {% return %}
+{% endif %}
+//- If query_1 had 0 results, proceed with the rest of this ShortCode's Lava
+
+//- query_2 is FirstName, LastName, EmailAddress, and MobilePhone
+{% if emailaddress != 0 and mobilephone != 0 %}
+    {% sql return:'query_2_result' %}
+        SELECT TOP 3
+            pa.[Guid]
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+            INNER JOIN [PhoneNumber] pn ON pn.[PersonId] = p.[Id] AND pn.[NumberTypeValueId] = 12
+        WHERE
+            (p.[NickName] LIKE '{{ firstname }}%'
+            OR
+            p.[FirstName] LIKE '{{ firstname }}%'
+            )
+            AND
+            p.[LastName] LIKE '{{ lastname }}%'
+            AND
+            p.[Email] = '{{ emailaddress }}'
+            AND
+            pn.[NumberFormatted] = '{{ mobilephone }}'
+        ORDER BY
+            p.[CreatedDateTime] ASC
+    {% endsql %}
+    
+    {% assign var_count_2 = query_2_result | Size %}
+{% endif %}
+
+//- If query_2 has more than 0 results, output the corresponding PersonAliasGuid and RETURN out of this ShortCode
+{% if var_count_2 > 0 %}
+    {% assign output = query_2_result | First | Property:'Guid' %}
+    {{ output}}
+    {% return %}
+{% endif %}
+//- If query_2 had 0 results, proceed with the rest of this ShortCode's Lava
+
+//- query_3 is FirstName, LastName, and EmailAddress
+{% if emailaddress != 0 %}
+    {% sql return:'query_3_result' %}
+        SELECT TOP 3
+            pa.[Guid]
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+        WHERE
+            (p.[NickName] LIKE '{{ firstname }}%'
+            OR
+            p.[FirstName] LIKE '{{ firstname }}%'
+            )
+            AND
+            p.[LastName] LIKE '{{ lastname }}%'
+            AND
+            p.[Email] = '{{ emailaddress }}'
+        ORDER BY
+            p.[CreatedDateTime] ASC
+    {% endsql %}
+    
+    {% assign var_count_3 = query_3_result | Size %}
+{% endif %}
+
+//- If query_3 has more than 0 results, output the corresponding PersonAliasGuid and RETURN out of this ShortCode
+{% if var_count_3 > 0 %}
+    {% assign output = query_3_result | First | Property:'Guid' %}
+    {{ output}}
+    {% return %}
+{% endif %}
+//- If query_3 had 0 results, proceed with the rest of this ShortCode's Lava
+
+//- query_4 is FirstName, LastName, and MobilePhone
+{% if mobilephone != 0 %}
+    {% sql return:'query_4_result' %}
+        SELECT TOP 3
+            pa.[Guid]
+        FROM
+            [Person] p
+            INNER JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+            INNER JOIN [PhoneNumber] pn ON pn.[PersonId] = p.[Id] AND pn.[NumberTypeValueId] = 12
+        WHERE
+            (p.[NickName] LIKE '{{ firstname }}%'
+            OR
+            p.[FirstName] LIKE '{{ firstname }}%'
+            )
+            AND
+            p.[LastName] LIKE '{{ lastname }}%'
+            AND
+            pn.[NumberFormatted] = '{{ mobilephone }}'
+        ORDER BY
+            p.[CreatedDateTime] ASC
+    {% endsql %}
+    
+    {% assign var_count_4 = query_4_result | Size %}
+{% endif %}
+
+//- If query_4 has more than 0 results, output the corresponding PersonAliasGuid and RETURN out of this ShortCode
+{% if var_count_4 > 0 %}
+    {% assign output = query_4_result | First | Property:'Guid' %}
+    {{ output}}
+    {% return %}
+{% endif %}
+
+//- If even at this point of the Lava we have 0 results, we don't have enough information to make a confident match and retrieve a PersonAliasGuid
+//- We have too little information, we risk selecting a person who just so happens to have the same FirstName and LatsName
+//- Therefore, output 'tim_blank'
+{{ output }}
