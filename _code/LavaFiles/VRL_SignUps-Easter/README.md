@@ -1,0 +1,4 @@
+# VRL Sign-Ups
+Tim initially created this Directory on 26-FEB-2025 because we wanted to combine the best parts of Sign-Ups (which is new to us as of Rock v15) with the best parts of Connections.
+
+Essentially, use the idea is to use the **Sign-Ups Finder** Block in order to display which Volunteer Positions are still available, but rebuild the href to the "Register" button such that the following child page will show a Workflow Form that will create a ConnectionRequest in the corresponding ConnectionOpportunity. This way, the NextGen Team will get to ensure that Easter volunteers are vetted (mainly for background check related reasons) before they are placed inside a Sign-Up Group.

@@ -1,0 +1,56 @@
+/---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Required Lava Command(s):
+    - Sql
+    
+    Path:
+    _code/ShortCodes/ShortCodeId_66/ShortCodeId_66.lava
+    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{%- if idtype == '' or identifier == '' or output == '' -%}
+    Error: One or more of the required parameters isBlank.
+    {% return %}
+{%- endif -%}
+
+{%- if idtype == 'GroupId' or idtype == 'GroupGuid' -%}
+{%- else -%}
+    Error: Typo in 'idtype' Parameter.
+    {% return %}
+{%- endif -%}
+
+{% sql return:'sql_GroupType' %}
+    SELECT
+        gt.[Id] AS 'GroupTypeId'
+      , gt.[Guid] AS 'GroupTypeGuid'
+      , gt.[IconCssClass] AS 'GroupTypeIconCssClass'
+      , gt.[Name] AS 'GroupTypeName'
+    FROM
+        [Group] g
+        INNER JOIN [GroupType] gt ON gt.[Id] = g.[GroupTypeId]
+    WHERE
+        {%- if idtype == 'GroupId' -%}
+        g.[Id] = '{{ identifier }}'
+        {%- endif -%}
+        {%- if idtype == 'GroupGuid' -%}
+        g.[Guid] = '{{ identifier }}'
+        {%- endif -%}
+{% endsql %}
+
+{%- case output -%}
+{%- when 'GroupTypeId' -%}
+    {{- sql_GroupType | First | Property:'GroupTypeId' -}}
+{%- when 'GroupTypeGuid' -%}
+    {{- sql_GroupType | First | Property:'GroupTypeGuid' -}}
+{%- when 'GroupTypeIconCssClass' -%}
+    {{- sql_GroupType | First | Property:'GroupTypeIconCssClass' }}
+{%- when 'GroupTypeName' -%}
+    {%- assign var_Output = sql_GroupType | First | Property:'GroupTypeName' -%}
+    {%- if var_Output == '' or var_Output == empty or var_Output == blank or var_Output == null -%}
+        NameIsBlank
+    {%- else -%}
+        {{- var_Output -}}
+    {%- endif -%}
+{%- else -%}
+    Error: Possibly typo in 'output' Parameter.
+{%- endcase -%}
