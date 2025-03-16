@@ -4,7 +4,7 @@
     PageId=136, BLockId=7482, [RockCommunity Recipe 203] > HTML
     
     This Lava is used to inject a table of WorkflowAttributes into the <fieldset></fieldset> in BlockId=178
-
+    
     Required Lava Command(s):
     - Sql
     
@@ -13,7 +13,7 @@
     
     Path:
     _code/Block-HTMLContent/PageId_136/BlockId_7482-Attributes.lava
-
+    
 -------------------------------------------------------------------------------------------------------------------------------------/
 
 {% assign var_WorkflowTypeId = 'Global' | PageParameter:'workflowTypeId' %}
@@ -36,7 +36,7 @@
         att.[Key] ASC
     ;
     {% endsql %}
-    
+
     {% sql return:'sql_WorkflowActivityTypes' %}
     SELECT
         [Id], [IsActive], [Name], [Order]
@@ -48,7 +48,7 @@
         [Order] ASC
     ;
     {% endsql %}
-    
+
     {% sql return:'sql_WorkflowActivityAttributes' %}
     SELECT
         att.[Id] AS 'Attribute_Id'
@@ -65,9 +65,11 @@
         att.[EntityTypeId] = 116 --This is the [EntityType].[Id] for 'Rock.Model.WorkflowActivity'
         AND
         att.[EntityTypeQualifierValue] IN ({{ sql_WorkflowActivityTypes | Map:'Id' | Join:', ' }})
+    ORDER BY
+        wat.[Order] ASC
     ;
     {% endsql %}
-    
+
     {% assign grouped_WorkflowActivityAttributes = sql_WorkflowActivityAttributes | GroupBy:'Activity_Id' %}
 
     <div id="attributeList" class="col-md-6" style="display:none;">
@@ -92,12 +94,12 @@
                             <td>{{ row.Attribute_Key }}</td>
                             <td>{{ row.FieldType_Name }}</td>
                         </tr>
-                    {% endfor%}
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-    {% for wactivity in grouped_WorkflowActivityAttributes%}
+    {% for wactivity in grouped_WorkflowActivityAttributes %}
         {% assign parts = wactivity | PropertyToKeyValue %}
         <a data-toggle="collapse" class="workflow-activities-readonly-header" href="#toggle_ReadOnlyList_ActivityAttributes_{{ parts.Key }}" role="button" aria-expanded="false" aria-controls="Collapse Attributes">
             <span style="top: auto; left: auto; padding-top: 8px; padding-bottom: 8px; color: #515151; font-weight:600;">Activity | {{ parts.Value[0].Activity_Name }}</span> ({{ parts.Value | Size }})
