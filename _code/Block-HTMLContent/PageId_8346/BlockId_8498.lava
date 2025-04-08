@@ -1,0 +1,248 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=8346, BlockId=8498, [Code for main UI elements] > HTML
+    
+    Required Lava Command(s):
+    - Rock Entity
+    
+    Path:
+    _code/Block-HTMLContent/PageId_8346/BlockId_8498.lava
+    
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+<style>
+    /* Layout containers */
+    .timseo--page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    
+    .timseo--container {
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Interactive elements */
+    .timseo--button {
+        background-color: #4a90e2;
+        color: white;
+        padding: 16px 20px;
+        text-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 24px;
+        position: relative;
+        z-index: 3; /* Ensure buttons are above other elements */
+        display: block; /* Make the entire button area clickable */
+        width: 100%; /* Ensure full width clickable area */
+    }
+    
+    .timseo--button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .timseo--button:last-of-type {
+        margin-bottom: 0;
+    }
+    
+    .timseo--button.timseo--active {
+        background-color: #357abd;
+    }
+    
+    .timseo--button-spacer {
+        height: 12px; /* Adjust this value to increase/decrease space */
+    }
+
+    /* Content cards */
+    .timseo--card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.5s ease;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-top: -8px;
+        margin-bottom: -24px;
+        transform: scale(0.95);
+        position: relative;
+        z-index: 2;
+    } 
+    
+    .timseo--card p {
+        margin: 12px 0;
+        line-height: 1.5;
+    }
+    
+    .timseo--card.timseo--active {
+        max-height: 1000px;
+        overflow-y: auto;
+        opacity: 1;
+        margin-top: 0;
+        transform: scale(1);
+    }
+
+    /* Utility classes */
+    .timseo--hidden {
+        opacity: 0;
+        transform: scale(0.9);
+        pointer-events: none;
+    }
+    
+    .timseo--overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+    }
+    
+    .timseo--overlay.timseo--active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+</style>
+
+{% assign date_today = 'Now' | Date:'yyyy-MM-dd' %}
+{% assign datetime_today = 'Now' | Date:'yyyy-MM-ddTHH:mm:ss.fffzzz'%}
+
+{% contentchannelitem where:'ContentChannelId == 370' securityenabled:'false' %}
+    {% assign array_Buttons = contentchannelitemItems | OrderBy:'Order' %}
+{% endcontentchannelitem %}
+
+<div class="timseo--overlay" id="overlay"></div>
+    
+<div class="timseo--page-wrapper">
+    <div class="timseo--container">
+    {% for thing in array_Buttons %}
+        {% assign datetime_start = thing.StartDateTime | Date:'yyyy-MM-ddTHH:mm:ss.fffzzz' %}
+        {% assign datetime_end = thing.ExpireDateTime | Date:'yyyy-MM-ddTHH:mm:ss.fffzzz' %}
+        
+        {% if datetime_end != null and datetime_end != empty %}
+            {% assign logic_ShowButton = datetime_today | IsDateBetween:datetime_start,datetime_end %}
+        {% elseif datetime_today > datetime_start %}
+            {% assign logic_ShowButton = 1 | AsBoolean %}
+        {% else %}
+            {% assign logic_ShowButton = 0 | AsBoolean %}
+        {% endif %}
+        
+        {% if logic_ShowButton == true %}
+            {% assign txt_CustomCssClass-Button = thing | Attribute:'text_CSS_Class-Button' %}
+            {% assign txt_CustomCssClass-Card = thing | Attribute:'text_CSS_Class-Card' %}
+            <div class="{{ txt_CustomCssClass-Button | WithFallback:'', 'timseo--button'}}" id="button-{{ thing.Id }}">{{ thing.Title }}</div>
+            <div class="{{ txt_CustomCssClass-Card | WithFallback:'', 'timseo--card'}}" id="card-{{ thing.Id }}">
+                {{ thing.Content }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Get all buttons and cards
+    const buttons = document.querySelectorAll('.timseo--button');
+    const cards = document.querySelectorAll('.timseo--card');
+    const overlay = document.getElementById('overlay');
+    const container = document.querySelector('.timseo--container');
+    
+    // Track current active elements
+    let activeButton = null;
+    let activeCard = null;
+    
+    // Function to reset to default state
+    function resetView() {
+        // Show all buttons
+        buttons.forEach((button) => {
+            button.classList.remove('timseo--hidden');
+            button.classList.remove('timseo--active');
+        });
+        
+        // Hide all cards
+        cards.forEach((card) => {
+            card.classList.remove('timseo--active');
+        });
+        
+        // Hide the overlay
+        overlay.classList.remove('timseo--active');
+        
+        // Reset tracking variables
+        activeButton = null;
+        activeCard = null;
+    }
+    
+    // Add click event listeners to each button
+    buttons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            // Prevent the click from bubbling
+            event.stopPropagation();
+            
+            // Get the button ID and find the corresponding card ID
+            const buttonId = button.id;
+            const cardId = buttonId.replace('button', 'card');
+            const card = document.getElementById(cardId);
+            
+            // Check if this button is already active
+            if (button === activeButton) {
+                resetView();
+                return;
+            }
+            
+            // Hide all other buttons except the clicked one
+            buttons.forEach((otherButton) => {
+                if (otherButton !== button) {
+                    otherButton.classList.add('timseo--hidden');
+                }
+            });
+            
+            // Make the clicked button active
+            button.classList.add('timseo--active');
+            
+            // Show the corresponding card
+            card.classList.add('timseo--active');
+            
+            // Show the overlay
+            overlay.classList.add('timseo--active');
+            
+            // Track active elements
+            activeButton = button;
+            activeCard = card;
+        });
+    });
+    
+    // Add click event listeners to each card to prevent closing when clicking inside
+    cards.forEach(card => {
+        card.addEventListener('click', (event) => {
+            // Prevent the click from bubbling to the document
+            event.stopPropagation();
+        });
+    });
+    
+    // Add click event listener to the overlay
+    overlay.addEventListener('click', resetView);
+    
+    // Also allow clicking anywhere on the document to close
+    document.addEventListener('click', (event) => {
+        // Only reset if we have an active card and the click wasn't on a button
+        if (activeCard && !event.target.classList.contains('timseo--button')) {
+            resetView();
+        }
+    });
+</script>

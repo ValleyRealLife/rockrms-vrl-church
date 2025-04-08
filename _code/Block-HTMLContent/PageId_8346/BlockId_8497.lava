@@ -1,0 +1,54 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=8346, BlockId=8497, [Code for utilities] > HTML
+    
+    Required Lava Command(s):
+    - n/a
+    
+    Path:
+    _code/Block-HTMLContent/PageId_8346/BlockId_8497.lava
+    
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+<script>
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    prm.add_endRequest(function() {
+        moveBlock_8499();
+        checkViewportMeta();
+    });
+    
+    $(document).ready(function() {
+        moveBlock_8499();
+        checkViewportMeta();
+    });
+    
+    function moveBlock_8499() {
+        $('#card-2623')
+            .append($('#WorkflowEntryBlock-8499'));
+        
+        $('#WorkflowEntryBlock-8499').show();
+        $('#WorkflowEntryBlock-8499 .panel-block .panel-heading').hide();
+    }
+    
+    function checkViewportMeta() {
+        // Check if viewport meta tag already exists
+        var hasViewport = false;
+        var metaTags = document.getElementsByTagName('meta');
+        
+        for (var i = 0; i < metaTags.length; i++) {
+            if (metaTags[i].name === 'viewport') {
+                hasViewport = true;
+                break;
+            }
+        }
+        
+        // If viewport meta tag doesn't exist, create and append it
+        if (!hasViewport) {
+            var viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1.0';
+            document.getElementsByTagName('head')[0].appendChild(viewportMeta);
+        }
+    }
+</script>
