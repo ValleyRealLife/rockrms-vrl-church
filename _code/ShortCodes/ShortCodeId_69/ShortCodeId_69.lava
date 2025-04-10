@@ -1,0 +1,34 @@
+/---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Required Lava Command(s):
+    - N/A
+    
+    Path:
+    _code/ShortCodes/ShortCodeId_69/ShortCodeId_69.lava
+    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{%- if url == '' -%}
+    Error: 'url' is missing.
+    See example usage:
+    <pre>{[ ButtonPrimary url:'/StudentsCampRegistration?RegInsId=597' newtab:'Y' label:'Register for MOVE 2024 - Student Registration' ]}</pre>
+    {% return %}
+{%- endif -%}
+
+{%- if newtab != 'Y' and newtab != 'N' -%}
+    Error: 'newtab' is missing or misspelled. Must be either 'Y' or 'N'
+    See example usage:
+    <pre>{[ ButtonPrimary url:'/StudentsCampRegistration?RegInsId=597' newtab:'Y' label:'Register for MOVE 2024 - Student Registration' ]}</pre>
+    {% return %}
+{%- endif -%}
+
+{%- if label == '' -%}
+    Error: 'label' is missing.
+    See example usage:
+    <pre>{[ ButtonPrimary url:'/StudentsCampRegistration?RegInsId=597' newtab:'Y' label:'Register for MOVE 2024 - Student Registration' ]}</pre>
+    {% return %}
+{%- endif -%}
+
+<div style="display: flex; justify-content: center;">
+    <a href="{{ url }}" class="btn btn-primary margin-t-md" {% if newtab == 'Y' %}target="_blank"{% endif %}>{{ label }}</a>
+</div>
