@@ -4,14 +4,23 @@
 
 <p>The thid parameter is 'label'. This is what the button will say.</p>
 
-<p>Example Lava:</p>
+<p><b>Example Lava:</b></p>
 
 <pre>{[ ButtonPrimary url:'/StudentsCampRegistration?RegInsId=597' newtab:'Y' label:'Register for MOVE 2024 - Student Registration' ]}</pre>
 
-<p>Example Output:</p>
+<p><b>Example Output:</b></p>
 
 <pre><div style="display: flex; justify-content: center;"><a href="/StudentsCampRegistration?RegInsId=597" class="btn btn-primary margin-t-md" target="_blank">Register for MOVE 2024 - Student Registration</a></div></pre>
 
+<p>Note:</p>
+<p>The above example is something you'd write in the <b>Ocucrrence Note</b> field of an Event Occurrence (directly underneath its Linkages).</p>
+
 <hr>
 
-Note: The above example is something you'd write in the <b>Ocucrrence Note</b> field of an Event Occurrence (directly underneath its Linkages).
+<p>Advanced Users:</p>
+<p>This ShortCode also has the 'id' and 'class' parameters, these are optional parameters.</p>
+<p>The 'class' parameter will be appended after btn, btn-primary, and margin-t-md</p>
+
+<p>Example Lava:</p>
+
+<pre>{[ ButtonPrimary id:'1' class:'custom--class' url:'/StudentsCampRegistration?RegInsId=597' newtab:'Y' label:'Register for MOVE 2024 - Student Registration' ]}</pre>

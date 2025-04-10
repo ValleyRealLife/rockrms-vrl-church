@@ -30,5 +30,5 @@
 {%- endif -%}
 
 <div style="display: flex; justify-content: center;">
-    <a href="{{ url }}" class="btn btn-primary margin-t-md" {% if newtab == 'Y' %}target="_blank"{% endif %}>{{ label }}</a>
+    <a {% unless id == '' %}id="{{ id }}" {% endunless %}href="{{ url }}" class="btn btn-primary margin-t-md{% unless class == '' %} {{ class }}{% endunless %}" {% if newtab == 'Y' %}target="_blank"{% endif %}>{{ label }}</a>
 </div>
