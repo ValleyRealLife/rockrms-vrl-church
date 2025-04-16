@@ -1,66 +1,130 @@
-/******************************************************************************************
+/********************************************************************************************************************************************
     
     This Lava is found in
     PageId=1923, BlockId=4665, [Dynamic Data Block] > Query
     
-    I am copy+pasting this here from the VRL Rock Site.
-    I copy+pasted this on 15-APR-2024
-    
     Path:
     _code/Block-DynamicData/LifeGroupLeaders_and_RDT-PageId_1923/BlockId_4665-Query.lava
     
-******************************************************************************************/
+********************************************************************************************************************************************/
 
-{% assign var_GroupId = PageParameter.GroupId | SanitizeSql %}
+{% assign var_GroupId = 'Global' | Page:'QueryString' | Property:'GroupId' | SanitizeSql %}
+{% assign var_GroupTypeId = 'Global' | Page:'QueryString' | Property:'GroupTypeId' | SanitizeSql %}
+{% assign var_RoleId = 'Global' | Page:'QueryString' | Property:'RoleId' | SanitizeSql %}
+{% assign boolean_RDTdate = 'Global' | Page:'QueryString' | Property:'date_RDT' | SanitizeSql %}
 
-{% if var_GroupId != empty and var_GroupId != null %}
-DECLARE @RdtCourses TABLE (
-    [PersonAliasId] INT PRIMARY KEY NOT NULL,
-    [RdtCourse] DATETIME NOT NULL
+-- Declare some variables
+DECLARE @GroupType_LifeGroup TABLE (
+    [Id] int NOT NULL
 );
 
-INSERT INTO @RdtCourses (
-    [PersonAliasId],
-    [RdtCourse]
-)
-SELECT
-    stp.[PersonAliasId],
-    MAX(stp.[CompletedDateTime])
-FROM
-    [Step] stp
-WHERE
-    stp.[StepTypeId] = 7
-GROUP BY
-    stp.[PersonAliasId]
+DECLARE @LifeGroups TABLE (
+    [Id] int NOT NULL
+);
+
+DECLARE @GroupTypeRole_Leader TABLE (
+    [Id] int NOT NULL
+);
+
+DECLARE @Step_RDT TABLE (
+    [PersonAliasId] int NOT NULL
+  , [CompletedDateTime] datetime
+);
+
+-- Insert rows into TABLE variables
+INSERT INTO @GroupType_LifeGroup ([Id])
+VALUES
+    (25) --This is "LifeGroup"
+  , (45) --This is "MensLifeGroup"
+  , (46) --This is "WomensLifeGroup"
+  , (59) --This is "RecoveryLifeGroup"
 ;
 
+INSERT INTO @LifeGroups ([Id])
 SELECT
-    p.[Id]
-    {%- if var_GroupId contains "," -%}
-  , g.[Name] AS 'Group Name'
-    {%- endif -%}
-  , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'Person Name'
-  , gtr.[Name] AS 'Role'
-  , rdt.[RdtCourse] AS 'Most Recent RDT'
-  , CONCAT('<a title="Person Profile" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/person/', p.[Id], '/steps/" target="_blank"><i class="fa fa-user-alt"></i></a>', ' ', '<a title="Group Viewer" class="btn btn-sm btn-square btn-default" href="https://rock.vrl.church/page/697?GroupId=', g.[Id], '" target="_blank"><i class="fa fa-users"></i></a>') AS 'Person and Group'
+    [Id]
 FROM
-    [Person] p
-    LEFT JOIN [GroupMember] gm ON gm.[PersonId] = p.[Id]
-    LEFT JOIN [Group] g ON g.[Id] = gm.[GroupId]
-    LEFT JOIN [GroupTypeRole] gtr ON gtr.[GroupTypeId] = gm.[GroupTypeId] AND gtr.[Id] = gm.[GroupRoleId]
-    LEFT JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
-    LEFT JOIN @RdtCourses rdt ON rdt.[PersonAliasId] = pa.[Id]
-WHERE
-    gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- if forloop.last == false -%}, {%- endif -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
+    [Group]
+WHERE 
+    [IsActive] = 1 AND [IsArchived] = 0
     AND
+    [GroupTypeId] IN (SELECT [Id] FROM @GroupType_LifeGroup)
+;
+
+INSERT INTO @GroupTypeRole_Leader ([Id])
+SELECT
+    [Id]
+FROM
+    [GroupTypeRole]
+WHERE
+    [GroupTypeId] IN (SELECT [Id] FROM @GroupType_LifeGroup)
+    AND
+    ([IsLeader] = 1
+    OR
+    [Id] = 175 --This is the "NextLeader" Role, which does not have the [IsLeader] property but should count towards this
+    )
+;
+
+INSERT INTO @Step_RDT ([PersonAliasId], [CompletedDateTime])
+SELECT
+    [PersonAliasId]
+  , MAX([CompletedDateTime])
+FROM
+    [Step]
+WHERE
+    [StepTypeId] = 7
+GROUP BY
+    [PersonAliasId]
+;
+
+-- Now do the actual Query that we're here to do
+SELECT
+    p.[Id] AS 'Id'
+  , g.[Name] AS 'Group'
+  , gt.[Name] AS 'GroupType'
+  , p.[NickName] AS 'FirstName'
+  , p.[LastName] AS 'LastName'
+  , gtr.[Name] AS 'Role'
+  , COALESCE(FORMAT(s7.[CompletedDateTime], 'yyyy-MM-dd'), '--') AS 'RDT Date (yyyy-MM-dd)'
+FROM
+    [GroupMember] gm
+    INNER JOIN [GroupType] gt ON gt.[Id] = gm.[GroupTypeId]
+    INNER JOIN [Group] g ON g.[Id] = gm.[GroupId]
+    INNER JOIN [Person] p ON p.[Id] = gm.[PersonId]
+    INNER JOIN [PersonAlias] pa ON pa.[PersonId] = p.[Id] AND pa.[PersonId] = pa.[AliasPersonId]
+    INNER JOIN [GroupTypeRole] gtr ON gtr.[Id] = gm.[GroupRoleId]
+    LEFT JOIN @Step_RDT s7 ON s7.[PersonAliasId] = pa.[Id]
+WHERE
     gm.[IsArchived] = 0
+    AND
+    gm.[GroupMemberStatus] <> 0
+    {% if var_GroupId != empty and var_GroupId != null %}
+    AND
+    gm.[GroupId] IN ({%- if var_GroupId contains "," -%}{%- assign variableParts = var_GroupId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- unless forloop.last -%}, {%- endunless -%}{%- endfor -%}{%- else -%}{{- var_GroupId -}}{%- endif -%})
+    {% else %}
+    AND
+    gm.[GroupId] IN (SELECT [Id] FROM @LifeGroups)
+    {% endif %}
+    {% if var_GroupTypeId != empty and var_GroupTypeId != null %}
+    AND
+    gm.[GroupTypeId] IN ({%- if var_GroupTypeId contains "," -%}{%- assign variableParts = var_GroupTypeId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- unless forloop.last -%}, {%- endunless -%}{%- endfor -%}{%- else -%}{{- var_GroupTypeId -}}{%- endif -%})
+    {% endif %}
+    {% if var_RoleId != empty and var_RoleId != null %}
+    AND
+    gm.[GroupRoleId] IN ({%- if var_RoleId contains "," -%}{%- assign variableParts = var_RoleId | Split:',' -%}{%- for a in variableParts -%}{{- a -}}{%- unless forloop.last -%}, {%- endunless -%}{%- endfor -%}{%- else -%}{{- var_RoleId -}}{%- endif -%})
+    {% else %}
+    AND
+    gm.[GroupRoleId] IN (SELECT [Id] FROM @GroupTypeRole_Leader)
+    {% endif %}
+    {% if boolean_RDTdate != empty and boolean_RDTdate != null and boolean_RDTdate == 1 %}
+    AND
+    s7.[CompletedDateTime] IS NOT NULL
+    {% elseif boolean_RDTdate != empty and boolean_RDTdate != null and boolean_RDTdate == 0 %}
+    AND
+    s7.[CompletedDateTime] IS NULL
+    {% endif %}
 ORDER BY
-    {%- if var_GroupId contains "," -%}
-    g.[Id],
-    {%- endif -%}
-    gtr.[Order] ASC
-  , rdt.[RdtCourse] DESC
+    gt.[Id] ASC
   , p.[LastName] ASC
   , p.[NickName] ASC
 ;
-{% endif %}
