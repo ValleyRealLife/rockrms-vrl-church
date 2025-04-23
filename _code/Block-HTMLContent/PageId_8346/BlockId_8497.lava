@@ -15,11 +15,17 @@
     var prm = Sys.WebForms.PageRequestManager.getInstance();
     prm.add_endRequest(function() {
         moveBlock_8499();
+        moveBlock_8551();
+        moveBlock_8552();
+        moveBlock_8553();
         checkViewportMeta();
     });
     
     $(document).ready(function() {
         moveBlock_8499();
+        moveBlock_8551();
+        moveBlock_8552();
+        moveBlock_8553();
         checkViewportMeta();
     });
     
@@ -29,6 +35,30 @@
         
         $('#WorkflowEntryBlock-8499').show();
         $('#WorkflowEntryBlock-8499 .panel-block .panel-heading').hide();
+    }
+
+    function moveBlock_8551() {
+        $('#card-2622')
+            .append($('#WorkflowEntryBlock-8551'));
+        
+        $('#WorkflowEntryBlock-8551').show();
+        $('#WorkflowEntryBlock-8551 .panel-block .panel-heading').hide();
+    }
+
+    function moveBlock_8552() {
+        $('#card-2626')
+            .append($('#WorkflowEntryBlock-8552'));
+        
+        $('#WorkflowEntryBlock-8552').show();
+        $('#WorkflowEntryBlock-8552 .panel-block .panel-heading').hide();
+    }
+
+    function moveBlock_8553() {
+        $('#card-2628')
+            .append($('#WorkflowEntryBlock-8553'));
+        
+        $('#WorkflowEntryBlock-8553').show();
+        $('#WorkflowEntryBlock-8553 .panel-block .panel-heading').hide();
     }
     
     function checkViewportMeta() {

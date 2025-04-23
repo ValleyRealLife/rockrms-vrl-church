@@ -149,7 +149,7 @@
             {% assign txt_CustomCssClass-Card = thing | Attribute:'text_CSS_Class-Card' %}
             <div class="{{ txt_CustomCssClass-Button | WithFallback:'', 'timseo--button'}}" id="button-{{ thing.Id }}">{{ thing.Title }}</div>
             <div class="{{ txt_CustomCssClass-Card | WithFallback:'', 'timseo--card'}}" id="card-{{ thing.Id }}">
-                {{ thing.Content }}
+                {{ thing.Content | RunLava }}
             </div>
         {% endif %}
     {% endfor %}
