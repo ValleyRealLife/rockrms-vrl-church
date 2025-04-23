@@ -8,6 +8,7 @@
     ShowAdvanced=1
     
     Required Lava Command(s):
+    - Rock Entity
     - Sql
     
     Path:
