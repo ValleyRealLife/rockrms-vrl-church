@@ -1,0 +1,311 @@
+/--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    Path:
+    _code/Recipes/RecipeId_2722/RecipeId_2722-Content.lava
+    
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .timseo-custom-ol {
+        list-style: none;
+        counter-reset: steps;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .timseo-custom-li {
+        background-color: #f5f7fa;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+        padding-left: 60px;
+    }
+    
+    .timseo-custom-li::before {
+        counter-increment: steps;
+        content: counter(steps);
+        position: absolute;
+        left: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .recipe-screenshot {
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .recipe-screenshot-small {
+        display: block;
+        max-width: 75%;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    i.timseo {
+        margin: 0 4px;
+    }
+    
+    .timseo-custom-li br {
+        display: block;
+        margin: 10px 0;
+    }
+</style>
+
+<h1>Big Picture</h1>
+<p>
+    In order to reset the Sandbox we will:
+    <ol>
+        <li>Create a copy of our Azure SQL Database</li>
+        <li>Create a copy of our Azure Web App Service</li>
+        <li>Map the copied Azure Database to the copied Azure App Service</li>
+        <li>Disable some settings in the copied App Service</li>
+        <li>Make a visual distinction to the copied App Service</li>
+        <li>Remove the SQL Database and App Service related to the older sandbox</li>
+    </ol>
+<p>
+
+<div class="alert alert-info">
+    <p class="alert-title">
+        <i class="fa fa-info-circle"></i> Note
+    </p>
+    <p class="ce-alert-content">
+        In the two years that i worked at Valley Real Life, the UI of our Azure Portal has changed (in big or small ways) three times. Therefore, rather than focusing on the screenshots below, it might be better to focus on the names of the items that you need to find/click.
+    </p>
+</div>
+
+<hr>
+
+<h2>1- Create a copy of our Azure SQL Database</h2>
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        <b>Navigate</b> to <a href="https://portal.azure.com/" target="_blank">https://portal.azure.com/</a>.<br>
+        As of 06-MAY-2025, this is what the portal looks like:<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-01.png" class="recipe-screenshot" alt="Azure Portal"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Browse</b> our SQL databases, and<br>
+        <b>click</b> the one named "rockDB"<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-02-rockDB.png" class="recipe-screenshot" alt="Azure main SQL database"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Create a copy</b> of this database. At the time of writing this guide, this is where the 'Copy' button is found:<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-03-copy.png" class="recipe-screenshot" alt="Azure Copy a Database"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Set the name</b> of this database copy. i have been naming them as <code>timcopy-</code> followed by the <code>yyyyMMdd</code> of the date when i'm creating the copy.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-04-SQLdatabaseName.png" class="recipe-screenshot" alt="Azure Name for the Database Copy"><br>
+        <b>Remember</b> this <u>Database name</u> because it will be the <u>Catalog</u> in the <code>connectionString</code> in Step 4-6.<br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Set the DTUs</b> of this database copy. For our purposes, 50 DTUs seem to be appropriate.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-04-ConfigureDatabase.png" class="recipe-screenshot" alt="Azure Copy a Database"><br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-05-SetDTU.png" class="recipe-screenshot" alt="Azure Database DTUs"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Set the Backup redundancy</b> of this database copy to 'Locally-redundant backup', and<br>
+        <b>Proceed to create this copy</b> by clicking however many buttons you have to.
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-06-BackupRedundancy.png" class="recipe-screenshot" alt="Azure Database Backup Redundancy"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        You will be redirected to an overview that indicates your copy is in progress,<br>
+        while waiting on the deployment of this SQL Database copy, you can proceed to creating the copy of our Web App Service.
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-07-SQLdatabaseCopyInProgress.png" class="recipe-screenshot" alt="Azure Confirm Database Copy"><br><br>
+    </li>
+</ol>
+
+<br><br>
+
+<h2>2- Create a copy of our Azure Web App Service</h2>
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        <b>Navigate</b> to <a href="https://portal.azure.com/" target="_blank">https://portal.azure.com/</a>.<br>
+        You can do this by opening this 'Home' breadcrumb in a new tab:<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-07-BackToHome.png" class="recipe-screenshot" alt="Back to Azure Portal"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Browse</b> our App Services, and<br>
+        <b>click</b> the one named "rock1"<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-08-rock1.png" class="recipe-screenshot" alt="Azure main SQL database"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Create a backup</b> of this Web App Service.<br>
+        At the time of writing this guide, this is where the 'Restore' button is found:<br>
+        Settings → Backups → Restore
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-10-backup.png" class="recipe-screenshot" alt="Azure Backup a Web App Service"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        This should be true by default, but <b>ensure</b> that the selected <u>Backup time</u> corresponds to the most-recent backup.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-11-BackupTime.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Select</b> the 'vrltest' App Service, and<br>
+        <b>proceed to creating</b> this copy of our Azure Web App Service by clicking however many buttons you have to.<br>
+        (Notice that, in this particular example, the <u>Deployment Slot</u> name that was automatically generated for us is <span style="color: blue;">restore-bf07</span>)<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-12-AppService.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        This time, you will not be redirected to an overview page.<br>
+        <b>click</b> the 'Bell' icon, and <b>click</b> 'More events in the activity log'
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-13-ActivityLog.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        Once the 'Status' of 'Restore Web Apps Slots Snapshots' changes from "Accepted" to <span style="color: green;">"Succeeded"</span>, the new webapp is ready.<br>
+        You will need to manually click the 'Refresh' button in order to see it.
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-14-refresh.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+</ol>
+
+<br>
+
+<div class="alert alert-info">
+    <p class="alert-title">
+        <i class="fa fa-info-circle"></i> Note
+    </p>
+    <p class="ce-alert-content">
+        Historically, this is where you would wait ~30min until the Web App is ready, in order to map the copied SQL database to the copied Web App;<br>
+        However, i am making a change here.<br>
+        We will navigate to the copied SQL database and run some queries that will (1) disable all ServiceJobs, and (2) disable all Financial Gateways.<br>
+        This way, by the time we map the copied SQL databaes to the copied Web App, these things are already disabled.
+    </p>
+</div>
+
+<br>
+
+<h2>3- Use SQL to disable certain Components</h2>
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        <b>Navigate</b> to <a href="https://portal.azure.com/" target="_blank">https://portal.azure.com/</a>.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-01.png" class="recipe-screenshot" alt="Azure Portal"><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Browse</b> our SQL databases, and<br>
+        <b>click</b> the one you created in Step 1-6<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-15-1.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Navigate to the</b> 'Query editor' (aka "preview")<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-16-QueryEditor.png" class="recipe-screenshot" alt=""><br>
+        <b>Notice</b> that the <u>Server name</u> here will be the <u>Data Source</u> in the <code>connectionString</code> in Step 4-6.<br>
+    </li>
+    <li class="timseo-custom-li">
+        As of 06-MAY-2025, the credentials for the Sandbox database(s) is:<br>
+        <u>Login Username</u>: <code>vrladmin</code><br>
+        <u>Login Password</u>: <code>admin123!</code><br>
+        (You will need these same credentials for the <code>connectionString</code> in Step 4-6)<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-17.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Run</b> these queries:
+        <ul>
+            <li><code>UPDATE [dbo].[ServiceJob] SET [IsActive] = 0 WHERE [IsActive] = 1</code></li>
+            <li><code>UPDATE [dbo].[FinancialGateway] SET [IsActive] = 0 WHERE [IsActive] = 1</code></li>
+        </ul>
+        It should look like this:<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-18.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+</ol>
+
+<br><br>
+
+<h2>4- Map the SQL Database and the Web App Service</h2>
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        <b>Navigate</b> back to our App Services, and<br>
+        this time, <b>click</b> the one named "vrltest"<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-08-vrltest.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Open</b> the Deployment Slots of this Web App.<br>
+        At the time of writing this guide, this button is found under:<br>
+        Deployment → Deployment slots<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-19-DeploymentSlots.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Open</b> the Deployment Slot that matches the name that was automatically generated for you in the <u>Deployment slot</u> field at Step 2-5.<br>
+        (In this particular example, the <u>Deployment Slot</u> name that was automatically generated for us is <span style="color: blue;">restore-bf07</span>)<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-20-NewSlot.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Open</b> the <u>App Service Editor</u> (also known as "Preview") of this new Slot.<br>
+        At the time of writing this guide, this button is found under:<br>
+        Development Tools → App Service Editor (Preview) → Open Editor
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-22-OpenAppServiceEditorPreview.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Open</b> the <code>WWWROOT\web.ConnectionStrings.config</code> file.
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-23-WebConnectionStringsConfig.png" class="recipe-screenshot" alt=""><br>
+        When you open this file, there will be connection strings with sensitive credentials: One is named 'RockContextOld' and the other is named 'RockContext'<br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Ensure</b> that 'RockContext' has a <code>connectionString</code> set to these parameters:
+        <ul>
+            <li>Data Source:<br><code>rockvrltest.database.windows.net</code></li>
+            <li>Initial Catalog:<br><code>timcopy-2025_05_06</code></li>
+            <li>User Id:<br><code>vrladmin</code></li>
+            <li>password:<br><code>admin123!</code></li>
+        </ul>
+        <b>Ensure that these changes have been saved before you close this tab.</b>
+    </li>
+</ol>
+
+<br><br>
+
+<h2>5- Disable some settings in the copied App Service</h2>
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        <b>Navigate back</b> to the 'Overview' page of this Slot,<br>
+        <b>Open the link</b> provided to you in the <u>Default domain</u> field, and<br>
+        <b>Log in</b> using your Rock credentials. It should be the exact same as your credentials in production.<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-24-DefaultDomain.png" class="recipe-screenshot" alt=""><br>
+        <u>Note:</u> It's possible that this link will take ~5 minutes to load after you've updated the config file in Step 4-6.<br>
+    </li>
+    <div class="alert alert-info">
+        <p class="alert-title">
+            <i class="fa fa-info-circle"></i> Note
+        </p>
+        <p class="ce-alert-content">
+            It's gonna be jarring/confusing/offputting to see the exact same branding color as our production instance of Rock,<br>
+            but there are two indicators that will help you discern that you are in a Sandbox instance:
+            <ol>
+                <li>The URL of your browser, and</li>
+                <li>Click the <i class="fas fa-info-circle"></i> on the bottom-right of your screen to see the <u>System Information</u>, open the 'Diagnostics' tab and see the name of the SQL Database your currently connected to.</li>
+            </ol>
+            <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-25-DoubleCheckWeAreSandbox.png" class="recipe-screenshot-small" alt=""><br>
+        </p>
+    </div>
+    <li class="timseo-custom-li">
+        <b>Navigate</b> to <u>Jobs Administration</u> and <b>ensure</b> all of them are inactive (they should be if you used SQL in Step 3-5),<br>
+        <b>Navigate</b> to <u>Financial Gateways</u> and <b>ensure</b> all of them are inactive (they should be if you used SQL in Step 3-5),<br>
+        <b>Navigate</b> to <u>Communication Transports</u> and <b>ensure</b> all of them are inactive (i currently don't know how to use SQL to disable these, so we must do it manually),<br>
+    </li>
+    <li class="timseo-custom-li">
+        <b>Navigate</b> to <u>Themes</u> and edit the 'Rock' theme,<br>
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-26-RockTheme.png" class="recipe-screenshot" alt=""><br>
+        <b>Change</b> the <u>Brand Color</u> to something very different from our VRL green. This will be our visual indicator that we are in a sandbox environment,<br>
+        <b>Click</b> 'Save' button on the top-right.
+        <img src="/Content/RecipeAttachments/Recipe-2722/screenshot-27-BrandColor.png" class="recipe-screenshot" alt=""><br><br>
+    </li>
+</ol>
+
+<br><br>
+
+<h2>6- Remove the SQL Database and App Service related to the older sandbox</h2>
+<ol class="timseo-custom-ol">
+    <li class="timseo-custom-li">
+        Finally, <b>validate</b> all the settings.<br>
+        When comfortable, <b>nvaigate back</b> to the Deployment Slots, and
+        <b>swap</b> the slots to have the new slot become active at <code>vrltest.azurewebsites.net</code>
+    </li>
+</ol>
