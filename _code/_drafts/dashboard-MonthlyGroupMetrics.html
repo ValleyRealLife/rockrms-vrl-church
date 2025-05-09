@@ -1,0 +1,43 @@
+<!-- VRL Monthly Group Dashboard Metrics -->
+<!-- Version 1.0, 8-May-2025 -->
+<!-- This code creates three boxes for attendance, new members and "unconnected" members. -->
+<!-- It requires Dataviews and Metrics to be set up to find and store the required data. -->
+<!-- You need to update the "MetricId" numbers in the first three code blocks and the labels in the panel code block -->
+
+<!-- Update the MetricId number below for the total monthly attendance. -->
+{% metricvalue where:'MetricId == 90' securityenabled:'false' %}
+	{% assign array_Unconnected = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_Unconnected = array_Unconnected[0].YValue | Format:'0' %}
+	{% assign int_UnconnectedChange = array_Unconnected[0].YValue | Minus:array_Unconnected[1].YValue | Format:'0' %}
+{% endmetricvalue %}
+
+<!-- Update the MetricId number below for the new member attendance. -->
+{% metricvalue where:'MetricId == 88' securityenabled:'false' %}
+    {% assign array_CurrentMonthNew = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_CurrentMonthNew = array_CurrentMonthNew[0].YValue | Format:'0' %}
+	{% assign int_NewChange = array_CurrentMonthNew[0].YValue | Minus:array_CurrentMonthNew[1].YValue | Format:'0' %}
+{% endmetricvalue %}
+
+<!-- Update the MetricId number below for the unconnected attendance. -->
+{% metricvalue where:'MetricId == 87' securityenabled:'false' %}
+    {% assign array_CurrentAttendees = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_CurrentAttendees = array_CurrentAttendees[0].YValue | Format:'0' %}
+	{% assign int_AttendeesChange = array_CurrentAttendees[0].YValue | Minus:array_CurrentAttendees[1].YValue | Format:'0' %}
+{% endmetricvalue %}
+
+<!-- Don't forget to update the labels below to match your group. -->
+    {[ panel title:'INSERT TITLE Numbers']}
+		{[ kpis size:'lg' ]}
+		
+			[[ kpi icon:'fas fa-users' value:'{{ int_CurrentAttendees }}' label:'Total Attendees This Month' subvalue:'({{ int_AttendeesChange }})' secondarylabel:'(Change From Last Month)' color:'blue-700' url:'https://rock.vrl.church/reporting/dataviews?DataviewId=1030']]
+			[[ endkpi ]]
+		
+			[[ kpi icon:'fas fa-user-plus' value:'{{ int_CurrentMonthNew }}' label:'New Persons This Month' subvalue:'({{ int_NewChange }})' secondarylabel:'(Change From Last Month)' color:'green-700' url:'https://rock.vrl.church/reporting/dataviews?DataViewId=1031']]
+			[[ endkpi ]]
+		    
+			[[ kpi icon:'fas fa-male' value:'{{ int_Unconnected }}' label:'Unconnected Persons This Month' subvalue:'({{ int_UnconnectedChange }})' secondarylabel:'(Change From Last Month)' color:'red-700' url:'https://rock.vrl.church/reporting/dataviews?DataViewId=1032']]
+			[[ endkpi ]]
+			
+		{[ endkpis]}
+    {[ endpanel]}
+
