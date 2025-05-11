@@ -19,6 +19,7 @@
 {% endmetricvalue %}
 
 <!-- Update the MetricId number below for the unconnected attendance. -->
+<!-- Change the second array value from [1] to [12] to compare values from one year ago instead. -->
 {% metricvalue where:'MetricId == 87' securityenabled:'false' %}
     {% assign array_CurrentAttendees = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
 	{% assign int_CurrentAttendees = array_CurrentAttendees[0].YValue | Format:'0' %}
