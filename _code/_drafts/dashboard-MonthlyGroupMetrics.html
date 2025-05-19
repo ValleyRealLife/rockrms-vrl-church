@@ -4,7 +4,7 @@
 <!-- It requires Dataviews and Metrics to be set up to find and store the required data. -->
 <!-- You need to update the "MetricId" numbers in the first three code blocks and the labels in the panel code block -->
 
-<!-- Update the MetricId number below for the total monthly attendance. -->
+<!-- Update the MetricId number below for the unconnected attendance. -->
 {% metricvalue where:'MetricId == 90' securityenabled:'false' %}
 	{% assign array_Unconnected = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
 	{% assign int_Unconnected = array_Unconnected[0].YValue | Format:'0' %}
@@ -18,7 +18,7 @@
 	{% assign int_NewChange = array_CurrentMonthNew[0].YValue | Minus:array_CurrentMonthNew[1].YValue | Format:'0' %}
 {% endmetricvalue %}
 
-<!-- Update the MetricId number below for the unconnected attendance. -->
+<!-- Update the MetricId number below for the monthly attendance. -->
 <!-- Change the second array value from [1] to [12] to compare values from one year ago instead. -->
 {% metricvalue where:'MetricId == 87' securityenabled:'false' %}
     {% assign array_CurrentAttendees = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
