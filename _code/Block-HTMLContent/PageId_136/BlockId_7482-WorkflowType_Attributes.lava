@@ -116,7 +116,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Attribute_Order' %}
+                    {% assign wactivityAttribute_Rows = parts.Value | OrderBy:'Attribute_Key' %}
                     {% for row in wactivityAttribute_Rows %}
                         <tr>
                             <td>{{ row.Attribute_Id }}</td>
