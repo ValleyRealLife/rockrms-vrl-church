@@ -1,4 +1,4 @@
-Dashboard for Men's Breakfast
+# Dashboard for Men's Breakfast
 
 This is intended to be a "one stop shop" page for whomever is leading/coordinating/managing the Men's Breakfast ministry. Think:
 
