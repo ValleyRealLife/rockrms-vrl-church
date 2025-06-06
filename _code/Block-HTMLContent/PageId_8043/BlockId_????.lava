@@ -1,0 +1,135 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=8043, BlockId=????, Zone SectionA > [HTML Content]
+    
+    This Lava uses various Entity Commands in order to show some SUM numbers
+    
+    Required Lava Command(s):
+    - Rock Entity
+    
+    Path:
+    _code/Block-HTMLContent/PageId_8043/BlockId_????.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .tim-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            padding: 20px;
+            background: #FFFFFF;
+            border: 1px solid #EBEBEB;
+            border-radius: 5px;
+        }
+        .tim-container .tim-block {
+            flex: 1; /* Distribute equal space to each div */
+            padding: 10px;
+            margin: 10px;
+            max-width: 300px;
+            min-width: 300px;
+            max-height: 150px;
+            min-height: 150px;
+            box-sizing: border-box;
+            background: #F3F3F3;
+            border: 1px solid #DBDBDD;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .tim-block:hover {
+            background: gray;
+            color: white;
+        }
+        .tim-block .tim-icon {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            margin: auto;
+            box-sizing: border-box;
+            font-size: 20px;
+            text-align: center;
+            }
+        .tim-block .tim-icon i {
+            max-width: 35px;
+            min-width: 35px;
+            max-height: 35px;
+            min-height: 35px;
+            font-size: 35px;
+        }
+        .tim-block .tim-count {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            margin: 1px;
+            font-size: 35px;
+            box-sizing: border-box;
+        }
+        .tim-count .badge-pill {
+            font-size: 35px;
+        }
+    </style>
+</head>
+
+<body>
+
+{% groupmember where:'GroupId == 85322' securityenabled:'false' count:'true' %}
+    {% assign count_GroupMember_MBtextList = count %}
+{% endgroupmember %}
+
+{% metricvalue where:'MetricId == 83' securityenabled:'false' %}
+	{% assign array_MBUnconnectedMen = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_MBUnconnectedMen = array_MBUnconnectedMen[0].YValue | Format:'0' %}
+	{% assign int_MBUnconnectedChange = array_MBUnconnectedMen[0].YValue | Minus:array_MBUnconnectedMen[1].YValue | Format:'0' %}
+{% endmetricvalue %}
+
+{% metricvalue where:'MetricId == 85' securityenabled:'false' %}
+    {% assign array_MBCurrentMonthNew = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_MBCurrentMonthNew = array_MBCurrentMonthNew[0].YValue | Format:'0' %}
+	{% assign int_MBNewChange = array_MBCurrentMonthNew[0].YValue | Minus:array_MBCurrentMonthNew[1].YValue | Format:'0' %}
+{% endmetricvalue %}
+
+{% metricvalue where:'MetricId == 86' securityenabled:'false' %}
+    {% assign array_MBCurrentAttendees = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_MBCurrentAttendees = array_MBCurrentAttendees[0].YValue | Format:'0' %}
+	{% assign int_MBAttendeesChange = array_MBCurrentAttendees[0].YValue | Minus:array_MBCurrentAttendees[12].YValue | Format:'0' %}
+{% endmetricvalue %}
+
+    {[ panel title:'Mens Breakfast Numbers']}
+		{[ kpis size:'lg' ]}
+		
+			[[ kpi icon:'fas fa-users' value:'{{ int_MBCurrentAttendees }}' label:'Total Attendees This Month' subvalue:'({{ int_MBAttendeesChange }})' secondarylabel:'(Change From Last Year)' color:'blue-700' url:'https://rock.vrl.church/reporting/dataviews?DataviewId=998']]
+			[[ endkpi ]]
+		
+			[[ kpi icon:'fas fa-user-plus' value:'{{ int_MBCurrentMonthNew }}' label:'New Men This Month' subvalue:'({{ int_MBNewChange }})' secondarylabel:'(Change From Last Month)' color:'green-700' url:'https://rock.vrl.church/reporting/dataviews?DataViewId=999']]
+			[[ endkpi ]]
+		    
+			[[ kpi icon:'fas fa-male' value:'{{ int_MBUnconnectedMen }}' label:'Unconnected Men This Month' subvalue:'({{ int_MBUnconnectedChange }})' secondarylabel:'(Change From Last Month)' color:'red-700' url:'https://rock.vrl.church/reporting/dataviews?DataViewId=997']]
+			[[ endkpi ]]
+			
+		{[ endkpis]}
+    {[ endpanel]}
+
+	
+    <div class="tim-container">
+        <a class="tim-block" href="/page/697?GroupId=85322" target="_blank" style="color: #000000;">
+            <div class="tim-icon"><i class="fa fa-sms"></i></div>
+            <div class="tim-icon">Men's Breakfast Text List</div>
+            <div class="tim-count"><span class="badge badge-pill badge-info">{{ count_GroupMember_MBtextList | AsInteger }}</span></div>
+        </a>
+        <p style="padding: 1.5em;;">
+            All men who have subscribed to text reminders of Men's Breakfast.
+            <br><br>
+            This Communication List is also being synced to Clearstream.
+        </p>
+    </div>
+</body>
+
+<br><br>
