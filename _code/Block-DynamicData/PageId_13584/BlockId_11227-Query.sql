@@ -23,7 +23,7 @@ DECLARE @MetricId_AverageAttendance AS int = 96;
 DECLARE @MetricId_HowMany_Adults_in_LifeGroups_All AS int = 97;
 DECLARE @MetricId_HowMany_LifeGroups_All AS int = 98;
 DECLARE @MetricId_HowMany_LifeGroupLeaders_All AS int = 99;
-DECLARE @MetricId_HowMany_LifeGroupCoaches_All AS int = 100;
+--DECLARE @MetricId_HowMany_LifeGroupCoaches_All AS int = 100; --Deprecated
 
 /**********
     First Query: Average Attendance
@@ -318,8 +318,8 @@ ORDER BY
 ;
 
 /**********
-    Sixth Query: How Many Life Group Coaches
-**********/
+    Deprecated Query: How Many Life Group Coaches
+
 WITH ReportingData AS (
     SELECT
         FORMAT([YValue], 'N0') AS 'MetricValue'
@@ -368,3 +368,4 @@ PIVOT (
 ORDER BY
     [MinistryYear] DESC
 ;
+**********/

@@ -371,8 +371,8 @@
 </div>
 
 <!--
-    This is the sixth Table: Total LifeGroupCoaches
--->
+    This is a deprecated Table: Total LifeGroupCoaches
+
 <div class="panel panel-block">
     <div class="panel-heading">
         <h1 class="panel-title pull-left">Total Life Group Coaches</h1>
@@ -441,3 +441,4 @@
         </div>
     </div>
 </div>
+-->
