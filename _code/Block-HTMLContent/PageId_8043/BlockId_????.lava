@@ -1,7 +1,7 @@
 /----------------------------------------------------------------------------------------------------------------------------------
     
     This Lava is found in
-    PageId=8043, BlockId=????, Zone SectionA > [HTML Content]
+    PageId=8043, BlockId=8277, Zone SectionA > [HTML Content]
     
     This Lava uses various Entity Commands in order to show some SUM numbers
     
@@ -9,7 +9,7 @@
     - Rock Entity
     
     Path:
-    _code/Block-HTMLContent/PageId_8043/BlockId_????.lava
+    _code/Block-HTMLContent/PageId_8043/BlockId_8277.lava
     
 ----------------------------------------------------------------------------------------------------------------------------------/
 
@@ -102,6 +102,11 @@
 	{% assign int_MBAttendeesChange = array_MBCurrentAttendees[0].YValue | Minus:array_MBCurrentAttendees[12].YValue | Format:'0' %}
 {% endmetricvalue %}
 
+{% metricvalue where:'MetricId == 117' securityenabled:'false' %}
+    {% assign array_MBAllAttendees = metricvalueItems | OrderBy:'MetricValueDateTime desc' %}
+	{% assign int_MBAllAttendees = array_MBAllAttendees[0].YValue | Format:'0' %}
+{% endmetricvalue %}
+
     {[ panel title:'Mens Breakfast Numbers']}
 		{[ kpis size:'lg' ]}
 		
@@ -130,6 +135,17 @@
             This Communication List is also being synced to Clearstream.
         </p>
     </div>
+	
+	{[ panel title:'All Men Who Have Attendeed Men's Breakfast]}
+		{[ kpis size:'lg' ]}
+		
+			[[ kpi icon:'fas fa-users' value:'{{ int_MBAllAttendees }}' label:'All Attendees' color:'blue-700' url:'https://rock.vrl.church/reporting/dataviews?DataviewId=1050']]
+			[[ endkpi ]]
+		
+		{[ endkpis]}
+    {[ endpanel]}
+
+	
 </body>
 
 <br><br>
