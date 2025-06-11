@@ -28,7 +28,7 @@
     WHERE
         p.[ParentPageId] = 1746
         AND
-        p.[Id] NOT IN (1761, 3598)
+        p.[Id] NOT IN (1761, 3598, 8043, 10608)
     ORDER BY
         p.[Order] ASC
     ;

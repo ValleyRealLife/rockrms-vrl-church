@@ -1,0 +1,443 @@
+{% comment %}
+    
+    This Lava/SQL is found in
+    PageId:13584, BlockId:11227, [Dynamic Data] > FormattedOutput
+    
+    This Lava is used in order to customize the results of the Dynamic Data block's SQL query
+    
+    Path:
+    _code/Block-DynamicData/PageId_13584/BlockId_11227-FormattedOutput.lava
+    
+{% endcomment %}
+
+<!--
+    This is the first Table: Average Attendance
+-->
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Average Attendance</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ministry Year</th>
+                            <th scope="col">September</th>
+                            <th scope="col">October</th>
+                            <th scope="col">November</th>
+                            <th scope="col">December</th>
+                            <th scope="col">January</th>
+                            <th scope="col">February</th>
+                            <th scope="col">March</th>
+                            <th scope="col">April</th>
+                            <th scope="col">May</th>
+                            <th scope="col">June</th>
+                            <th scope="col">July</th>
+                            <th scope="col">August</th>
+                            <th scope="col">Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in table1.rows %}
+                        {% assign average_sum = row.September | Plus: row.October | Plus: row.November | Plus: row.December | Plus: row.January | Plus: row.February | Plus: row.March | Plus: row.April | Plus: row.May | Plus: row.June | Plus: row.July | Plus: row.August %}
+                        {% assign average_denominator = 0 %}
+                        {% if row.September > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.October > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.November > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.December > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.January > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.February > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.March > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.April > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.May > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.June > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.July > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.August > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% assign average = average_sum | DividedBy: average_denominator,0 %} {% comment %}The comma allows me to enter the second parameter for the DivideBy Filter, which is the number of decimal places to round to.{% endcomment %}
+                        <tr>
+                            <td>{{ row.MinistryYear }}</td>
+                            <td>{{ row.September }}</td>
+                            <td>{{ row.October }}</td>
+                            <td>{{ row.November }}</td>
+                            <td>{{ row.December }}</td>
+                            <td>{{ row.January }}</td>
+                            <td>{{ row.February }}</td>
+                            <td>{{ row.March }}</td>
+                            <td>{{ row.April }}</td>
+                            <td>{{ row.May }}</td>
+                            <td>{{ row.June }}</td>
+                            <td>{{ row.July }}</td>
+                            <td>{{ row.August }}</td>
+                            <td style="background-color: yellow;">{{ average | Format:'#,##0' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    This is the second Table: Adults in All Groups
+-->
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Adults in Life Groups</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ministry Year</th>
+                            <th scope="col">September</th>
+                            <th scope="col">October</th>
+                            <th scope="col">November</th>
+                            <th scope="col">December</th>
+                            <th scope="col">January</th>
+                            <th scope="col">February</th>
+                            <th scope="col">March</th>
+                            <th scope="col">April</th>
+                            <th scope="col">May</th>
+                            <th scope="col">June</th>
+                            <th scope="col">July</th>
+                            <th scope="col">August</th>
+                            <th scope="col">Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in table2.rows %}
+                        {% assign average_sum = row.September | Plus: row.October | Plus: row.November | Plus: row.December | Plus: row.January | Plus: row.February | Plus: row.March | Plus: row.April | Plus: row.May | Plus: row.June | Plus: row.July | Plus: row.August %}
+                        {% assign average_denominator = 0 %}
+                        {% if row.September > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.October > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.November > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.December > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.January > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.February > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.March > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.April > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.May > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.June > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.July > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.August > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% assign average = average_sum | DividedBy: average_denominator,0 %} {% comment %}The comma allows me to enter the second parameter for the DivideBy Filter, which is the number of decimal places to round to.{% endcomment %}
+                        <tr>
+                            <td>{{ row.MinistryYear }}</td>
+                            <td>{{ row.September }}</td>
+                            <td>{{ row.October }}</td>
+                            <td>{{ row.November }}</td>
+                            <td>{{ row.December }}</td>
+                            <td>{{ row.January }}</td>
+                            <td>{{ row.February }}</td>
+                            <td>{{ row.March }}</td>
+                            <td>{{ row.April }}</td>
+                            <td>{{ row.May }}</td>
+                            <td>{{ row.June }}</td>
+                            <td>{{ row.July }}</td>
+                            <td>{{ row.August }}</td>
+                            <td style="background-color: yellow;">{{ average | Format:'#,##0' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    This is the third Table: Ratio of Adults in All LifeGroups
+-->
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Percentage of Adults in Life Groups</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ministry Year</th>
+                            <th scope="col">September</th>
+                            <th scope="col">October</th>
+                            <th scope="col">November</th>
+                            <th scope="col">December</th>
+                            <th scope="col">January</th>
+                            <th scope="col">February</th>
+                            <th scope="col">March</th>
+                            <th scope="col">April</th>
+                            <th scope="col">May</th>
+                            <th scope="col">June</th>
+                            <th scope="col">July</th>
+                            <th scope="col">August</th>
+                            <th scope="col">Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in table3.rows %}
+                        {% assign average_sum = row.September | Plus: row.October | Plus: row.November | Plus: row.December | Plus: row.January | Plus: row.February | Plus: row.March | Plus: row.April | Plus: row.May | Plus: row.June | Plus: row.July | Plus: row.August %}
+                        {% assign average_denominator = 0 %}
+                        {% if row.September > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.October > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.November > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.December > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.January > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.February > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.March > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.April > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.May > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.June > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.July > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.August > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% assign average = average_sum | DividedBy: average_denominator,1 %} {% comment %}The comma allows me to enter the second parameter for the DivideBy Filter, which is the number of decimal places to round to.{% endcomment %}
+                        <tr>
+                            <td>{{ row.MinistryYear }}</td>
+                            <td>{{ row.September }}{% if row.September > 0 %}%{% endif %}</td>
+                            <td>{{ row.October }}{% if row.October > 0 %}%{% endif %}</td>
+                            <td>{{ row.November }}{% if row.November > 0 %}%{% endif %}</td>
+                            <td>{{ row.December }}{% if row.December > 0 %}%{% endif %}</td>
+                            <td>{{ row.January }}{% if row.January > 0 %}%{% endif %}</td>
+                            <td>{{ row.February }}{% if row.February > 0 %}%{% endif %}</td>
+                            <td>{{ row.March }}{% if row.March > 0 %}%{% endif %}</td>
+                            <td>{{ row.April }}{% if row.April > 0 %}%{% endif %}</td>
+                            <td>{{ row.May }}{% if row.May > 0 %}%{% endif %}</td>
+                            <td>{{ row.June }}{% if row.June > 0 %}%{% endif %}</td>
+                            <td>{{ row.July }}{% if row.July > 0 %}%{% endif %}</td>
+                            <td>{{ row.August }}{% if row.August > 0 %}%{% endif %}</td>
+                            <td style="background-color: yellow;">{{ average | Format:'#,##0.0' }}{% if average > 0 %}%{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    This is the fourth Table: Total LifeGroups
+-->
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Total Life Groups</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ministry Year</th>
+                            <th scope="col">September</th>
+                            <th scope="col">October</th>
+                            <th scope="col">November</th>
+                            <th scope="col">December</th>
+                            <th scope="col">January</th>
+                            <th scope="col">February</th>
+                            <th scope="col">March</th>
+                            <th scope="col">April</th>
+                            <th scope="col">May</th>
+                            <th scope="col">June</th>
+                            <th scope="col">July</th>
+                            <th scope="col">August</th>
+                            <th scope="col">Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in table4.rows %}
+                        {% assign average_sum = row.September | Plus: row.October | Plus: row.November | Plus: row.December | Plus: row.January | Plus: row.February | Plus: row.March | Plus: row.April | Plus: row.May | Plus: row.June | Plus: row.July | Plus: row.August %}
+                        {% assign average_denominator = 0 %}
+                        {% if row.September > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.October > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.November > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.December > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.January > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.February > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.March > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.April > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.May > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.June > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.July > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.August > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% assign average = average_sum | DividedBy: average_denominator,0 %} {% comment %}The comma allows me to enter the second parameter for the DivideBy Filter, which is the number of decimal places to round to.{% endcomment %}
+                        <tr>
+                            <td>{{ row.MinistryYear }}</td>
+                            <td>{{ row.September }}</td>
+                            <td>{{ row.October }}</td>
+                            <td>{{ row.November }}</td>
+                            <td>{{ row.December }}</td>
+                            <td>{{ row.January }}</td>
+                            <td>{{ row.February }}</td>
+                            <td>{{ row.March }}</td>
+                            <td>{{ row.April }}</td>
+                            <td>{{ row.May }}</td>
+                            <td>{{ row.June }}</td>
+                            <td>{{ row.July }}</td>
+                            <td>{{ row.August }}</td>
+                            <td style="background-color: yellow;">{{ average | Format:'#,##0' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    This is the fifth Table: Total LifeGroupLeaders
+-->
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Total Life Group Leaders</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ministry Year</th>
+                            <th scope="col">September</th>
+                            <th scope="col">October</th>
+                            <th scope="col">November</th>
+                            <th scope="col">December</th>
+                            <th scope="col">January</th>
+                            <th scope="col">February</th>
+                            <th scope="col">March</th>
+                            <th scope="col">April</th>
+                            <th scope="col">May</th>
+                            <th scope="col">June</th>
+                            <th scope="col">July</th>
+                            <th scope="col">August</th>
+                            <th scope="col">Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in table5.rows %}
+                        {% assign average_sum = row.September | Plus: row.October | Plus: row.November | Plus: row.December | Plus: row.January | Plus: row.February | Plus: row.March | Plus: row.April | Plus: row.May | Plus: row.June | Plus: row.July | Plus: row.August %}
+                        {% assign average_denominator = 0 %}
+                        {% if row.September > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.October > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.November > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.December > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.January > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.February > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.March > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.April > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.May > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.June > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.July > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.August > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% assign average = average_sum | DividedBy: average_denominator,0 %} {% comment %}The comma allows me to enter the second parameter for the DivideBy Filter, which is the number of decimal places to round to.{% endcomment %}
+                        <tr>
+                            <td>{{ row.MinistryYear }}</td>
+                            <td>{{ row.September }}</td>
+                            <td>{{ row.October }}</td>
+                            <td>{{ row.November }}</td>
+                            <td>{{ row.December }}</td>
+                            <td>{{ row.January }}</td>
+                            <td>{{ row.February }}</td>
+                            <td>{{ row.March }}</td>
+                            <td>{{ row.April }}</td>
+                            <td>{{ row.May }}</td>
+                            <td>{{ row.June }}</td>
+                            <td>{{ row.July }}</td>
+                            <td>{{ row.August }}</td>
+                            <td style="background-color: yellow;">{{ average | Format:'#,##0' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    This is the sixth Table: Total LifeGroupCoaches
+-->
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Total Life Group Coaches</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ministry Year</th>
+                            <th scope="col">September</th>
+                            <th scope="col">October</th>
+                            <th scope="col">November</th>
+                            <th scope="col">December</th>
+                            <th scope="col">January</th>
+                            <th scope="col">February</th>
+                            <th scope="col">March</th>
+                            <th scope="col">April</th>
+                            <th scope="col">May</th>
+                            <th scope="col">June</th>
+                            <th scope="col">July</th>
+                            <th scope="col">August</th>
+                            <th scope="col">Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in table6.rows %}
+                        {% assign average_sum = row.September | Plus: row.October | Plus: row.November | Plus: row.December | Plus: row.January | Plus: row.February | Plus: row.March | Plus: row.April | Plus: row.May | Plus: row.June | Plus: row.July | Plus: row.August %}
+                        {% assign average_denominator = 0 %}
+                        {% if row.September > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.October > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.November > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.December > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.January > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.February > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.March > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.April > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.May > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.June > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.July > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% if row.August > 0 %}{% assign average_denominator = average_denominator | Plus: 1 %}{% endif %}
+                        {% assign average = average_sum | DividedBy: average_denominator,0 %} {% comment %}The comma allows me to enter the second parameter for the DivideBy Filter, which is the number of decimal places to round to.{% endcomment %}
+                        <tr>
+                            <td>{{ row.MinistryYear }}</td>
+                            <td>{{ row.September }}</td>
+                            <td>{{ row.October }}</td>
+                            <td>{{ row.November }}</td>
+                            <td>{{ row.December }}</td>
+                            <td>{{ row.January }}</td>
+                            <td>{{ row.February }}</td>
+                            <td>{{ row.March }}</td>
+                            <td>{{ row.April }}</td>
+                            <td>{{ row.May }}</td>
+                            <td>{{ row.June }}</td>
+                            <td>{{ row.July }}</td>
+                            <td>{{ row.August }}</td>
+                            <td style="background-color: yellow;">{{ average | Format:'#,##0' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
