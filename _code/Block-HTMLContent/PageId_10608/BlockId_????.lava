@@ -1,7 +1,7 @@
 /----------------------------------------------------------------------------------------------------------------------------------
     
     This Lava is found in
-    PageId=10608, BlockId=????, Zone SectionA > [HTML Content]
+    PageId=10608, BlockId=9689, Zone SectionA > [HTML Content]
     
     This Lava uses various Entity Commands in order to show some SUM numbers
     
@@ -9,7 +9,7 @@
     - Rock Entity
     
     Path:
-    _code/Block-HTMLContent/PageId_10608/BlockId_????.lava
+    _code/Block-HTMLContent/PageId_10608/BlockId_9689.lava
     
 ----------------------------------------------------------------------------------------------------------------------------------/
 
