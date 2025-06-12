@@ -1,0 +1,55 @@
+/----------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=12, Main Zone > BlockId=11274 > [HTML Content]
+    
+    Required Lava Command(s):
+    - Rock Entity
+    
+    Path:
+    _code/Block-HTMLContent/PageId_12/BlockId_11274.lava
+    
+----------------------------------------------------------------------------------------------------------------------------------/
+
+//- Define some Variables and Arrays up here
+{% assign datetime_now = 'Now' | Date:'yyyy-MM-dd' %}
+{% assign datetime_7daysago = datetime_now | DateAdd:-7,'d' %}
+
+{% contentchannelitem where:'ContentChannelId == 370' securityenabled:'false' %}
+    {% assign array_NextStepForms = contentchannelitemItems | OrderBy:'Order' %}
+{% endcontentchannelitem %}
+
+//- Do the things down here
+{[ accordion firstopen:'false' paneltype:'block' ]}
+    
+    [[ item title:'The QR Code on the Back of Auditorium Seats' ]]
+        <p>When someone uses their phone to scan this QR code, their phone will open this page: <a href="https://connect.vrl.church/" target="_blank">connect.vrl.church</a></p>
+        <p>Hannah Pusateri has control over this page; if you want custom buttons shown on this page, please speak to her.</p>
+    [[ enditem ]]
+    
+{[ endaccordion ]}
+
+{[ accordion firstopen:'false' paneltype:'block' ]}
+    
+    [[ item title:'Connecting Point' ]]
+        <p>The iPads at the Connecting Point are defaulted to this page: <a href="https://www.vrl.church/connecting-point" target="_blank">www.vrl.church/connecting-point</a></p>
+        <p>This page has been specifically designed for iPads, and is not compatible with mobile phones.</p>
+        <p>These are the forms available at the connecting point:</p>
+        <div>
+            {[ kpis size:'lg' ]}
+            {% for thing in array_NextStepForms %}
+                {% assign int_WorkflowTypeId = thing | Attribute:'WorkflowTypeId' %}{% unless int_WorkflowTypeId > 0 %}{% continue %}{% endunless %} {% comment %}This line checks whether this ConentChannelItem has an AttributeValue for WorkflowTypeId. If null, it will skip to the next FORloop iteration{% endcomment %}
+                {% assign datetime_Expiration = thing.ExpireDateTime %}{% if datetime_Expiration != blank and datetime_Expiration < datetime_now %}{% continue %}{% endif %} {%comment %}This line checks whether this ContentChannelItem has a Property of ExpireDateTime. If it has already expired, then it will skip to the next FORloop iteration{% endcomment %}
+                {% workflowtype where:'Id == {{ int_WorkflowTypeId }}' securityenabled:'false' %}
+                    {% assign wft = workflowtypeItems | First %}
+                {% endworkflowtype %}
+                {% workflow where:'WorkflowTypeId == {{ int_WorkflowTypeId }} && CreatedDateTime >= "{{ datetime_7daysago }}"' securityenabled:'false' %}
+                    {% assign int_wf_count = workflowItems | Size %}
+                {% endworkflow %}
+                [[ kpi icon:'{{ wft.IconCssClass }}' value:'{{ int_wf_count | Format:'0' }}' label:'{{ thing.Title }}' labellocation:'bottom' secondarylabel:'(in the past seven days)' color:'#0E2C54' url:'/page/288?WorkflowTypeId={{ int_WorkflowTypeId }}' ]][[ endkpi ]]
+            {% endfor %}
+            {[ endkpis ]}
+        </div>
+    [[ enditem ]]
+    
+{[ endaccordion ]}
