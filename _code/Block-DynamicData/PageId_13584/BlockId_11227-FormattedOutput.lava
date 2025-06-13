@@ -10,12 +10,116 @@
     
 {% endcomment %}
 
+<style>
+    .VRL--info {
+        /* Base styling */
+        background-color: white;
+        border: none;
+        border-radius: 50%;
+        color: black;
+        cursor: pointer;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        
+        /* Initial circular dimensions */
+        width: 35px;
+        height: 35px;
+        
+        /* Smooth transition for all properties */
+        transition: all 0.5s ease;
+        
+        /* Hide overflow to prevent text from showing in circle state */
+        overflow: hidden;
+        white-space: nowrap;
+        
+        /* Remove default button styling */
+        outline: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Icon styling */
+    .VRL--info .fa-info-circle {
+        flex-shrink: 0;
+        margin: 0;
+        font-size: 15px !important;
+        transition: margin-right 0.5s ease;
+    }
+    
+    /* Text styling - initially hidden */
+    .VRL--info .VRL--extra-info {
+        opacity: 0;
+        max-width: 0;
+        margin-left: 0;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.5s ease;
+        overflow: hidden;
+    }
+    
+    /* Hover state */
+    .VRL--info:hover {
+        /* Expand to rectangle - use fixed width instead of auto to prevent bounce */
+        width: 200px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        
+        /* Subtle color change */
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Show text on hover */
+    .VRL--info:hover .VRL--extra-info {
+        opacity: 1;
+        max-width: 240px;
+        margin-left: 8px;
+    }
+    
+    /* Add slight margin to icon when expanded */
+    .VRL--info:hover .fa-info-circle {
+        margin-right: 0;
+    }
+    
+    /* Active/focus states */
+    .VRL--info:active,
+    .VRL--info:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+    
+    /* Optional: Add a subtle animation on initial load */
+    .VRL--info {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+
+//- Define Lava variables up in this section
+{% assign var_Month = 'Now' | Date:'MMMM' %}
+{% assign var_Month_Number = 'Now' | Date:'MM' %}
+{% assign var_Month_minus2 = var_Month_Number | AsInteger | Minus:2 | Append:'/01/2005' | Date:'MMMM' %}
+{% assign var_Month_minus1 = var_Month_Number | AsInteger | Minus:1 | Append:'/01/2005' | Date:'MMMM' %}
+{% assign var_Month_plus1 = var_Month_Number | AsInteger | Plus:1 | Append:'/01/2005' | Date:'MMMM' %}
+
 <!--
     This is the first Table: Average Attendance
 -->
 <div class="panel panel-block">
     <div class="panel-heading">
         <h1 class="panel-title pull-left">Average Attendance</h1>
+        <a href="https://rock.vrl.church/intranet/tools/weekly-metrics" class="btn btn-default" target="_blank">Enter Attendance</a>
     </div>
     <div class="panel-body">
         <div class="grid grid-panel">
@@ -88,6 +192,12 @@
 <div class="panel panel-block">
     <div class="panel-heading">
         <h1 class="panel-title pull-left">Adults in Life Groups</h1>
+        <button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-aboutMetricId98">
+            <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+            <span class="VRL--extra-info">
+                About these numbers
+            </span>
+        </button>
     </div>
     <div class="panel-body">
         <div class="grid grid-panel">
@@ -155,11 +265,47 @@
 </div>
 
 <!--
+    This is the Modal for the button inside the second Table's header
+-->
+<div class="modal fade" id="VRL--helptext-aboutMetricId97" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-aboutMetricId97-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-aboutMetricId97-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    On the first day of each month, Rock will see how many rows there are in <a href="https://rock.vrl.church/reporting/dataviews?DataViewId=1054" target="_blank">this DataView</a>. That number of rows will be recorded into <a href="https://rock.vrl.church/page/280?MetricId=97" target="_blank">this Metric</a>.<br>
+                    Then, the Table you are viewing on this Page will show you the numbers that have been recorded into that Metric.
+                </p>
+                <p>
+                    Also: It's worth noting that the measurement for month X is taken on the first day of month Y.
+                </p>
+                <p>
+                    For example:<br>
+                    - The measurement for {{ var_Month_minus2 }} is taken on the first day of {{ var_Month_minus1 }};<br>
+                    - The measurement for {{ var_Month_minus1 }} is taken on the first day of {{ var_Month }};<br>
+                    - The measurement for {{ var_Month }} will be taken on the first day of {{ var_Month_plus1 }};<br>
+                    etc.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
     This is the third Table: Ratio of Adults in All LifeGroups
 -->
 <div class="panel panel-block">
     <div class="panel-heading">
         <h1 class="panel-title pull-left">Percentage of Adults in Life Groups</h1>
+        <button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-aboutPercentages-FromMetric96Metric97">
+            <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+            <span class="VRL--extra-info">
+                About these percentages
+            </span>
+        </button>
     </div>
     <div class="panel-body">
         <div class="grid grid-panel">
@@ -227,11 +373,36 @@
 </div>
 
 <!--
+    This is the Modal for the button inside the third Table's header
+-->
+<div class="modal fade" id="VRL--helptext-aboutMetricId97" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-aboutMetricId97-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-aboutMetricId97-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    These percentages are automatically calculated from the numbers in the "Average Attendance" Table and the "Adults in Life Groups" Table
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
     This is the fourth Table: Total LifeGroups
 -->
 <div class="panel panel-block">
     <div class="panel-heading">
         <h1 class="panel-title pull-left">Total Life Groups</h1>
+        <button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-aboutMetricId98">
+            <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+            <span class="VRL--extra-info">
+                About these numbers
+            </span>
+        </button>
     </div>
     <div class="panel-body">
         <div class="grid grid-panel">
@@ -299,11 +470,47 @@
 </div>
 
 <!--
+    This is the Modal for the button inside the fourth Table's header
+-->
+<div class="modal fade" id="VRL--helptext-aboutMetricId98" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-aboutMetricId98-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-aboutMetricId98-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    On the first day of each month, Rock will see how many rows there are in <a href="https://rock.vrl.church/reporting/dataviews?DataViewId=1052" target="_blank">this DataView</a>. That number of rows will be recorded into <a href="https://rock.vrl.church/page/280?MetricId=98" target="_blank">this Metric</a>.<br>
+                    Then, the Table you are viewing on this Page will show you the numbers that have been recorded into that Metric.
+                </p>
+                <p>
+                    Also: It's worth noting that the measurement for month X is taken on the first day of month Y.
+                </p>
+                <p>
+                    For example:<br>
+                    - The measurement for {{ var_Month_minus2 }} is taken on the first day of {{ var_Month_minus1 }};<br>
+                    - The measurement for {{ var_Month_minus1 }} is taken on the first day of {{ var_Month }};<br>
+                    - The measurement for {{ var_Month }} will be taken on the first day of {{ var_Month_plus1 }};<br>
+                    etc.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
     This is the fifth Table: Total LifeGroupLeaders
 -->
 <div class="panel panel-block">
     <div class="panel-heading">
         <h1 class="panel-title pull-left">Total Life Group Leaders</h1>
+        <button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-aboutMetricId99">
+            <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+            <span class="VRL--extra-info">
+                About these numbers
+            </span>
+        </button>
     </div>
     <div class="panel-body">
         <div class="grid grid-panel">
@@ -365,6 +572,36 @@
                     <tfoot>
                     </tfoot>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    This is the Modal for the button inside the fifth Table's header
+-->
+<div class="modal fade" id="VRL--helptext-aboutMetricId99" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-aboutMetricId99-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-aboutMetricId99-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    On the first day of each month, Rock will see how many rows there are in <a href="https://rock.vrl.church/reporting/dataviews?DataViewId=1053" target="_blank">this DataView</a>. That number of rows will be recorded into <a href="https://rock.vrl.church/page/280?MetricId=99" target="_blank">this Metric</a>.<br>
+                    Then, the Table you are viewing on this Page will show you the numbers that have been recorded into that Metric.
+                </p>
+                <p>
+                    Also: It's worth noting that the measurement for month X is taken on the first day of month Y.
+                </p>
+                <p>
+                    For example:<br>
+                    - The measurement for {{ var_Month_minus2 }} is taken on the first day of {{ var_Month_minus1 }};<br>
+                    - The measurement for {{ var_Month_minus1 }} is taken on the first day of {{ var_Month }};<br>
+                    - The measurement for {{ var_Month }} will be taken on the first day of {{ var_Month_plus1 }};<br>
+                    etc.
+                </p>
             </div>
         </div>
     </div>
