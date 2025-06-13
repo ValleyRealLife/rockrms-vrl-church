@@ -50,6 +50,8 @@ WITH ReportingData AS (
     WHERE
         [MetricId] = @MetricId_AverageAttendance
         AND
+        [MetricValueType] = 0 --These are hardcoded by SparkDev. '0' is "Measure" and '1' is "Goal"
+        AND
         [MetricValueDateTime] >= DATEFROMPARTS(
             CASE
                 WHEN MONTH(GETDATE()) >= 10
@@ -101,6 +103,8 @@ WITH ReportingData AS (
         [MetricValue]
     WHERE
         [MetricId] = @MetricId_HowMany_Adults_in_LifeGroups_All
+        AND
+        [MetricValueType] = 0 --These are hardcoded by SparkDev. '0' is "Measure" and '1' is "Goal"
         AND
         [MetricValueDateTime] >= DATEFROMPARTS(
             CASE
@@ -238,6 +242,8 @@ WITH ReportingData AS (
     WHERE
         [MetricId] = @MetricId_HowMany_LifeGroups_All
         AND
+        [MetricValueType] = 0 --These are hardcoded by SparkDev. '0' is "Measure" and '1' is "Goal"
+        AND
         [MetricValueDateTime] >= DATEFROMPARTS(
             CASE
                 WHEN MONTH(GETDATE()) >= 10
@@ -290,6 +296,8 @@ WITH ReportingData AS (
     WHERE
         [MetricId] = @MetricId_HowMany_LifeGroupLeaders_All
         AND
+        [MetricValueType] = 0 --These are hardcoded by SparkDev. '0' is "Measure" and '1' is "Goal"
+        AND
         [MetricValueDateTime] >= DATEFROMPARTS(
             CASE
                 WHEN MONTH(GETDATE()) >= 10
@@ -341,6 +349,8 @@ WITH ReportingData AS (
         [MetricValue]
     WHERE
         [MetricId] = @MetricId_HowMany_LifeGroupCoaches_All
+        AND
+        [MetricValueType] = 0 --These are hardcoded by SparkDev. '0' is "Measure" and '1' is "Goal"
         AND
         [MetricValueDateTime] >= DATEFROMPARTS(
             CASE
