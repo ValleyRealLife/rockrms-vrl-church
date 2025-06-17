@@ -6,4 +6,5 @@ i thought it'd be helpful to start documenting the various ways i do it
 - JavaScript popup window
   - [BlockId:4323](./BlockId4323.lava)
 - Modal
-  - [BlockId:6357](../../Block-DynamicData/Report_LifeGroups_PageId4798/BlockId6357-FormattedOutput.lava)
+  - [BlockId:6357](../../Block-DynamicData/Report_LifeGroups-PageId_4798/BlockId_6357-FormattedOutput.lava)
+    - (Search for the `GenerateUrlWithCorrectParams` function)
