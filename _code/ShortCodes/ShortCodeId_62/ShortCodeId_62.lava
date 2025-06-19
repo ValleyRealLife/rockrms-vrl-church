@@ -46,9 +46,8 @@
         {% assign CM_Object = CM_JSON | FromJSON %}
         {% assign CM_Size = CM_Object.Rows | Size %}
         {% if CM_Size >=1 %}
-            {% assign logic_highlight = 1 | AsBoolean %}
         {% else %}
-            {% assign logic_highlight = 0 | AsBoolean %}
+            {% continue %}
         {% endif %}
         <div class="row" style="margin-bottom: 5px;">
             <div class="col-md-2">
