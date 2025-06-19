@@ -1,0 +1,278 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=13765, BlockId=11331, [HTML Block] > HTML
+    
+    Required Lava Command(s):
+    - Rock Entity
+    
+    Path:
+    _code/Block-HTMLContent/PageId_13765/BlockId_11331.lava
+    
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+//- Assign some variables up here
+{% assign obj_RockGuy = 'Global' | Attribute:'RockGuy', 'Object' %}
+{% assign date_PromotionDate = 'Global' | Attribute:'GradeTransitionDate' %}
+{% assign var_Year_Number = 'Now' | Date:'yyyy' %}
+{% assign int_Year_plus13 = var_Year_Number | AsInteger | Plus:13 %}
+
+{% assign array_CurrentPerson_Children = CurrentPerson | Children %}
+{% if array_CurrentPerson_Children == empty or array_CurrentPerson_Children == blank %}
+    {% assign example_Child_Name = 'John Doe' %}
+    {% assign example_Child_GradeLevel_1 = '1st Grade' %}
+    {% assign example_Child_GradeLevel_2 = '2nd Grade' %}
+{% else %}
+    {% assign obj_CurrentPerson_Child = array_CurrentPerson_Children | Sort:'Age', 'desc' | First %}
+    {% assign example_Child_Name = obj_CurrentPerson_Child.NickName %}
+    {% assign example_Child_GradeLevel_1 = '1st Grade' %}
+    {% assign example_Child_GradeLevel_2 = '2nd Grade' %}
+{% endif %}
+
+{% person dataview:'1057' securityenabled:'false' iterator:'array_ChildrenTurningFive' %}
+    {% assign count_ChildrenTurningFive = array_ChildrenTurningFive | Size %}
+{% endperson %}
+
+{% person where:'GraduationYear == {{ int_Year_plus13 }}' securityenabled:'false' iterator:'array_ChildrenInKindergarten' %}
+    {% assign count_ChildrenInKindergarten = array_ChildrenInKindergarten | Size %}
+{% endperson %}
+
+//- All content is down here
+<style>
+    .VRL--modal-dialog {
+        display: inline-block;
+        float: left;
+        margin-right: 20px;
+        width: 500px;
+    }
+    /* Popup styles */
+    .VRL--popup-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+    }
+    .VRL--popup {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+        max-width: 540px;
+        width: 90%;
+        margin: 60px auto 0 auto;
+        padding: 0;
+        position: relative;
+    }
+    .VRL--popup-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .VRL--popup-close {
+        background: none;
+        border: none;
+        font-size: 1.5em;
+        color: #888;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .VRL--popup-body {
+        padding: 16px;
+    }
+</style>
+
+{[ panel title:'Fact: GradeLevel becomes GradeLevel +1' ]}
+<div>
+    <p>
+        Every Person record that already has <b><i>something</i></b> in their <code>Grade Level</code> field, it will automatically become <code>Grade Level +1</code> after <u>Promotion Day</u> <span style="color: #9c9c94;">(Rock calls this 'Grade Transition Date')</span>.
+    </p>
+    <p>
+        For example:
+        <ul>
+            <li>
+                If Rock already knows that {{ example_Child_Name }} is in {{ example_Child_GradeLevel_1 }},
+            </li>
+            <li>
+                then Rock will automatically know that (after <u>Promotion Day</u>) they are now in {{ example_Child_GradeLevel_2 }}.
+            </li>
+        </ul>
+    </p>
+    <p>
+        All that being said, as of right now, this is what Rock thinks is <u>Promotion Day</u>:
+        <div class="kpi-container">
+            <div class="kpi kpi-card has-icon-bg VRL--promotionday-popup-trigger" style="color:#565657; cursor:pointer;">
+                <a href="javascript:void(0);" class="stretched-link"></a>
+                <div class="kpi-icon">
+                    <img class="svg-placeholder" src="data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'&gt;&lt;/svg&gt;">
+                    <div class="kpi-content"><i class="fa fa-fw fa fa-calendar-day"></i></div>
+                </div>
+                <div class="kpi-stat ">
+                    <span class="kpi-value text-color">{{ date_PromotionDate | Date:'MMMM d' }}</span>
+                    <span class="kpi-label">GradeTransitionDate</span>
+                </div>
+            </div>
+        </div>
+    </p>
+    <p>
+        <span style="color: #9c9c94;">*Don't change this date until January 1st of the Promotion Year!</span><br>
+        <span style="color: #9c9c94;">**Click on the row, not on the pencil icon.</span>
+    </p>
+</div>
+{[ endpanel ]}
+
+<!-- Popup markup (hidden by default) -->
+<div class="VRL--popup-overlay" id="VRL--promotionday-popup-overlay">
+    <div class="VRL--popup">
+        <div class="VRL--popup-header">
+            <button class="VRL--popup-close" id="VRL--promotionday-popup-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="VRL--popup-body" id="VRL--promotionday-popup-body">
+            {% comment %}JavaScript will move a Block into this section here{% endcomment %}
+        </div>
+    </div>
+</div>
+
+{[ panel title:'Question: "12th Grade" becomes "13th Grade"?' ]}
+<div>
+    <p>
+        Thankfully, Rock is smart enough to make it so that anything beyond 12th Grade is obsolete.
+    </p>
+    <p>
+        Therefore, we don't need to worry about any of our Seniors <span style="color: #9c9c94;">(unless they repeat 12th Grade, in which case go to their Rock Profile and update it accordingly)</span>.
+    </p>
+</div>
+{[ endpanel ]}
+
+{[ panel title:'Task: "Blank" GradeLevel needs to become "Kindergarten"' ]}
+<div>
+    <p>
+        This is the one where we need some manual work.
+    </p>
+    <p>
+        Rock can "move" a kid from one GradeLevel to the next, but<br>
+        Rock cannot "move" a kid from no GradeLevel into "Kindergarten"
+    </p>
+    <p>
+        Therefore, we created this DataView [DataViewId 1057] that will identify every record that meets these criteria:
+        <ul>
+            <li>
+                <code>GradeLevel</code> is "blank"
+            </li>
+            <li>
+                <code>AgeClassification</code> is not "Adult"
+            </li>
+            <li>
+                <code>Age</code> is currently 5, or will be turning 5 by Aug 1
+            </li>
+            <li>
+                Has been checked into either the '4 Year Olds' or the '5 Year Olds' Room <span style="color: #9c9c94;">at least once</span> between <u>January 1st, {{ 'Now' | Date:'yyyy' }}</u> and <u>Today</u>.
+            </li>
+            <li>
+                is not a "Test" person
+            </li>
+        </ul>
+        {[ kpis size:'md' ]}
+            [[ kpi
+                icon:'fa fa-table'
+                value:'{{ count_ChildrenTurningFive }}'
+                label:'DataViewId 1057'
+                color:'#565657'
+                url:'/reporting/dataviews?DataViewId=1057'
+                ]][[ endkpi ]]
+            [[ kpi
+                icon:'fa fa-table'
+                value:'{{ count_ChildrenInKindergarten }}'
+                label:'Person records with GraduationYear = {{ int_Year_plus13 }}'
+                color:'#565657'
+                url:''
+                ]][[ endkpi ]]
+        {[ endkpis ]}
+    </p>
+    <p>
+        Steps:
+        <ol>
+            <li>
+                Open the DataView in a new Tab.
+            </li>
+            <li>
+                Double-check that this is the correct set of children.
+            </li>
+            <li>
+                Click the 'Cog' Icon <span style="color: #9c9c94;">(looks like <i class="fas fa-cog"></i>, look to the top-right of the Column Headers)</span>
+            </li>
+            <li>
+                For the <u>WorkflowType</u>, select this one:
+                <ul>
+                    <li>
+                        <i class="VRLicon VRLicon-V-Logo"></i>_VRL Staff → <i class="fa fa-arrow-circle-up"></i> Blank GradeLevel becomes Kindergarten
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Click 'Launch'
+                <ul>
+                    <li><span style="color: #9c9c94;">After clicking the 'Launch' button, it's normal for Rock to take approx 90 seconds to get started with the mass-update.</span></li>
+                </ul>
+            </li>
+            <li>
+                Refresh the DataView, and see whether the number of rows has decreased.
+            </li>
+        </ol>
+    </p>
+</div>
+{[ endpanel ]}
+
+<script>
+    // Run Loadscript on Partial Post Backs.
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    prm.add_endRequest(function() {
+        moveBlock11332();
+    });
+    
+    // Run Loadscript on Document Read
+    $(document).ready(function() {
+        moveBlock11332();
+
+        // Popup logic
+        $('.VRL--promotionday-popup-trigger').on('click', function(e) {
+            e.preventDefault();
+            $('#VRL--promotionday-popup-overlay').fadeIn(150);
+        });
+        $('#VRL--promotionday-popup-close, #VRL--promotionday-popup-overlay').on('click', function(e) {
+            // Only close if clicking the overlay or close button, not inside the popup
+            if (e.target === this) {
+                $('#VRL--promotionday-popup-overlay').fadeOut(150);
+            }
+        });
+    });
+    
+    function moveBlock11332() {
+        const attributesBlock = document.getElementById('VRL--AttributesBlock-11332');
+        if (attributesBlock) {
+            const table = attributesBlock.querySelector('table');
+            if (table) {
+                const thead = table.querySelector('thead');
+                const tfoot = table.querySelector('tfoot');
+                
+                if (thead) {
+                    const trElements = thead.querySelectorAll('tr');
+                    if (trElements.length > 1) {
+                        trElements[0].style.display = 'none';
+                    }
+                }
+                
+                if (tfoot) {
+                    tfoot.style.display = 'none';
+                }
+            }
+        }
+        // Instead of moving to modal, move to popup body
+        $('#VRL--promotionday-popup-body').append($('#VRL--AttributesBlock-11332'));
+        $('#VRL--AttributesBlock-11332').show();
+    }
+</script>
