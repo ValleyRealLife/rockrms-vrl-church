@@ -8,7 +8,7 @@
     - That's because the DataView has extra logic that SparkDev hardcoded (such as filtering out inactive Person records).
     
     Path:
-    _code/DataViews/DataViewId_907/DataViewId_1052.sql
+    _code/DataViews/DataViewId_1052/DataViewId_1052.sql
     
 **************************************************************************************************************/
 
