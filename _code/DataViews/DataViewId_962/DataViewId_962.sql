@@ -7,7 +7,7 @@
     - This DataView is used in ServiceJobId:210
     
     Note:
-    The intention of this query is to identify all Placeholders that are more than 25 days old.
+    The intention of this query is to identify all Placeholders that have been created 25 days ago (or older).
     ServiceJobId=210 will communicate to the [AdministrativeContactEmail] saying, "hey, this is a Placeholder, not the actual thing. As such, your Placeholder will disappear in 5 days!"
     
     Path:
@@ -53,7 +53,9 @@ FROM
 WHERE
     [CreatedDateTime] <= DATEADD(DAY, -25, GETDATE())
     AND
-    [ReservationTypeId] = 6
+    [ReservationTypeId] = 6 --This means "Placeholder"
+    AND
+    [ApprovalState] <> 7 --This means "Not cancelled (yet)"
 ORDER BY
     [CreatedDateTime] ASC
 ;
