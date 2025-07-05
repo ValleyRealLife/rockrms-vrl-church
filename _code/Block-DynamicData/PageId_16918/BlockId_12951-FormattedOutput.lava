@@ -1,0 +1,102 @@
+{% comment %}
+    
+    This Lava/HTML is found in
+    PageId:16918, BlockId:12951, [Dynamic Data] > FormattedOutput
+    
+    This Lava is used in order to customize the results of the Dynamic Data block's SQL query
+    
+    Path:
+    _code/Block-DynamicData/PageId_16918/BlockId_12951-FormattedOutput.lava
+    
+{% endcomment %}
+
+{% assign var_ShowNamesFromAudit = 'Global' | Page:'QueryString' | Property:'A1' | SanitizeSql %}
+{% assign txt_CurrentURL = 'Global' | Page:'Url' | SanitizeSql %}
+{% assign txt_CurrentURL-Remove_A1 = txt_CurrentURL | SetUrlParameter:'A1','0' %}
+{% assign txt_CurrentURL-Add_A1_1 = txt_CurrentURL | SetUrlParameter:'A1','1' %}
+{% assign txt_CurrentURL-Add_A1_2 = txt_CurrentURL | SetUrlParameter:'A1','2' %}
+{% assign txt_CurrentURL-Add_A1_3 = txt_CurrentURL | SetUrlParameter:'A1','3' %}
+
+{% unless var_ShowNamesFromAudit > 0 %}
+{[ kpis size:'md' ]}
+    [[ kpi
+        icon:'fa fa-child'
+        value:'{{ table1.rows | Size }}'
+        label:'Kids who are registered AND CAN check-in'
+        color:'#EBBE4D'
+        url:'{{ txt_CurrentURL-Add_A1_1 }}'
+        ]][[ endkpi ]]
+    [[ kpi
+        icon:'fa fa-exclamation-triangle'
+        value:'{{ table2.rows | Size }}'
+        label:'Kids who are registered BUT CANNOT check-in'
+        color:'#565657'
+        url:'{{ txt_CurrentURL-Add_A1_2 }}'
+        ]][[ endkpi ]]
+    [[ kpi
+        icon:'fa fa-exclamation-triangle'
+        value:'{{ table3.rows | Size }}'
+        label:'Kids who DID NOT register AND CAN check-in'
+        color:'#565657'
+        url:'{{ txt_CurrentURL-Add_A1_3 }}'
+        ]][[ endkpi ]]
+{[ endkpis ]}
+{% endunless %}
+
+{% if var_ShowNamesFromAudit > 0 %}
+    {% case var_ShowNamesFromAudit %}
+        {% when '1' %}
+            {% assign SelectedArray = table1.rows %}
+            {% assign TableLabel = 'Kids who are registered AND CAN check-in' %}
+        {% when '2' %}
+            {% assign SelectedArray = table2.rows %}
+            {% assign TableLabel = 'Kids who are registered BUT CANNOT check-in' %}
+        {% when '3' %}
+            {% assign SelectedArray = table3.rows %}
+            {% assign TableLabel = 'Kids who DID NOT register AND CAN check-in' %}
+        {% else %}
+            {% assign SelectedArray = '' %}
+            {% assign TableLabel = 'No rows to show' %}
+    {% endcase %}
+    
+    <div class="panel panel-block">
+        <div class="panel-heading">
+            <h1 class="panel-title pull-left">{{ TableLabel }}</h1>
+            <a class="close js-modaldialog-close-link" aria-hidden="true" type="button" href="{{ txt_CurrentURL-Remove_A1 }}">×</a>
+        </div>
+        <div class="panel-body">
+            <div class="grid grid-panel">
+                <div class="table-responsive">
+                    <table class="grid-table table table-bordered table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Family Id</th>
+                                <th scope="col">Person Id</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Nick Name</th>
+                                <th scope="col">Middle Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Age</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for row in SelectedArray %}
+                            <tr>
+                                <td>{{ row.PrimaryFamilyId }}</td>
+                                <td>{{ row.Id }}</td>
+                                <td>{{ row.FirstName }}</td>
+                                <td>{{ row.NickName }}</td>
+                                <td>{{ row.MiddleName }}</td>
+                                <td>{{ row.LastName }}</td>
+                                <td>{{ row.Age }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

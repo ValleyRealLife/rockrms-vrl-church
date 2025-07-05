@@ -1,0 +1,188 @@
+/---------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    WorkflowTypeId 367 > [Page 2] > [Show the Results]
+    
+    This Lava uses SQL in order to retrieve the Persons who can check-in the given Kid.
+    
+    Path:
+    _code/WorkfowTypes/WorkflowTypeId_367/ActionTypeId_5293-FormHeader.lava
+    
+---------------------------------------------------------------------------------------------------------/
+{% assign obj_Person1 = Activity | Attribute:'Person1', 'Object' %}
+{% assign txt_SearchPerson2By = Workflow | Attribute:'singleselect_SearchPerson2By', 'RawValue'%}
+
+{% if txt_SearchPerson2By == 1 %}
+    {% assign txt_Person2_Id = Workflow | Attribute:'Form_PersonId_of_Person2', 'RawValue' %}
+{% elseif txt_SearchPerson2By == 2 %}
+    {% assign txt_MobilePhone_of_Person2 = Workflow | Attribute:'Form_MobilePhone_of_Person2', 'RawValue' %}
+{% elseif txt_SearchPerson2By == 3 %}
+    {% assign txt_MobilePhoneLast4_of_Person2 = Workflow | Attribute:'Form_MobilePhoneLast4_of_Person2', 'RawValue' | Right:4 %}
+{% endif %}
+
+{% sql return:'sql_AdultsFromPerson1Family'%}
+    DECLARE @FamiliesWherePersonIsChild TABLE (
+        [Id] int NOT NULL
+    );
+    
+    DECLARE @AdultsInTheFamiliesWherePersonIsChild TABLE (
+        [Id] int NOT NULL
+    );
+    
+    INSERT INTO @FamiliesWherePersonIsChild ([Id])
+    SELECT
+        gm.[GroupId]
+    FROM
+        [GroupMember] gm
+    WHERE
+        gm.[GroupTypeId] = 10 --Family
+        AND
+        gm.[PersonId] = {{ obj_Person1.Id }}
+        AND
+        gm.[GroupRoleId] = 4 --Child
+        AND
+        gm.[IsArchived] = 0
+    ;
+    
+    INSERT INTO @AdultsInTheFamiliesWherePersonIsChild ([Id])
+    SELECT
+        gm.[PersonId]
+    FROM
+        [GroupMember] gm
+    WHERE
+        gm.[GroupId] IN (SELECT [Id] FROM @FamiliesWherePersonIsChild)
+        AND
+        gm.[IsArchived] = 0
+        AND
+        gm.[GroupRoleId] = 3 --Adult
+    ;
+    
+    SELECT
+        p.[Id] AS 'PersonId'
+      , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'PersonName'
+      , pn.[NumberFormatted] AS 'MobilePhone'
+    FROM
+        [Person] p
+        INNER JOIN [PhoneNumber] pn ON pn.[PersonId] = p.[Id] AND pn.[NumberTypeValueId] = 12
+    WHERE
+        p.[Id] IN (SELECT [Id] FROM @AdultsInTheFamiliesWherePersonIsChild)
+    ;
+{% endsql %}
+
+{% sql return:'sql_KnownRelationshipsThatCanCheckInPerson1'%}
+    DECLARE @KnownRelationshipsWherePersonIsOwner TABLE (
+        [Id] int NOT NULL
+    );
+    
+    DECLARE @AllowCheckInByThesePersonIds TABLE (
+        [Id] int NOT NULL
+    );
+    INSERT INTO @KnownRelationshipsWherePersonIsOwner ([Id])
+    SELECT
+        gm.[GroupId]
+    FROM
+        [GroupMember] gm
+    WHERE
+        gm.[GroupTypeId] = 11 --KnownRelationship
+        AND
+        gm.[PersonId] = {{ obj_Person1.Id }}
+        AND
+        gm.[GroupRoleId] = 5
+        AND
+        gm.[IsArchived] = 0
+    ;
+    
+    INSERT INTO @AllowCheckInByThesePersonIds ([Id])
+    SELECT
+        gm.[PersonId]
+    FROM
+        [GroupMember] gm
+    WHERE
+        gm.[GroupId] IN (SELECT [Id] FROM @KnownRelationshipsWherePersonIsOwner)
+        AND
+        gm.[IsArchived] = 0
+        AND
+        gm.[GroupRoleId] = 8 --AllowCheckinBy
+    ;
+    
+    SELECT
+        p.[Id] AS 'PersonId'
+      , CONCAT(p.[NickName], ' ', p.[LastName]) AS 'PersonName'
+      , pn.[NumberFormatted] AS 'MobilePhone'
+    FROM
+        [Person] p
+        INNER JOIN [PhoneNumber] pn ON pn.[PersonId] = p.[Id] AND pn.[NumberTypeValueId] = 12
+    WHERE
+        p.[Id] IN (SELECT [Id] FROM @AllowCheckInByThesePersonIds)
+    ;
+{% endsql %}
+
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <h1 class="panel-title pull-left">Results</h1>
+    </div>
+    <div class="panel-body">
+        <div class="grid grid-panel">
+            <div class="table-responsive">
+                <table class="grid-table table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col"><span style="color: #9c9c94;">Person Id</span></th>
+                            <th scope="col">This Person</th>
+                            <th scope="col">Can Check-in {{ obj_Person1.NickName }} {{ obj_Person1.LastName }} because</th>
+                            <th scope="col">Using this Mobile Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in sql_AdultsFromPerson1Family %}
+                        {% assign row_PersonId = row.PersonId %}
+                        {% assign row_MobilePhone = row.MobilePhone %}
+                        {% assign row_MobilePhoneFirst10 = row.MobilePhone | Slice:0,10 %}
+                        {% assign row_MobilePhoneLast4 = row.MobilePhone | Right:4 %}
+                        <tr>
+                            {% if txt_SearchPerson2By == 1 and row_PersonId == txt_Person2_Id %}
+                                <td><span style="background-color: yellow;">{{ row.PersonId }}</span></td>
+                            {% else %}
+                                <td><span style="color: #9c9c94;">{{ row.PersonId }}</span></td>
+                            {% endif %}
+                            <td>{{ row.PersonName }}</td>
+                            <td>is an 'Adult' in the same family as {{ obj_Person1.NickName }} {{ obj_Person1.LastName }}</td>
+                            {% if txt_SearchPerson2By == 2 and row_MobilePhone == txt_MobilePhone_of_Person2 %}
+                                <td><span style="background-color: yellow;">{{ row.MobilePhone }}</span></td>
+                            {% elseif txt_SearchPerson2By == 3 and row_MobilePhoneLast4 == txt_MobilePhoneLast4_of_Person2 %}
+                                <td>{{ row_MobilePhoneFirst10 }}<span style="background-color: yellow;">{{ row_MobilePhoneLast4 }}</span></td>
+                            {% else %}
+                                <td>{{ row.MobilePhone }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    {% for row in sql_KnownRelationshipsThatCanCheckInPerson1 %}
+                        {% assign row_PersonId = row.PersonId %}
+                        {% assign row_MobilePhone = row.MobilePhone %}
+                        {% assign row_MobilePhoneFirst10 = row.MobilePhone | Slice:0,10 %}
+                        {% assign row_MobilePhoneLast4 = row.MobilePhone | Right:4 %}
+                        <tr>
+                            {% if txt_SearchPerson2By == 1 and row_PersonId == txt_Person2_Id %}
+                                <td><span style="background-color: yellow;">{{ row.PersonId }}</span></td>
+                            {% else %}
+                                <td><span style="color: #9c9c94;">{{ row.PersonId }}</span></td>
+                            {% endif %}
+                            <td>{{ row.PersonName }}</td>
+                            <td>is a Known Relationship of {{ obj_Person1.NickName }} {{ obj_Person1.LastName }}</td>
+                            {% if txt_SearchPerson2By == 2 and row_MobilePhone == txt_MobilePhone_of_Person2 %}
+                                <td><span style="background-color: yellow;">{{ row.MobilePhone }}</span></td>
+                            {% elseif txt_SearchPerson2By == 3 and row_MobilePhoneLast4 == txt_MobilePhoneLast4_of_Person2 %}
+                                <td>{{ row_MobilePhoneFirst10 }}<span style="background-color: yellow;">{{ row_MobilePhoneLast4 }}</span></td>
+                            {% else %}
+                                <td>{{ row.MobilePhone }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
