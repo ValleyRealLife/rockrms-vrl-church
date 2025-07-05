@@ -1,0 +1,180 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=16918, BlockId=12948, [HTML Block] > HTML
+    
+    Required Lava Command(s):
+    - Rock Entity
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/PageId_16918/BlockId_12948.lava
+    
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var_RegInsId = 'Global' | Page:'QueryString' | Property:'RegInsId' | SanitizeSql %}
+{% assign var_CheckinGroup = 'Global' | Page:'QueryString' | Property:'CheckinGroup' | SanitizeSql %}
+
+<style>
+    .recipe-screenshot {
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+
+{% if var_RegInsId > 0 %}
+    {% sql return:'HowManyRegistrations' %}
+        SELECT
+            COUNT(*) AS 'Count'
+        FROM
+            [Registration]
+        WHERE
+            [RegistrationInstanceId] = {{ var_RegInsId }}
+        ;
+    {% endsql %}
+    {% sql return:'HowManyRegistrants' %}
+        SELECT
+            SUM(CASE WHEN regreg.[OnWaitList] = 0 THEN 1 ELSE 0 END) AS 'NotOnWaitList'
+          , SUM(CASE WHEN regreg.[OnWaitList] = 1 THEN 1 ELSE 0 END) AS 'OnWaitList'
+        FROM
+            [RegistrationRegistrant] regreg
+        WHERE
+            regreg.[RegistrationId] IN (SELECT [Id] FROM [Registration] WHERE [RegistrationInstanceId] = {{ var_RegInsId }})
+        ;
+    {% endsql %}
+{% endif %}
+
+{[ accordion firstopen:'True' ]}
+    [[ item title:'First: Can JohnnyDoe be Checked-in?' ]]
+    <div>
+        <p>
+            In theory, every Registrant <span style="color: #9c9c94">(represented by the orange number)</span> in your Registration Instance should be allowed to check-in.
+        </p>
+        {[ kpis size:'md' ]}
+            [[ kpi
+                icon:'fa fa-list-alt'
+                value:'{{ HowManyRegistrations | First | Property:'Count' }}'
+                label:'Registration Form Submissions'
+                color:'#565657'
+                url:'/RegistrationInstance/{{ var_RegInsId }}'
+                ]][[ endkpi ]]
+            [[ kpi
+                icon:'fa fa-child'
+                value:'{{ HowManyRegistrants | First | Property:'NotOnWaitList' }}'
+                subvalue:'({{ HowManyRegistrants | First | Property:'OnWaitList' }})'
+                label:'Registrants'
+                description:'The number inside parentheses represents Registrants who are still on the WaitList'
+                color:'orange'
+                url:'/web/event-registrations/{{ var_RegInsId }}/registrants'
+                ]][[ endkpi ]]
+        {[ endkpis ]}
+        <p>
+            There is one technical detail you must be aware of: <u>Registering to the thing</u>, and <u>checking-in to the thing</u> are two separate systems. In other words, even if they <u>registered</u> it's possible they might not be able to <u>check-in</u>.
+        </p>
+        <p>
+            Look at these Check-in Rosters:
+        </p>
+        {% group where:'GroupTypeId == 95 && IsActive == true' securityenabled:'false' iterator:'groups_Checkin' %}
+        {% endgroup %}
+        {[ kpis size:'md' ]}
+            {% for row in groups_Checkin %}
+            {% assign thisGroupId = row.Id %}
+            [[ kpi
+                icon:'fa fa-child'
+                value:'{{ row.Members | Size }}'
+                label:'{{ row.Name }}'
+                color:'{% if thisGroupId == var_CheckinGroup %}#EBBE4D{% else %}#565657{% endif %}'
+                url:'/page/697?GroupId={{ row.Id }}'
+                ]][[ endkpi ]]
+            {% endfor %}
+        {[ endkpis ]}
+        <p>
+            Here's a tool you can use for quick audit:
+        </p>
+        <div id="VRL--MoveBlockId12950-ToHere" style="margin-bottom: 12px;">
+        </div>
+        <div id="VRL--MoveBlockId12951-ToHere">
+        </div>
+    </div>
+    [[ enditem ]]
+{[ endaccordion ]}
+
+{[ accordion firstopen:'True' ]}
+    [[ item title:'Second: Can JohnDoe check-in JohnnyDoe?' ]]
+    <div>
+        <p>There are two types of people that can check-in JohnnyDoe. Let me show you an example first:</p>
+        <div class="row">
+            <div class="col-md-6">
+                <img src="/Content/RecipeAttachments/Recipe-Generalized/WhoCanCheckinWhom.png" class="recipe-screenshot" alt="Who can Check-in whom">
+            </div>
+            <div class="col-md-6">
+                <p style="margin-top: 15px;">
+                    From the example screenshot, there are three People who can check-in Alexis Decker:
+                    <ul>
+                        <li>Ted Decker,</li>
+                        <li>Cindy Decker, and</li>
+                        <li>Alisha Admin</li>
+                    </ul>
+                </p>
+                <p>
+                In other words, the two types of people that can check-in someone are:
+                <ol>
+                    <li>An adult who is in the same family as the kid, and</li>
+                    <li>A person who is designated as a "Allow check-in by ..." relationship.<br><span style="color: #9c9c94"><u>Note</u>: Alexis' grandparents or aunts or uncles (etc) should be designated as an "Allow check-in by" relationship.</span></li>
+                </ol>
+                </p>
+            </div>
+        </div>
+        <p>
+            Here's a tool you can use for quick audit:
+        </p>
+        <div id="VRL--MoveBlockId12999-ToHere" style="margin-bottom: 12px;">
+        </div>
+    </div>
+    [[ enditem ]]
+{[ endaccordion ]}
+
+<script>
+    // Run Loadscript on Partial Post Backs.
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    prm.add_endRequest(function() {
+        moveBlock12950();
+        moveBlock12951();
+        moveBlock12999();
+    });
+    
+    // Run Loadscript on Document Ready
+    $(document).ready(function() {
+        moveBlock12950();
+        moveBlock12951();
+        moveBlock12999();
+    });
+    
+    function moveBlock12950() {
+        const theGroupSelectorBlock = document.getElementById('VRL--BlockId-12950');
+        if (theGroupSelectorBlock) {
+            $('#VRL--MoveBlockId12950-ToHere').append($('#VRL--BlockId-12950'));
+            $('#VRL--BlockId-12950').show();
+        }
+    }
+    
+    function moveBlock12951() {
+        const theDynamicDataBlock = document.getElementById('VRL--BlockId-12951');
+        if (theDynamicDataBlock) {
+            $('#VRL--MoveBlockId12951-ToHere').append($('#VRL--BlockId-12951'));
+            $('#VRL--BlockId-12951').show();
+        }
+    }
+    
+    function moveBlock12999() {
+        const theWorkflowEntryBlock = document.getElementById('VRL--BlockId-12999');
+        if (theWorkflowEntryBlock) {
+            $('#VRL--MoveBlockId12999-ToHere').append($('#VRL--BlockId-12999'));
+            $('#VRL--BlockId-12999').show();
+            $('#VRL--BlockId-12999 .panel.panel-block .panel-heading').hide();
+        }
+    }
+</script>
