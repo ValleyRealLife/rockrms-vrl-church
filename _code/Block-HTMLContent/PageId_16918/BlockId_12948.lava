@@ -91,6 +91,7 @@
                 ]][[ endkpi ]]
             {% endfor %}
         {[ endkpis ]}
+        <br>
         <p>
             Here's a tool you can use for quick audit:
         </p>
@@ -128,11 +129,16 @@
                 </p>
             </div>
         </div>
+        <br>
         <p>
             Here's a tool you can use for quick audit:
         </p>
-        <div id="VRL--MoveBlockId12999-ToHere" style="margin-bottom: 12px;">
-        </div>
+        <iframe id=""
+                src="https://rock.vrl.church/page/17189?RegInsId={{ var_RegInsId }}"
+                width="100%"
+                height="500em"
+                frameborder="0">
+        </iframe>
     </div>
     [[ enditem ]]
 {[ endaccordion ]}
@@ -143,14 +149,12 @@
     prm.add_endRequest(function() {
         moveBlock12950();
         moveBlock12951();
-        moveBlock12999();
     });
     
     // Run Loadscript on Document Ready
     $(document).ready(function() {
         moveBlock12950();
         moveBlock12951();
-        moveBlock12999();
     });
     
     function moveBlock12950() {
@@ -166,15 +170,6 @@
         if (theDynamicDataBlock) {
             $('#VRL--MoveBlockId12951-ToHere').append($('#VRL--BlockId-12951'));
             $('#VRL--BlockId-12951').show();
-        }
-    }
-    
-    function moveBlock12999() {
-        const theWorkflowEntryBlock = document.getElementById('VRL--BlockId-12999');
-        if (theWorkflowEntryBlock) {
-            $('#VRL--MoveBlockId12999-ToHere').append($('#VRL--BlockId-12999'));
-            $('#VRL--BlockId-12999').show();
-            $('#VRL--BlockId-12999 .panel.panel-block .panel-heading').hide();
         }
     }
 </script>
