@@ -1,0 +1,204 @@
+/-------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    This Lava is found in
+    PageId=1009, BlockId=12948, [HTML Block] > HTML
+    
+    Required Lava Command(s):
+    - Rock Entity
+    - Sql
+    
+    Path:
+    _code/Block-HTMLContent/PageId_16918/BlockId_12948.lava
+    
+-------------------------------------------------------------------------------------------------------------------------------------------------/
+
+{% assign var_ConnectionOpportunityId = 'Global' | Page:'QueryString' | Property:'ConnectionOpportunityId' | SanitizeSql %}
+
+{% connectionopportunity where:'ConnectionTypeId == 20' securityenabled:'false' %}
+    {% assign array_ConnOppIds = connectionopportunityItems | Map:'Id' %} //-The 'Id' values in this array are Integers. I need them to be Strings.
+    {% assign array_ConnOppIds = array_ConnOppIds | Join:',' %} //-By using the Join filter, I can concatenate the integer values from the array into a single string.
+    {% assign array_ConnOppIds = array_ConnOppIds | Split:',' %} //-By using the Split filter, I can re-create an array, but this time it will be an array of strings.
+{% endconnectionopportunity %}
+
+{% assign bool_Show = array_ConnOppIds | Contains:var_ConnectionOpportunityId %}
+
+{% unless bool_Show == true %}
+    {% return %}
+{% endunless %}
+
+<style>
+    .VRL--info {
+        /* Base styling */
+        background-color: white;
+        border: none;
+        border-radius: 50%;
+        color: black;
+        cursor: pointer;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        
+        /* Initial circular dimensions */
+        width: 35px;
+        height: 35px;
+        
+        /* Smooth transition for all properties */
+        transition: all 0.5s ease;
+        
+        /* Hide overflow to prevent text from showing in circle state */
+        overflow: hidden;
+        white-space: nowrap;
+        
+        /* Remove default button styling */
+        outline: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Icon styling */
+    .VRL--info .fa-info-circle {
+        flex-shrink: 0;
+        margin: 0;
+        font-size: 15px !important;
+        transition: margin-right 0.5s ease;
+    }
+    
+    /* Text styling - initially hidden */
+    .VRL--info .VRL--extra-info {
+        opacity: 0;
+        max-width: 0;
+        margin-left: 0;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.5s ease;
+        overflow: hidden;
+    }
+    
+    /* Hover state */
+    .VRL--info:hover {
+        /* Expand to rectangle - use fixed width instead of auto to prevent bounce */
+        width: 250px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        
+        /* Subtle color change */
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Show text on hover */
+    .VRL--info:hover .VRL--extra-info {
+        opacity: 1;
+        max-width: 240px;
+        margin-left: 8px;
+    }
+    
+    /* Add slight margin to icon when expanded */
+    .VRL--info:hover .fa-info-circle {
+        margin-right: 0;
+    }
+    
+    /* Active/focus states */
+    .VRL--info:active,
+    .VRL--info:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+    
+    /* Optional: Add a subtle animation on initial load */
+    .VRL--info {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+
+{% if var_ConnectionOpportunityId == 117 %}
+<button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-autoassign-ConnOpp118">
+    <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+    <span class="VRL--extra-info">
+        About Round-robin connector
+    </span>
+</button>
+
+<div class="modal fade" id="VRL--helptext-autoassign-ConnOpp118" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-autoassign-ConnOpp118-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-autoassign-ConnOpp118-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    If a Connection Request in this Connection Opportunity does not have a Connector, <a href="https://rock.vrl.church/admin/general/workflows?WorkflowTypeId=217" target="_blank">WorkflowTypeId=371</a>
+                    will round-robin a Connector by choosing a GroupMember from <a href="https://rock.vrl.church/page/697?GroupId=138680" target="_blank">this Group</a>.
+                </p>
+                <p>
+                    Please Note: The auto-assignment happens when it's been 90-days since the ConnectionRequest has been created.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if var_ConnectionOpportunityId == 118 %}
+<button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-autoassign-ConnOpp118">
+    <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+    <span class="VRL--extra-info">
+        About Round-robin connector
+    </span>
+</button>
+
+<div class="modal fade" id="VRL--helptext-autoassign-ConnOpp118" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-autoassign-ConnOpp118-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-autoassign-ConnOpp118-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    If a Connection Request in this Connection Opportunity does not have a Connector, <a href="https://rock.vrl.church/admin/general/workflows?WorkflowTypeId=217" target="_blank">WorkflowTypeId=217</a>
+                    will round-robin a Connector by choosing a GroupMember from <a href="https://rock.vrl.church/page/697?GroupId=117579" target="_blank">this Group</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if var_ConnectionOpportunityId == 119 %}
+<button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-autoassign-ConnOpp118">
+    <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+    <span class="VRL--extra-info">
+        About Round-robin connector
+    </span>
+</button>
+
+<div class="modal fade" id="VRL--helptext-autoassign-ConnOpp118" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-autoassign-ConnOpp118-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-autoassign-ConnOpp118-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    If a Connection Request in this Connection Opportunity does not have a Connector, <a href="https://rock.vrl.church/admin/general/workflows?WorkflowTypeId=370" target="_blank">WorkflowTypeId=370</a>
+                    will round-robin a Connector by choosing a GroupMember from <a href="https://rock.vrl.church/page/697?GroupId=138679" target="_blank">this Group</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
