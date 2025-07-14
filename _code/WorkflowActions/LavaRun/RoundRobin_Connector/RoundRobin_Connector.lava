@@ -1,6 +1,16 @@
 /----------------------------------------------------------------------------------------------------
+    
+    Required Lava Command(s):
+    - Rock Entity
+    
     This Lava is found in
-    WorkflowTypeId=217, [Assign ConnReq to a Connector] > Set (Connector)
+    - WorkflowTypeId=217, [Assign ConnReq to a Connector] > Set (Connector)
+    - WorkflowTypeId=370, [Assign ConnReq to a Connector] > Set (Connector)
+    - WorkflowTypeId=371, [Assign ConnReq to a Connector] > Set (Connector)
+    
+    Path:
+    _code/WorkflowActions/LavaRun/RoundRobin_Connector/RoundRobin_Connector.lava
+    
 ----------------------------------------------------------------------------------------------------/
 
 {% assign ConnReq = Workflow | Attribute:'ConnectionRequest','Object' %}
@@ -20,23 +30,24 @@
 {% endconnectionopportunityconnectorgroup %}
 
 {% connectionrequest where:'ConnectionState == 0 && ConnectionOpportunityId == {{ ConnReq.ConnectionOpportunityId }}' securityenabled:'false' iterator:'ActiveConnReqs' %}
-    {% capture connectors %}
-    [
-        {%- for groupMember in var_ConnectorGroup.Members -%}
-        {
-            "Connector": {{ groupMember.Person.PrimaryAlias.Guid | ToJSON }},
-            "ConnReqs": {{ ActiveConnReqs | Where:'ConnectorPersonAliasId', groupMember.Person.PrimaryAliasId | Size }}
-        }{%- unless forloop.last %},{% endunless -%}
-        {%- endfor -%}
-    ]
-    {% endcapture %}
-
-    {% assign connectors = connectors | FromJSON | Where:'Connector','','notequal' %}
-    {% assign connectorCount = connectors | Size %}
-
-    {% if connectorCount > 0 %}
-        {{- connectors| OrderBy:'ConnReqs' | First | Property:'Connector' -}}
-    {% else %}
-        {{ var_ConnectorGroup.Members | Select:'PersonId' | First | PersonById | Property:'PrimaryAlias.Guid' }}
-    {% endif %}
 {% endconnectionrequest %}
+
+{% capture connectors %}
+[
+    {%- for groupMember in var_ConnectorGroup.Members -%}
+    {
+        "Connector": {{ groupMember.Person.PrimaryAlias.Guid | ToJSON }},
+        "ConnReqs": {{ ActiveConnReqs | Where:'ConnectorPersonAliasId', groupMember.Person.PrimaryAliasId | Size }}
+    }{%- unless forloop.last %},{% endunless -%}
+    {%- endfor -%}
+]
+{% endcapture %}
+
+{% assign connectors = connectors | FromJSON | Where:'Connector','','notequal' %}
+{% assign connectorCount = connectors | Size %}
+
+{% if connectorCount > 0 %}
+    {{- connectors | OrderBy:'ConnReqs' | First | Property:'Connector' -}}
+{% else %}
+    {{ var_ConnectorGroup.Members | Select:'PersonId' | First | PersonById | Property:'PrimaryAlias.Guid' }}
+{% endif %}
