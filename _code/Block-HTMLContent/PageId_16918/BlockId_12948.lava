@@ -143,23 +143,41 @@
     [[ enditem ]]
 {[ endaccordion ]}
 
+{[ accordion firstopen:'True' ]}
+    [[ item title:'Third: Has JohnnyDoe been checked-in?' ]]
+    <div>
+        <p>At the end of a Camp Day, or at the end of a Camp Week, you might want to know things like (1) How many kids checked-in?, or (2) Has this specific Kid Checked-in?</p>
+        <p>Or you might want to send a Communication to the parents of the kids who attended the camp.</p>
+        <p>This section is designed to help you know that or do that.</p>
+        <div id="VRL--MoveBlockId13475-ToHere" style="margin-bottom: 12px;">
+        </div>
+        <div id="VRL--MoveBlockId13476-ToHere">
+        </div>
+    </div>
+    [[ enditem ]]
+{[ endaccordion ]}
+
 <script>
     // Run Loadscript on Partial Post Backs.
     var prm = Sys.WebForms.PageRequestManager.getInstance();
     prm.add_endRequest(function() {
         moveBlock12950();
         moveBlock12951();
+        moveBlock13475();
+        moveBlock13476();
     });
     
     // Run Loadscript on Document Ready
     $(document).ready(function() {
         moveBlock12950();
         moveBlock12951();
+        moveBlock13475();
+        moveBlock13476();
     });
     
     function moveBlock12950() {
-        const theGroupSelectorBlock = document.getElementById('VRL--BlockId-12950');
-        if (theGroupSelectorBlock) {
+        const thePageParameterFilterBlock = document.getElementById('VRL--BlockId-12950');
+        if (thePageParameterFilterBlock) {
             $('#VRL--MoveBlockId12950-ToHere').append($('#VRL--BlockId-12950'));
             $('#VRL--BlockId-12950').show();
         }
@@ -170,6 +188,22 @@
         if (theDynamicDataBlock) {
             $('#VRL--MoveBlockId12951-ToHere').append($('#VRL--BlockId-12951'));
             $('#VRL--BlockId-12951').show();
+        }
+    }
+    
+    function moveBlock13475() {
+        const thePageParameterFilterBlock = document.getElementById('VRL--BlockId-13475');
+        if (thePageParameterFilterBlock) {
+            $('#VRL--MoveBlockId13475-ToHere').append($('#VRL--BlockId-13475'));
+            $('#VRL--BlockId-13475').show();
+        }
+    }
+    
+    function moveBlock13476() {
+        const theDynamicDataBlock = document.getElementById('VRL--BlockId-13476');
+        if (theDynamicDataBlock) {
+            $('#VRL--MoveBlockId13476-ToHere').append($('#VRL--BlockId-13476'));
+            $('#VRL--BlockId-13476').show();
         }
     }
 </script>
