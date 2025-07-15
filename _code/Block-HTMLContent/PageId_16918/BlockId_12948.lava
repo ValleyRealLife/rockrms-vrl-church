@@ -147,7 +147,6 @@
     [[ item title:'Third: Has JohnnyDoe been checked-in?' ]]
     <div>
         <p>At the end of a Camp Day, or at the end of a Camp Week, you might want to know things like (1) How many kids checked-in?, or (2) Has this specific Kid Checked-in?</p>
-        <p>Or you might want to send a Communication to the parents of the kids who attended the camp.</p>
         <p>This section is designed to help you know that or do that.</p>
         <div id="VRL--MoveBlockId13475-ToHere" style="margin-bottom: 12px;">
         </div>
