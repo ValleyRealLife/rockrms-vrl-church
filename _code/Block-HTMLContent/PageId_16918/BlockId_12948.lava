@@ -13,6 +13,8 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------/
 
 {% assign var_RegInsId = 'Global' | Page:'QueryString' | Property:'RegInsId' | SanitizeSql %}
+{% assign var_ShowHidePanels = 'Global' | Page:'QueryString' | Property:'A0' | SanitizeSql %}
+{% assign array_ShowHidePanels = var_ShowHidePanels | Split:',' %}
 {% assign var_CheckinGroup = 'Global' | Page:'QueryString' | Property:'CheckinGroup' | SanitizeSql %}
 
 <style>
@@ -47,7 +49,8 @@
     {% endsql %}
 {% endif %}
 
-{[ accordion firstopen:'True' ]}
+{% assign show_Panel_1 = array_ShowHidePanels | Contains:'1' %}
+{[ accordion firstopen:'{{ show_Panel_1 }}' ]}
     [[ item title:'First: Can JohnnyDoe be Checked-in?' ]]
     <div>
         <p>
@@ -103,7 +106,8 @@
     [[ enditem ]]
 {[ endaccordion ]}
 
-{[ accordion firstopen:'True' ]}
+{% assign show_Panel_2 = array_ShowHidePanels | Contains:'2' %}
+{[ accordion firstopen:'{{ show_Panel_2 }}' ]}
     [[ item title:'Second: Can JohnDoe check-in JohnnyDoe?' ]]
     <div>
         <p>There are two types of people that can check-in JohnnyDoe. Let me show you an example first:</p>
@@ -143,7 +147,8 @@
     [[ enditem ]]
 {[ endaccordion ]}
 
-{[ accordion firstopen:'True' ]}
+{% assign show_Panel_3 = array_ShowHidePanels | Contains:'3' %}
+{[ accordion firstopen:'{{ show_Panel_3 }}' ]}
     [[ item title:'Third: Has JohnnyDoe been checked-in?' ]]
     <div>
         <p>At the end of a Camp Day, or at the end of a Camp Week, you might want to know things like (1) How many kids checked-in?, or (2) Has this specific Kid Checked-in?</p>
