@@ -1,0 +1,32 @@
+{% comment %}
+    
+    This Lava/HTML is found in
+    PageId:16918, BlockId:13476, [Dynamic Data] > FormattedOutput
+    
+    This Lava is used in order to customize the results of the Dynamic Data block's SQL query
+    
+    Path:
+    _code/Block-DynamicData/PageId_16918/BlockId_13476-FormattedOutput.lava
+    
+{% endcomment %}
+
+{% assign var_ShowNamesFromAudit = 'Global' | Page:'QueryString' | Property:'A2' | SanitizeSql %}
+{% assign txt_CurrentURL = 'Global' | Page:'Url' | SanitizeSql %}
+{% assign txt_CurrentURL-Remove_A2 = txt_CurrentURL | SetUrlParameter:'A2','0' %}
+
+{% unless var_ShowNamesFromAudit > 0 %}
+{[ kpis size:'md' ]}
+{% for row in rows %}
+    {% assign int_PersonIsHere = row.PersonIsHere %}
+    {% assign txt_CurrentURL-Add_A2 = txt_CurrentURL | SetUrlParameter:'A2', row.AttendanceOccurrenceId %}
+    [[ kpi
+        icon:'fa fa-campground'
+        value:'{{ row.Attendance-Per-AttendanceOccurrence }}'
+        label:'{{ row.OccurrenceDate | Date:'ddd MMM d, yyyy' }}'
+        secondarylabel:'{{ row.CheckinGroup }}'
+        color:'{% if int_PersonIsHere > 0 %}#EBBE4D{% else %}#565657{% endif %}'
+        url:'{{ txt_CurrentURL-Add_A2 }}'
+        ]][[ endkpi ]]
+{% endfor %}
+{[ endkpis ]}
+{% endunless %}

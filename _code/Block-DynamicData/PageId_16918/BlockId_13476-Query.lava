@@ -1,0 +1,66 @@
+/********************************************************************************************************************************************
+    
+    This SQL is found in
+    PageId:16918, BlockId:13476, [Dynamic Data] > Query
+    
+    This SQL is used in the Dynamic Data block
+    
+    Path:
+    _code/Block-DynamicData/PageId_13476/BlockId_13476-Query.sql
+    
+********************************************************************************************************************************************/
+
+{% assign var_SlidingDateRange = 'Global' | Page:'QueryString' | Property:'AttendanceDates' | SanitizeSql %}
+{% assign var_DateRange = var_SlidingDateRange | DateRangeFromSlidingFormat %}
+
+DECLARE @ExcludedPersonIds TABLE (
+    [Id] int NOT NULL
+);
+
+INSERT INTO @ExcludedPersonIds ([Id])
+SELECT p.[Id]
+FROM [TaggedItem] ti
+    INNER JOIN [Person] p ON p.[Guid] = ti.[EntityGuid]
+WHERE ti.[TagId] IN (14, 16, 17)
+    --TagId:14 means 'ignore because REST Key'
+    --TagId:16 means 'ignore because Third-Party'
+    --TagId:17 means 'ignore because Test data'
+;
+
+SELECT
+    attocc.[Id] AS 'AttendanceOccurrenceId'
+  , attocc.[GroupId]
+  , g.[Name] AS 'CheckinGroup'
+  , attocc.[OccurrenceDate]
+  , COALESCE(attendance_counts.[AttendanceCount], 0) AS 'Attendance-Per-AttendanceOccurrence'
+  , attendance_counts.[PersonIsHere]
+FROM
+    [AttendanceOccurrence] attocc
+    INNER JOIN [Group] g ON g.[Id] = attocc.[GroupId]
+    INNER JOIN [Location] loc ON loc.[Id] = attocc.[LocationId]
+    LEFT JOIN (
+        SELECT
+            att.[OccurrenceId]
+          , COUNT(*) AS 'AttendanceCount'
+          , SUM(CASE 
+                WHEN @AttendanceRegistrant IS NULL THEN 0
+                WHEN pa.[PersonId] = @AttendanceRegistrant THEN 1 
+                ELSE 0 
+            END) AS 'PersonIsHere'
+        FROM
+            [Attendance] att
+            INNER JOIN [PersonAlias] pa ON pa.[Id] = att.[PersonAliasId]
+        WHERE
+            pa.[PersonId] NOT IN (SELECT [Id] FROM @ExcludedPersonIds)
+        GROUP BY
+            att.[OccurrenceId]
+        ) attendance_counts ON attendance_counts.[OccurrenceId] = attocc.[Id]
+WHERE
+    attocc.[GroupId] = @AttendanceGroup
+    {% if var_SlidingDateRange != null and var_SlidingDateRange != empty %}
+    AND attocc.[OccurrenceDate] >= '{{ var_DateRange.StartDate }}'
+    AND attocc.[OccurrenceDate] <= '{{ var_DateRange.EndDate }}'
+    {% endif %}
+ORDER BY
+    attocc.[Id] ASC
+;
