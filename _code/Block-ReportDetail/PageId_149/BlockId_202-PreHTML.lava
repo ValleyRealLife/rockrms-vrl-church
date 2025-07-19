@@ -1,0 +1,110 @@
+<style>
+    .following {
+        color: var(--brand-primary);
+    }
+
+    .toast-notification {
+        background: white;
+        color: black;
+        border-radius: 5px 0 0 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 1.95px 1.95px 2.6px;
+        position: fixed;
+        top: 100px;
+        right: 0;
+        padding: 10px 20px;
+        z-index: 10000;
+        opacity: 1;
+        transition: opacity 0.5s;
+        display: flex;
+        align-items: center;
+    }
+
+    .toast-notification.favorite {
+        border-right: 4px solid var(--brand-success);
+    }
+
+    .toast-notification.unfavorite {
+        border-right: 4px solid var(--brand-danger);
+    }
+
+    .toast-icon {
+        margin-right: 10px;
+    }
+
+    .toast-icon.favorite {
+        color: var(--brand-success);
+    }
+
+    .toast-icon.unfavorite {
+        color: var(--brand-danger);
+    }
+</style>
+
+{% comment %} Determine if this is a report or data view based on page query params and set appropriate values {% endcomment %}
+{% if PageParameter['ReportId'] != null %}
+    {% assign entityId = PageParameter['ReportId'] %}
+    {% assign entityTypeId = 107 %}
+    {% report id:'{{ entityId }}' %}
+        {% assign favorited = report | IsFollowed:'Favorited' %}
+    {% endreport %}
+{% elseif PageParameter['DataViewId'] != null %}
+    {% assign entityId = PageParameter['DataViewId'] %}
+    {% assign entityTypeId = 34 %}
+    {% dataview id:'{{ entityId }}' %}
+        {% assign favorited = dataview | IsFollowed:'Favorited' %}
+    {% enddataview %}
+{% endif %}
+
+<script>
+    function showFollowToast(isFollowing, $followingDiv, entityTypeId, entityId, personId, personAliasId) {
+        const message = isFollowing ? 'Favorited' : 'Unfavorited';
+        const type = isFollowing ? 'favorite' : 'unfavorite';
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification ' + type;
+
+        const icon = document.createElement('i');
+        icon.className = 'far fa-check-circle toast-icon ' + type;
+
+        const text = document.createElement('span');
+        text.innerText = message;
+
+        toast.appendChild(icon);
+        toast.appendChild(text);
+
+        document.body.appendChild(toast);
+
+        setTimeout(function() {
+            toast.style.opacity = 0;
+            setTimeout(function() {
+                document.body.removeChild(toast);
+            }, 500);
+        }, 3000);
+    }
+
+    $(document).ready(function () {
+        const panelHeading = $('#ctl00_main_ctl45_ctl01_ctl06_pnlViewDetails > div > div').first();
+
+        // Create a div with a star icon to act as the Favorite button.
+        // Needs to be a div specifically to work with the Rock followings toggle control.
+        const $followButton = $('<div>', {
+            html: '<i class="fas fa-star"></i>',
+            css: { marginRight: '10px', marginLeft: '10px', display: 'inline-block', cursor: 'pointer' }
+        }).appendTo(panelHeading);
+
+        // Set the initial state of the Favorite button
+        if ({{ favorited }}) {
+            $followButton.addClass('following');
+        }
+
+        Rock.controls.followingsToggler.initialize(
+            $followButton,
+            {{ entityTypeId }},
+            {{ entityId }},
+            'Favorited',
+            {{ CurrentPerson.Id }},
+            {{ CurrentPerson.PrimaryAliasId }},
+            showFollowToast
+        );
+    });
+</script>
