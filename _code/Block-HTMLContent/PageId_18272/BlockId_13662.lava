@@ -1,0 +1,463 @@
+{% assign reportEntityTypeGuid = 'F1F22D3E-FEFA-4C84-9FFA-9E8ACE60FCE7' %}
+{% assign dataviewEntityTypeGuid = '57F8FA29-DCF1-4F74-8553-87E90F234139' %}
+{% assign pageEntityTypeGuid = 'E104DCDF-247C-4CED-A119-8CC51632761F' %}
+
+{% comment %} reportEntityTypeId = 107 {% endcomment %}
+{% entitytype where:'Guid == "{{ reportEntityTypeGuid }}"' %}
+{% endentitytype %}
+{% assign reportEntityTypeId = entitytypeItems | First | Property:'Id' %}
+
+{% comment %} dataviewEntityTypeId = 34 {% endcomment %}
+{% entitytype where:'Guid == "{{ dataviewEntityTypeGuid }}"' %}
+{% endentitytype %}
+{% assign dataviewEntityTypeId = entitytypeItems | First | Property:'Id' %}
+
+{% comment %} pageEntityTypeId = 2 {% endcomment %}
+{% entitytype where:'Guid == "{{ pageEntityTypeGuid }}"' %}
+{% endentitytype %}
+{% assign pageEntityTypeId = entitytypeItems | First | Property:'Id' %}
+
+{% comment %} Query all reports and dataviews {% endcomment %}
+{% sql return:'allItems' %}
+WITH
+    reportcategories AS (
+        SELECT
+            [Id] AS [TopLevelId],
+            [Name] AS [TopLevelName],
+            [ParentCategoryId],
+            [Id]
+        FROM
+            [Category]
+        WHERE
+            [ParentCategoryId] IS NULL
+            AND (
+                [EntityTypeId] = {{ reportEntityTypeId }}
+                OR [EntityTypeId] = {{ dataviewEntityTypeId }}
+            )
+        UNION
+        ALL
+        SELECT
+            [reportcategories].[TopLevelId],
+            [Category].[Name],
+            [Category].[ParentCategoryId],
+            [Category].[Id]
+        FROM
+            [Category]
+            INNER JOIN [reportcategories]
+                ON [Category].[ParentCategoryId] = [reportcategories].[Id]
+    ),
+    authpersonid AS (
+        SELECT
+            [Auth].[EntityId],
+            [Auth].[EntityTypeId]
+        FROM
+            [Auth]
+            INNER JOIN [PersonAlias]
+                ON [PersonAlias].[Id] = [Auth].[PersonAliasId]
+                AND [PersonAlias].[PersonId] = {{ CurrentPerson.Id }}
+        WHERE
+            [Auth].[AllowOrDeny] = 'A'
+                AND [Auth].[EntityTypeId] IN ({{ reportEntityTypeId }}, {{ dataviewEntityTypeId }})
+    ),
+    favoritedpersonid AS (
+        SELECT
+            [Following].[EntityId],
+            [Following].[EntityTypeId]
+        FROM
+            [Following]
+            INNER JOIN [PersonAlias]
+                ON [PersonAlias].[Id] = [Following].[PersonAliasId]
+                AND [PersonAlias].[PersonId] = {{ CurrentPerson.Id }}
+        WHERE
+            [Following].[PurposeKey] = 'Favorited'
+            AND [Following].[EntityTypeId] IN ({{ reportEntityTypeId }}, {{ dataviewEntityTypeId }})
+    )
+SELECT CAST(
+    (
+        SELECT * FROM(
+            SELECT DISTINCT
+                [Report].[Id],
+                [Report].[Name],
+                'Report' AS [Type],
+                [Category].[Name] AS [Department],
+                (
+                    CASE
+                        WHEN [favoritedpersonid].[EntityId] IS NOT NULL THEN 1
+                        ELSE 0
+                    END
+                ) AS [IsFavorited],
+                CONCAT('/reporting/reports/', [Report].[Id]) AS [URL],
+                (CASE
+                    WHEN [Report].[CreatedDateTime] IS NOT NULL THEN
+                        [Report].[CreatedDateTime]
+                    ELSE
+                        0
+                END
+                ) AS [CreatedDateTime]
+            FROM [reportcategories]
+                INNER JOIN [Category]
+                    ON [Category].[Id] = [reportcategories].[TopLevelId]
+                INNER JOIN [Report]
+                    ON [Report].[CategoryId] = [reportcategories].[Id]
+                LEFT JOIN [authpersonid]
+                    ON [authpersonid].[EntityId] = [Report].[Id]
+                        AND [authpersonid].[EntityTypeId] = {{ reportEntityTypeId }}
+                LEFT JOIN [favoritedpersonid]
+                    ON [favoritedpersonid].[EntityId] = [Report].[Id]
+                    AND [favoritedpersonid].[EntityTypeId] = {{ reportEntityTypeId }}
+            UNION ALL
+            SELECT DISTINCT
+                [Dataview].[Id],
+                [Dataview].[Name],
+                'Dataview' AS [Type],
+                [Category].[Name],
+                (
+                    CASE
+                        WHEN [favoritedpersonid].[EntityId] IS NOT NULL THEN 1
+                        ELSE 0
+                    END
+                ) AS [IsFavorited],
+                CONCAT('/reporting/dataviews/?DataViewId=', [Dataview].[Id]) AS [URL],
+                (CASE
+                    WHEN [Dataview].[CreatedDateTime] IS NOT NULL THEN [Dataview].[CreatedDateTime]
+                    ELSE 0
+                END
+                ) AS [CreatedDateTime]
+            FROM [reportcategories]
+                INNER JOIN [Category]
+                    ON [Category].[Id] = [reportcategories].[TopLevelId]
+                INNER JOIN [Dataview]
+                    ON [Dataview].[CategoryId] = [reportcategories].[Id]
+                LEFT JOIN [authpersonid]
+                    ON [authpersonid].[EntityId] = [Dataview].[Id]
+                        AND [authpersonid].[EntityTypeId] = {{ dataviewEntityTypeId }}
+                LEFT JOIN [favoritedpersonid]
+                    ON [favoritedpersonid].[EntityId] = [Dataview].[Id]
+                    AND [favoritedpersonid].[EntityTypeId] = {{ dataviewEntityTypeId }}
+        ) AS [Results]
+        ORDER BY [CreatedDateTime] DESC
+        FOR JSON PATH
+    ) AS nvarchar(MAX)
+) AS [JSON]
+{% endsql %}
+
+{% comment %} Get data about which reports and dataviews have been visited by the user recently {% endcomment %}
+{% sql return:'recentInteractions' %}
+    SELECT
+        CAST((
+            SELECT * FROM (
+                SELECT TOP (20)
+                    I.[InteractionData] AS [URL],
+                    I.[InteractionDateTime] AS [LastViewedDateTime]
+                FROM [Interaction] AS I
+                    INNER JOIN PersonAlias AS PA
+                        ON PA.Id = I.PersonAliasId
+                        AND PA.PersonId = {{ CurrentPerson.Id }}
+                WHERE Operation = 'View'
+                    AND (
+                        I.InteractionSummary = 'Data Views'
+                        OR I.InteractionSummary = 'Reports'
+                    )
+                ORDER BY
+                    I.InteractionDateTime DESC
+            ) AS [Results]
+            FOR JSON PATH
+        ) AS nvarchar(MAX)
+    ) AS [JSON]
+{% endsql %}
+
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    .card {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        border-radius: 8px;
+    }
+    .badge.Report {
+        background-color: orange;
+    }
+    .badge.Dataview {
+        background-color: steelblue;
+    }
+    .card-title {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 3;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .department {
+        font-size: 13px;
+        color: gray;
+    }
+    .following {
+        color: var(--brand-primary);
+    }
+    .toast-notification {
+        background: white;
+        color: black;
+        border-radius: 5px 0 0 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 1.95px 1.95px 2.6px;
+        position: fixed;
+        top: 100px;
+        right: 0;
+        padding: 10px 20px;
+        z-index: 10000;
+        opacity: 1;
+        transition: opacity 0.5s;
+        display: flex;
+        align-items: center;
+    }
+    .toast-notification.favorite {
+        border-right: 4px solid var(--brand-success);
+    }
+    .toast-notification.unfavorite {
+        border-right: 4px solid var(--brand-danger);
+    }
+    .toast-icon {
+        margin-right: 10px;
+    }
+    .toast-icon.favorite {
+        color: var(--brand-success);
+    }
+    .toast-icon.unfavorite {
+        color: var(--brand-danger);
+    }
+    .category-filter-row {
+      display: flex;
+      gap: 10px;
+      margin: auto;
+    }
+    .type-filter-row {
+      display: flex;
+      gap: 10px;
+      margin: auto;
+    }
+</style>
+
+<div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem;">
+    <input type="text" id="searchBar" placeholder="Search" onkeyup="filterTable()" class="form-control input-sm" style="width: 25%; margin: auto" />
+    <div class="category-filter-row">
+        <a href="#" data-filter="Favorited" class="btn btn-primary">Favorited</a>
+        <a href="#" data-filter="Recent" class="btn">Recent</a>
+        <a href="#" data-filter="All" class="btn">All</a>
+    </div>
+    <div class="type-filter-row">
+        <a href="#" data-filter="Both" class="btn btn-primary">Reports & Dataviews</a>
+        <a href="#" data-filter="Reports" class="btn">Reports</a>
+        <a href="#" data-filter="Dataviews" class="btn">Dataviews</a>
+    </div>
+</div>
+
+<div class="grid" id="item-grid">
+    <!-- Cards are added here dynamically using jQuery -->
+</div>
+
+<script>
+    let allItems = [];
+
+    let recentInteractions = [];
+
+    // Need to maintain the list of favorited items separately to allow the display to update without refreshing the page,
+    // since the data is only queried on page load and will not update when favoriting/unfavoriting items
+    let favoritedItemIds = [];
+
+    /**
+     * Shows a toast message in the upper-right corner informing the user their selected report/dataview has been
+     * successfully followed or unfollowed
+    */
+    function showFollowToast(isFollowing, $followingDiv, entityTypeId, entityId, personId, personAliasId) {
+        if (isFollowing) {
+            favoritedItemIds.push(entityId);
+        } else {
+            favoritedItemIds = favoritedItemIds.filter(itemId => itemId !== entityId);
+        }
+
+        const message = isFollowing ? 'Favorited' : 'Unfavorited';
+        const type = isFollowing ? 'favorite' : 'unfavorite';
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification ' + type;
+
+        const icon = document.createElement('i');
+        icon.className = 'far fa-check-circle toast-icon ' + type;
+
+        const text = document.createElement('span');
+        text.innerText = message;
+
+        toast.appendChild(icon);
+        toast.appendChild(text);
+
+        document.body.appendChild(toast);
+
+        setTimeout(function() {
+            toast.style.opacity = 0;
+            setTimeout(function() {
+                document.body.removeChild(toast);
+            }, 500);
+        }, 3000);
+    }
+
+    /** Adds report/dataview rows to the table using the given data */
+    function populateTable(data) {
+        const grid = document.querySelector('#item-grid');
+        grid.innerHTML = "";
+
+        data.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card"
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="badge ${item.Type}">${item.Type}</span>
+                </div>
+                <div class="card-title"><a href=${item.URL || "#"} target="_blank" rel="noopener noreferrer">${item.Name}</a></div>
+                <div class="department">${item.Department}</div>
+            `;
+
+            const $followButton = $('<div>', {
+                html: '<i class="fas fa-star"></i>',
+                css: {
+                    position: 'absolute',
+                    top: '5px',
+                    right: '10px',
+                    cursor: 'pointer'
+                }
+            });
+            // Set the initial state of the Favorite button
+            if (favoritedItemIds.includes(item.Id)) {
+                $followButton.addClass('following');
+            }
+            const entityTypeId = item.Type === 'Report' ? {{reportEntityTypeId}} : {{dataviewEntityTypeId}};
+            // Initialize the Favorite button to use Rock's built-in "follow" functionality
+            Rock.controls.followingsToggler.initialize(
+                $followButton,
+                entityTypeId,
+                item.Id,
+                'Favorited',
+                {{ CurrentPerson.Id }},
+                {{ CurrentPerson.PrimaryAliasId }},
+                showFollowToast
+            );
+            $(card).find('.card-header').append($followButton);
+
+            grid.appendChild(card);
+        });
+    }
+
+    /** Retrieves the numeric ID of a report from the given report page URL */
+    function extractReportId(url) {
+        const match = url.match(/\/reports\/(\d+)/);
+        return match ? parseInt(match[1]) : null;
+    }
+
+    /** Retrieves the numeric ID of a dataview from the given dataview page URL */
+    function extractDataViewId(url) {
+        const match = url.match(/DataViewId=(\d+)/);
+        return match ? parseInt(match[1]) : null;
+    }
+
+    /**
+     * Callback to filter the data shown in the table when a filter option is selected or the user types in the
+     * search bar
+     */
+    function filterTable() {
+        let filteredData = allItems
+            .sort((a, b) => {
+                if (a.IsFavorited !== b.IsFavorited) {
+                return a.IsFavorited ? -1 : 1;
+                }
+                return a.Name.localeCompare(b.Name);
+            });
+
+        const selectedCategory = document.getElementsByClassName("btn-primary")[0].getAttribute('data-filter');
+        if (selectedCategory === 'Favorited') {
+            filteredData = filteredData.filter(item => favoritedItemIds.includes(item.Id))
+                .sort((a, b) => a.Name.localeCompare(b.Name));
+        } else if (selectedCategory === 'Recent') {
+            const recentInteractionIds = recentInteractions.flatMap(interaction => {
+                return [extractReportId(interaction.URL), extractDataViewId(interaction.URL)].filter(Boolean);
+            });
+            filteredData = filteredData.filter(item => recentInteractionIds.includes(item.Id))
+                .sort((a, b) => {
+                    if (a.IsFavorited !== b.IsFavorited) {
+                    return a.IsFavorited ? -1 : 1;
+                    }
+                    return a.Name.localeCompare(b.Name);
+                });
+        }
+
+        const selectedType = document.getElementsByClassName("btn-primary")[1].getAttribute('data-filter');
+        if (selectedType === 'Reports') {
+            filteredData = filteredData.filter(item => item.Type === 'Report');
+        } else if (selectedType === 'Dataviews') {
+            filteredData = filteredData.filter(item => item.Type === 'Dataview');
+        }
+
+        const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+        filteredData = filteredData.filter(item =>
+            ['Name', 'Type', 'Department'].some(key =>
+                String(item[key]).toLowerCase().includes(searchTerm)
+            )
+        );
+
+        populateTable(filteredData);
+    }
+
+    $(document).ready(function () {
+        allItems = {{ allItems[0]['JSON'] | Default:'[]' }};
+        recentInteractions = {{ recentInteractions[0]['JSON'] | Default:'[]' }};
+        favoritedItemIds = allItems.filter(item => item.IsFavorited).map(item => item.Id);
+
+        const categoryFilterButtons = document.querySelectorAll('.category-filter-row a');
+        categoryFilterButtons.forEach(button => {
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                categoryFilterButtons.forEach(b => b.classList.remove('btn-primary'));
+                button.classList.add('btn-primary');
+                filterTable();
+            });
+        });
+
+        const typeFilterButtons = document.querySelectorAll('.type-filter-row a');
+        typeFilterButtons.forEach(button => {
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                typeFilterButtons.forEach(b => b.classList.remove('btn-primary'));
+                button.classList.add('btn-primary');
+                filterTable();
+            });
+        });
+
+        filterTable();
+    });
+
+    // Make sure the page is always reloaded when navigated to, including when the browser back button is clicked.
+    // We want to do this since users could navigate to a report and favorite/unfavorite it, and we want the
+    // dashboard to update to show the new status.
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+          window.location.reload();
+        }
+    });
+</script>
