@@ -8,16 +8,16 @@
     - Sql
     
     Path:
-    _code/Block-HTMLContent/PageId_16918/BlockId_12948.lava
+    _code/Block-HTMLContent/PageId_1009/BlockId_13474-Info_ConnTypeId_20.lava
     
 -------------------------------------------------------------------------------------------------------------------------------------------------/
 
 {% assign var_ConnectionOpportunityId = 'Global' | Page:'QueryString' | Property:'ConnectionOpportunityId' | SanitizeSql %}
 
 {% connectionopportunity where:'ConnectionTypeId == 20' securityenabled:'false' %}
-    {% assign array_ConnOppIds = connectionopportunityItems | Map:'Id' %} //-The 'Id' values in this array are Integers. I need them to be Strings.
-    {% assign array_ConnOppIds = array_ConnOppIds | Join:',' %} //-By using the Join filter, I can concatenate the integer values from the array into a single string.
-    {% assign array_ConnOppIds = array_ConnOppIds | Split:',' %} //-By using the Split filter, I can re-create an array, but this time it will be an array of strings.
+    {% assign array_ConnOppIds = connectionopportunityItems | Map:'Id' %} //-The 'Id' values in this array are Integers. I need them to be Strings
+    {% assign array_ConnOppIds = array_ConnOppIds | Join:',' %} //-By using the Join filter, I can concatenate the integer values from the array into a single string
+    {% assign array_ConnOppIds = array_ConnOppIds | Split:',' %} //-By using the Split filter, I can re-create an array, but this time it will be an array of strings
 {% endconnectionopportunity %}
 
 {% assign bool_Show = array_ConnOppIds | Contains:var_ConnectionOpportunityId %}
@@ -196,6 +196,31 @@
                 <p>
                     If a Connection Request in this Connection Opportunity does not have a Connector, <a href="https://rock.vrl.church/admin/general/workflows?WorkflowTypeId=370" target="_blank">WorkflowTypeId=370</a>
                     will round-robin a Connector by choosing a GroupMember from <a href="https://rock.vrl.church/page/697?GroupId=138679" target="_blank">this Group</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if var_ConnectionOpportunityId == 121 %}
+<button type="button" class="VRL--info" data-toggle="modal" data-target="#VRL--helptext-autoassign-ConnOpp118">
+    <i class="fa fa-info-circle" style="font-size: 15px;"></i>
+    <span class="VRL--extra-info">
+        About Connectors
+    </span>
+</button>
+
+<div class="modal fade" id="VRL--helptext-autoassign-ConnOpp118" tabindex="-1" role="dialog" aria-labelledby="VRL--helptext-autoassign-ConnOpp118-label">
+    <div class="modal-dialog VRL--modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="VRL--helptext-autoassign-ConnOpp118-label">Dev Notes</h4>
+            </div>
+            <div class="modal-body VRL--modal-body">
+                <p>
+                    If you want to manage the options available inside the "Connectors" Dropdown for a Connection Request in this Connection Opportunity, simply add/remove someone from <a href="https://rock.vrl.church/page/697?GroupId=135157" target="_blank">this Group</a>.
                 </p>
             </div>
         </div>
