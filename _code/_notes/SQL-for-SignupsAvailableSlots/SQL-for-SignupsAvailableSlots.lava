@@ -1,0 +1,83 @@
+{% assign int_GroupId = 'Global' | Page:'QueryString' | Property:'GroupId' %}
+
+{% if int_GroupId != null and int_GroupId > 0 %}
+DECLARE @SignUpGroupId [int] = {{ int_GroupId }};
+
+DECLARE @Opportunity TABLE
+(
+    [GroupId] [int] NOT NULL
+  , [LocationId] [int] NOT NULL
+  , [ScheduleId] [int] NOT NULL
+  , [ScheduleName] [nvarchar](100) NOT NULL
+  , [ProjectName] [nvarchar](100) NOT NULL
+  , [OpportunityName] [nvarchar](100) NULL
+  , [EffectiveStartDate] [date] NULL
+  , [EffectiveEndDate] [date] NULL
+  , [iCalendarContent] [nvarchar](max)
+  , [SlotsMin] [int] NULL
+  , [SlotsDesired] [int] NULL
+  , [SlotsMax] [int] NULL
+  , [ParticipantCount] [int] NOT NULL
+);
+
+WITH CTE AS
+(
+    SELECT
+        g.[Id] AS [GroupId]
+      , gl.[LocationId] AS [LocationId]
+      , glsc.[ScheduleId] AS [ScheduleId]
+      , s.[Name] AS [ScheduleName]
+      , g.[Name] AS [ProjectName]
+      , glsc.[ConfigurationName] AS [OpportunityName]
+      , s.[EffectiveStartDate]
+      , s.[EffectiveEndDate]
+      , s.[iCalendarContent]
+      , glsc.[MinimumCapacity] AS [SlotsMin]
+      , glsc.[DesiredCapacity] AS [SlotsDesired]
+      , glsc.[MaximumCapacity] AS [SlotsMax]
+    FROM [GroupLocation] gl
+        INNER JOIN [Group] g ON g.[Id] = gl.[GroupId]
+        INNER JOIN [GroupType] gt ON gt.[Id] = g.[GroupTypeId]
+        INNER JOIN [GroupLocationScheduleConfig] glsc ON glsc.[GroupLocationId] = gl.[Id]
+        INNER JOIN [Schedule] s ON s.[Id] = glsc.[ScheduleId]
+    WHERE
+        g.[Id] = @SignUpGroupId
+)
+INSERT INTO @Opportunity
+SELECT
+    CTE.*
+  , COUNT(gma.[Id]) AS [ParticipantCount]
+FROM CTE
+    LEFT OUTER JOIN [GroupMember] gm ON gm.[GroupId] = CTE.[GroupId]
+    LEFT OUTER JOIN [GroupMemberAssignment] gma ON gma.[GroupMemberId] = gm.[Id] AND gma.[LocationId] = CTE.[LocationId] AND gma.[ScheduleId] = CTE.[ScheduleId]
+GROUP BY
+    CTE.[GroupId]
+  , CTE.[LocationId]
+  , CTE.[ScheduleId]
+  , CTE.[ScheduleName]
+  , CTE.[ProjectName]
+  , CTE.[OpportunityName]
+  , CTE.[EffectiveStartDate]
+  , CTE.[EffectiveEndDate]
+  , CTE.[iCalendarContent]
+  , CTE.[SlotsMin]
+  , CTE.[SlotsDesired]
+  , CTE.[SlotsMax]
+ORDER BY
+    CTE.[EffectiveStartDate] ASC
+  , CTE.[ProjectName] ASC
+  , [ParticipantCount] DESC
+;
+
+SELECT
+    [ScheduleId] AS 'Value'
+  , [ScheduleName] AS 'Text'
+FROM @Opportunity
+GROUP BY
+    [ScheduleId]
+  , [ScheduleName]
+HAVING
+    SUM(CASE WHEN [SlotsMax] IS NOT NULL AND [SlotsMax] > 0 THEN [SlotsMax] ELSE 0 END - [ParticipantCount]) > 1
+ORDER BY
+    [ScheduleId] ASC
+{% endif %}
